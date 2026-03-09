@@ -29,12 +29,6 @@ ScriptedImporter:
     originalUri: Assets\New Folder 2\BROKEN.bin
     assetPath: Assets\New Folder 2\BROKEN.bin
   - type: 1
-    originalUri: Assets\New Folder 2\Parquet_Trials_basecolor.jpg
-    assetPath: Assets\New Folder 2\Parquet_Trials_basecolor.jpg
-  - type: 1
-    originalUri: Assets\New Folder 2\Parquet_Trials_roughness.png
-    assetPath: Assets\New Folder 2\Parquet_Trials_roughness.png
-  - type: 1
     originalUri: Assets\New Folder 2\painted_plaster_wall_16_color.jpg
     assetPath: Assets\New Folder 2\painted_plaster_wall_16_color.jpg
   - type: 1
@@ -55,8 +49,154 @@ ScriptedImporter:
   - type: 1
     originalUri: Assets\New Folder 2\Material.001_Metallic.jpg-Material.001_Roughness.jpg.png
     assetPath: Assets\New Folder 2\Material.001_Metallic.jpg-Material.001_Roughness.jpg.png
+  - type: 1
+    originalUri: Assets\New Folder 2\lamp_emissive.png
+    assetPath: Assets\New Folder 2\lamp_emissive.png
+  - type: 1
+    originalUri: Assets\New Folder 2\lamp_baseColor.png
+    assetPath: Assets\New Folder 2\lamp_baseColor.png
+  - type: 1
+    originalUri: Assets\New Folder 2\lamp_metallicRoughness.png
+    assetPath: Assets\New Folder 2\lamp_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\notebook_metallicRoughness.png
+    assetPath: Assets\New Folder 2\notebook_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\notebook_baseColor.jpg
+    assetPath: Assets\New Folder 2\notebook_baseColor.jpg
+  - type: 1
+    originalUri: Assets\New Folder 2\penna_metallicRoughness.png
+    assetPath: Assets\New Folder 2\penna_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\penna_baseColor.png
+    assetPath: Assets\New Folder 2\penna_baseColor.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Parquet_Trials_basecolor.jpg
+    assetPath: Assets\New Folder 2\Parquet_Trials_basecolor.jpg
+  - type: 1
+    originalUri: Assets\New Folder 2\Parquet_Trials_roughness.png
+    assetPath: Assets\New Folder 2\Parquet_Trials_roughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\tiled_plane_DefaultMaterial_BaseColor.jpg
+    assetPath: Assets\New Folder 2\tiled_plane_DefaultMaterial_BaseColor.jpg
+  - type: 1
+    originalUri: Assets\New Folder 2\tiled_plane_DefaultMaterial_Roughness.png
+    assetPath: Assets\New Folder 2\tiled_plane_DefaultMaterial_Roughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Wood063_2K_Color.jpg
+    assetPath: Assets\New Folder 2\Wood063_2K_Color.jpg
+  - type: 1
+    originalUri: Assets\New Folder 2\Wood063_2K_Roughness.png
+    assetPath: Assets\New Folder 2\Wood063_2K_Roughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Specural tint_old copper.jpg
+    assetPath: Assets\New Folder 2\Specural tint_old copper.jpg
+  - type: 1
+    originalUri: Assets\New Folder 2\Base Color_old copper.jpg
+    assetPath: Assets\New Folder 2\Base Color_old copper.jpg
+  - type: 1
+    originalUri: Assets\New Folder 2\METALLIC_old copper-ROUGHNESS_old copper.png
+    assetPath: Assets\New Folder 2\METALLIC_old copper-ROUGHNESS_old copper.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Scene_-_Root_baseColor.png
+    assetPath: Assets\New Folder 2\Scene_-_Root_baseColor.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Scene_-_Root_metallicRoughness.png
+    assetPath: Assets\New Folder 2\Scene_-_Root_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\generator_metallicRoughness.png
+    assetPath: Assets\New Folder 2\generator_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\generator_baseColor.png
+    assetPath: Assets\New Folder 2\generator_baseColor.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Chess_board_clearcoat.png
+    assetPath: Assets\New Folder 2\Chess_board_clearcoat.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Chess_board_specularf0.png
+    assetPath: Assets\New Folder 2\Chess_board_specularf0.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Chess_board_baseColor.png
+    assetPath: Assets\New Folder 2\Chess_board_baseColor.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Chess_board_metallicRoughness.png
+    assetPath: Assets\New Folder 2\Chess_board_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\White_player.001_clearcoat.png
+    assetPath: Assets\New Folder 2\White_player.001_clearcoat.png
+  - type: 1
+    originalUri: Assets\New Folder 2\White_player.001_baseColor.png
+    assetPath: Assets\New Folder 2\White_player.001_baseColor.png
+  - type: 1
+    originalUri: Assets\New Folder 2\White_player.001_metallicRoughness.png
+    assetPath: Assets\New Folder 2\White_player.001_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Black_Player.001_clearcoat.png
+    assetPath: Assets\New Folder 2\Black_Player.001_clearcoat.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Black_Player.001_specularf0.png
+    assetPath: Assets\New Folder 2\Black_Player.001_specularf0.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Black_Player.001_baseColor.png
+    assetPath: Assets\New Folder 2\Black_Player.001_baseColor.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Black_Player.001_metallicRoughness.png
+    assetPath: Assets\New Folder 2\Black_Player.001_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Drawers_metallicRoughness.png
+    assetPath: Assets\New Folder 2\Drawers_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Drawers_baseColor.jpg
+    assetPath: Assets\New Folder 2\Drawers_baseColor.jpg
+  - type: 1
+    originalUri: Assets\New Folder 2\Table_metallicRoughness.png
+    assetPath: Assets\New Folder 2\Table_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Table_baseColor.jpg
+    assetPath: Assets\New Folder 2\Table_baseColor.jpg
+  - type: 1
+    originalUri: Assets\New Folder 2\TableLeg_metallicRoughness.png
+    assetPath: Assets\New Folder 2\TableLeg_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\TableLeg_baseColor.jpg
+    assetPath: Assets\New Folder 2\TableLeg_baseColor.jpg
+  - type: 1
+    originalUri: Assets\New Folder 2\UnderTableTrim_metallicRoughness.png
+    assetPath: Assets\New Folder 2\UnderTableTrim_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\UnderTableTrim_baseColor.jpg
+    assetPath: Assets\New Folder 2\UnderTableTrim_baseColor.jpg
+  - type: 1
+    originalUri: Assets\New Folder 2\Material.001_baseColor.jpg
+    assetPath: Assets\New Folder 2\Material.001_baseColor.jpg
+  - type: 1
+    originalUri: Assets\New Folder 2\ClockCase_metallicRoughness.png
+    assetPath: Assets\New Folder 2\ClockCase_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\ClockCase_baseColor.png
+    assetPath: Assets\New Folder 2\ClockCase_baseColor.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Clockface_baseColor.png
+    assetPath: Assets\New Folder 2\Clockface_baseColor.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Clockface_metallicRoughness.png
+    assetPath: Assets\New Folder 2\Clockface_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Clockface_normal.png
+    assetPath: Assets\New Folder 2\Clockface_normal.png
+  - type: 1
+    originalUri: Assets\New Folder 2\MoonDial_baseColor.png
+    assetPath: Assets\New Folder 2\MoonDial_baseColor.png
   reportItems:
   - type: 2
     code: 20
     messages:
+    - KHR_materials_emissive_strength
+  - type: 2
+    code: 20
+    messages:
     - KHR_materials_specular
+  - type: 2
+    code: 20
+    messages:
+    - KHR_materials_ior
