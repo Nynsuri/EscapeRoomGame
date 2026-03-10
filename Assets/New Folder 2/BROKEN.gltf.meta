@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 1aa78cd5ba8815b4e900491891c576b3
+guid: 4d6eb8a9a1fcc0245a8850788d9761e3
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -28,6 +28,45 @@ ScriptedImporter:
   - type: 0
     originalUri: Assets\New Folder 2\BROKEN.bin
     assetPath: Assets\New Folder 2\BROKEN.bin
+  - type: 1
+    originalUri: Assets\New Folder 2\ClockCase_metallicRoughness.png
+    assetPath: Assets\New Folder 2\ClockCase_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\ClockCase_baseColor.png
+    assetPath: Assets\New Folder 2\ClockCase_baseColor.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Clockface_baseColor.png
+    assetPath: Assets\New Folder 2\Clockface_baseColor.png
+  - type: 1
+    originalUri: Assets\New Folder 2\Clockface_metallicRoughness.png
+    assetPath: Assets\New Folder 2\Clockface_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\MoonDial_baseColor.png
+    assetPath: Assets\New Folder 2\MoonDial_baseColor.png
+  - type: 1
+    originalUri: Assets\New Folder 2\wood_diffuse.jpg
+    assetPath: Assets\New Folder 2\wood_diffuse.jpg
+  - type: 1
+    originalUri: Assets\New Folder 2\wood_glossiness.png
+    assetPath: Assets\New Folder 2\wood_glossiness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\tiled_plane_DefaultMaterial_BaseColor.jpg
+    assetPath: Assets\New Folder 2\tiled_plane_DefaultMaterial_BaseColor.jpg
+  - type: 1
+    originalUri: Assets\New Folder 2\tiled_plane_DefaultMaterial_Roughness.png
+    assetPath: Assets\New Folder 2\tiled_plane_DefaultMaterial_Roughness.png
+  - type: 1
+    originalUri: "Assets\\New Folder 2\\\u041C\u0430\u0442\u0435\u0440\u0438\u0430\u043B_Emission.jpg"
+    assetPath: "Assets\\New Folder 2\\\u041C\u0430\u0442\u0435\u0440\u0438\u0430\u043B_Emission.jpg"
+  - type: 1
+    originalUri: "Assets\\New Folder 2\\\u041C\u0430\u0442\u0435\u0440\u0438\u0430\u043B_Normal.jpg"
+    assetPath: "Assets\\New Folder 2\\\u041C\u0430\u0442\u0435\u0440\u0438\u0430\u043B_Normal.jpg"
+  - type: 1
+    originalUri: "Assets\\New Folder 2\\\u041C\u0430\u0442\u0435\u0440\u0438\u0430\u043B_BaseColor-\u041C\u0430\u0442\u0435\u0440\u0438\u0430\u043B_Alpha.png"
+    assetPath: "Assets\\New Folder 2\\\u041C\u0430\u0442\u0435\u0440\u0438\u0430\u043B_BaseColor-\u041C\u0430\u0442\u0435\u0440\u0438\u0430\u043B_Alpha.png"
+  - type: 1
+    originalUri: "Assets\\New Folder 2\\\u041C\u0430\u0442\u0435\u0440\u0438\u0430\u043B_Metallic-\u041C\u0430\u0442\u0435\u0440\u0438\u0430\u043B_Roughness.png"
+    assetPath: "Assets\\New Folder 2\\\u041C\u0430\u0442\u0435\u0440\u0438\u0430\u043B_Metallic-\u041C\u0430\u0442\u0435\u0440\u0438\u0430\u043B_Roughness.png"
   - type: 1
     originalUri: Assets\New Folder 2\painted_plaster_wall_16_color.jpg
     assetPath: Assets\New Folder 2\painted_plaster_wall_16_color.jpg
@@ -77,12 +116,6 @@ ScriptedImporter:
     originalUri: Assets\New Folder 2\Parquet_Trials_roughness.png
     assetPath: Assets\New Folder 2\Parquet_Trials_roughness.png
   - type: 1
-    originalUri: Assets\New Folder 2\tiled_plane_DefaultMaterial_BaseColor.jpg
-    assetPath: Assets\New Folder 2\tiled_plane_DefaultMaterial_BaseColor.jpg
-  - type: 1
-    originalUri: Assets\New Folder 2\tiled_plane_DefaultMaterial_Roughness.png
-    assetPath: Assets\New Folder 2\tiled_plane_DefaultMaterial_Roughness.png
-  - type: 1
     originalUri: Assets\New Folder 2\Wood063_2K_Color.jpg
     assetPath: Assets\New Folder 2\Wood063_2K_Color.jpg
   - type: 1
@@ -103,6 +136,18 @@ ScriptedImporter:
   - type: 1
     originalUri: Assets\New Folder 2\Scene_-_Root_metallicRoughness.png
     assetPath: Assets\New Folder 2\Scene_-_Root_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\plastic04_diffuse.jpg
+    assetPath: Assets\New Folder 2\plastic04_diffuse.jpg
+  - type: 1
+    originalUri: Assets\New Folder 2\plastic04_glossiness.png
+    assetPath: Assets\New Folder 2\plastic04_glossiness.png
+  - type: 1
+    originalUri: Assets\New Folder 2\rust_diffuse.jpg
+    assetPath: Assets\New Folder 2\rust_diffuse.jpg
+  - type: 1
+    originalUri: Assets\New Folder 2\rust_metalness-rust_glossiness.png
+    assetPath: Assets\New Folder 2\rust_metalness-rust_glossiness.png
   - type: 1
     originalUri: Assets\New Folder 2\generator_metallicRoughness.png
     assetPath: Assets\New Folder 2\generator_metallicRoughness.png
@@ -169,24 +214,6 @@ ScriptedImporter:
   - type: 1
     originalUri: Assets\New Folder 2\Material.001_baseColor.jpg
     assetPath: Assets\New Folder 2\Material.001_baseColor.jpg
-  - type: 1
-    originalUri: Assets\New Folder 2\ClockCase_metallicRoughness.png
-    assetPath: Assets\New Folder 2\ClockCase_metallicRoughness.png
-  - type: 1
-    originalUri: Assets\New Folder 2\ClockCase_baseColor.png
-    assetPath: Assets\New Folder 2\ClockCase_baseColor.png
-  - type: 1
-    originalUri: Assets\New Folder 2\Clockface_baseColor.png
-    assetPath: Assets\New Folder 2\Clockface_baseColor.png
-  - type: 1
-    originalUri: Assets\New Folder 2\Clockface_metallicRoughness.png
-    assetPath: Assets\New Folder 2\Clockface_metallicRoughness.png
-  - type: 1
-    originalUri: Assets\New Folder 2\Clockface_normal.png
-    assetPath: Assets\New Folder 2\Clockface_normal.png
-  - type: 1
-    originalUri: Assets\New Folder 2\MoonDial_baseColor.png
-    assetPath: Assets\New Folder 2\MoonDial_baseColor.png
   reportItems:
   - type: 2
     code: 20
