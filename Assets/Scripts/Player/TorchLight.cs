@@ -28,7 +28,7 @@ public class TorchItem : InventoryItem
     public Vector3 heldMeshScale = new Vector3(1f, 1f, 1f);
 
     [Header("Light offset relative to camera")]
-    public Vector3 heldLightOffset = new Vector3(0f, 0f, 0.3f);
+    public Vector3 heldLightOffset = new Vector3(0.28f, -0.20f, 0.85f);
 
     // ── Private state ─────────────────────────────────────────────
     private bool _isOn = false;
@@ -61,10 +61,10 @@ public class TorchItem : InventoryItem
         if (torchLight != null)
         {
             torchLight.type = LightType.Spot;
-            torchLight.spotAngle = 60f;           // wider circular beam
-            torchLight.innerSpotAngle = 35f;      // soft falloff edge
+            torchLight.spotAngle = 80f;           // wider circular beam
+            torchLight.innerSpotAngle = 55f;      // soft falloff edge
             torchLight.range = 30f;
-            torchLight.intensity = 8f;
+            torchLight.intensity = 5f;
             torchLight.color = new Color(1f, 0.95f, 0.85f); // warm white
             torchLight.enabled = false;
 
@@ -90,6 +90,7 @@ public class TorchItem : InventoryItem
     public override void OnPickup()
     {
         base.OnPickup(); // hides all renderers + colliders on world object
+        torchLight.cullingMask = ~(1 << LayerMask.NameToLayer("HeldItem"));
 
         _cam = Camera.main ?? FindFirstObjectByType<Camera>();
         if (_cam == null) return;
@@ -130,6 +131,7 @@ public class TorchItem : InventoryItem
             torchLight.transform.SetParent(_originalLightParent, false);
             torchLight.transform.localPosition = _originalLightLocalPos;
             torchLight.transform.localRotation = _originalLightLocalRot;
+            torchLight.cullingMask = ~0;
         }
 
         // Turn off light when dropped
