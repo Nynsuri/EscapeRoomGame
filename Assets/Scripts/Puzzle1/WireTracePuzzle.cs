@@ -41,6 +41,7 @@ public class WireTracePuzzle : MonoBehaviour
     private Quaternion _camOriginalRot;
     private GameObject _cursorDot;
     private GUIStyle _labelStyle;
+    private GUIStyle _promptStyle;
     private string _message = "";
     private float _messageTimer = 0f;
 
@@ -378,6 +379,33 @@ public class WireTracePuzzle : MonoBehaviour
 
     void OnGUI()
     {
+        // ── Interaction prompt when idle and looking at puzzle ──
+        if (_state == PuzzleState.Idle && playerCamera != null)
+        {
+            Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+            if (Physics.Raycast(ray, out RaycastHit hit, 3f) && hit.collider.gameObject == gameObject)
+            {
+                if (_promptStyle == null)
+                    _promptStyle = new GUIStyle(GUI.skin.label)
+                    {
+                        fontSize = 22,
+                        fontStyle = FontStyle.Bold,
+                        alignment = TextAnchor.MiddleCenter,
+                        normal = { textColor = Color.white }
+                    };
+
+                string msg = "[E]  Interact with Wire Puzzle";
+                float pw = 420f, ph = 40f;
+                float px = (Screen.width - pw) / 2f;
+                float py = (Screen.height - ph) / 2f + 60f;
+
+                GUI.color = Color.black;
+                GUI.Label(new Rect(px + 2, py + 2, pw, ph), msg, _promptStyle);
+                GUI.color = Color.white;
+                GUI.Label(new Rect(px, py, pw, ph), msg, _promptStyle);
+            }
+        }
+
         if (_messageTimer <= 0f) return;
         if (_labelStyle == null)
             _labelStyle = new GUIStyle(GUI.skin.label)
