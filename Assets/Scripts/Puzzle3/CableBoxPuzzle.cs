@@ -65,12 +65,13 @@ public class CableBoxPuzzle : MonoBehaviour
     public float leverTargetX = 0f;   // target localEulerAngles.X when pulled
     public float leverSpeed = 2f;
 
-    [Header("Solve Objects — Straight completion (3 objects deleted)")]
+    [Header("Solve Objects — STRAIGHT solve (cables top-to-top)")]
+    [Tooltip("These get DESTROYED on straight solve — assign the BISHOP piece and its parts here (wrong piece for this solve)")]
     public GameObject straightDeleteObject1;
-    public GameObject straightDeleteObject2;
-    public GameObject straightDeleteObject3;
 
-    [Header("Solve Objects — Diagonal/Color completion (1 object deleted)")]
+
+    [Header("Solve Objects — DIAGONAL/COLOR solve (cables by color)")]
+    [Tooltip("This gets DESTROYED on color solve — assign the ROOK piece here (wrong piece for this solve)")]
     public GameObject diagonalDeleteObject;
 
     [Header("Drawer")]
@@ -445,8 +446,7 @@ public class CableBoxPuzzle : MonoBehaviour
         if (straight)
         {
             if (straightDeleteObject1 != null) Destroy(straightDeleteObject1);
-            if (straightDeleteObject2 != null) Destroy(straightDeleteObject2);
-            if (straightDeleteObject3 != null) Destroy(straightDeleteObject3);
+
         }
         else
         {

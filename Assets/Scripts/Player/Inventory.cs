@@ -73,7 +73,7 @@ public class Inventory : MonoBehaviour
         return true;
     }
 
-    /// <summary>Remove item from inventory (e.g. after use).</summary>
+
     public void RemoveItem(InventoryItem item)
     {
         if (!_items.Contains(item)) return;
@@ -127,7 +127,7 @@ public class Inventory : MonoBehaviour
     {
         _isOpen = !_isOpen;
         Cursor.lockState = _isOpen ? CursorLockMode.None : CursorLockMode.Locked;
-        Cursor.visible   = _isOpen;
+        Cursor.visible = _isOpen;
         OnInventoryToggled?.Invoke(_isOpen);
     }
 
