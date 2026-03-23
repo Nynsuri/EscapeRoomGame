@@ -25,6 +25,12 @@ public abstract class InventoryItem : MonoBehaviour
         SetWorldVisible(true);
     }
 
+    // Called when item is permanently consumed (placed on board etc.) — fully hides it
+    public virtual void OnConsume()
+    {
+        gameObject.SetActive(false);
+    }
+
     void SetWorldVisible(bool visible)
     {
         // Toggle all renderers

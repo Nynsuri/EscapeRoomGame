@@ -68,7 +68,8 @@ public class CableBoxPuzzle : MonoBehaviour
     [Header("Solve Objects — STRAIGHT solve (cables top-to-top)")]
     [Tooltip("These get DESTROYED on straight solve — assign the BISHOP piece and its parts here (wrong piece for this solve)")]
     public GameObject straightDeleteObject1;
-
+    public GameObject straightDeleteObject2;
+    public GameObject straightDeleteObject3;
 
     [Header("Solve Objects — DIAGONAL/COLOR solve (cables by color)")]
     [Tooltip("This gets DESTROYED on color solve — assign the ROOK piece here (wrong piece for this solve)")]
@@ -134,9 +135,6 @@ public class CableBoxPuzzle : MonoBehaviour
 
 
     private GUIStyle _promptStyle;
-
-    // Lever world button (sphere collider trigger in world space)
-    private bool _leverReady = false;
 
     void Awake()
     {
@@ -207,7 +205,40 @@ public class CableBoxPuzzle : MonoBehaviour
         if (!Physics.Raycast(ray, out RaycastHit hit, interactRange)) return;
         if (hit.collider.gameObject != gameObject && !IsChildOf(hit.collider.gameObject, gameObject)) return;
         if (Input.GetKeyDown(interactKey))
+        {
+            if (!HasAllCablePieces())
+            {
+                ShowFeedback("You need all 4 cable pieces first!", Color.red, 2f);
+                _panel.SetActive(true);
+                StartCoroutine(HideFeedbackPanel());
+                return;
+            }
             StartPuzzle();
+        }
+    }
+
+    IEnumerator HideFeedbackPanel()
+    {
+        yield return new WaitForSeconds(2f);
+        _panel.SetActive(false);
+    }
+
+    bool HasAllCablePieces()
+    {
+        var inventory = FindFirstObjectByType<Inventory>();
+        if (inventory == null) return false;
+        bool hasRed = false, hasBlue = false, hasYellow = false, hasGreen = false;
+        foreach (var item in inventory.Items)
+        {
+            if (item is CablePieceItem cp)
+            {
+                if (cp.cableColor == CableColor.Red) hasRed = true;
+                if (cp.cableColor == CableColor.Blue) hasBlue = true;
+                if (cp.cableColor == CableColor.Yellow) hasYellow = true;
+                if (cp.cableColor == CableColor.Green) hasGreen = true;
+            }
+        }
+        return hasRed && hasBlue && hasYellow && hasGreen;
     }
 
     void StartPuzzle()
@@ -226,6 +257,16 @@ public class CableBoxPuzzle : MonoBehaviour
         {
             _detached.Add(new DetachedChild { child = c, parent = playerCamera.transform, pos = c.position, rot = c.rotation });
             c.SetParent(null, true);
+        }
+
+        // Remove all cable pieces from inventory — they are now being connected
+        var inv = FindFirstObjectByType<Inventory>();
+        if (inv != null)
+        {
+            var toRemove = new List<InventoryItem>();
+            foreach (var item in inv.Items)
+                if (item is CablePieceItem) toRemove.Add(item);
+            foreach (var item in toRemove) inv.RemoveItem(item);
         }
 
         Cursor.lockState = CursorLockMode.None;
@@ -446,7 +487,8 @@ public class CableBoxPuzzle : MonoBehaviour
         if (straight)
         {
             if (straightDeleteObject1 != null) Destroy(straightDeleteObject1);
-
+            if (straightDeleteObject2 != null) Destroy(straightDeleteObject2);
+            if (straightDeleteObject3 != null) Destroy(straightDeleteObject3);
         }
         else
         {
