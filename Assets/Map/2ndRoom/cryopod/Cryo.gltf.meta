@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 63aabce413912c24b8f0cc0fffae1165
+guid: a38be6fd2d4f4314482c3ebe3454c9d6
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -26,8 +26,8 @@ ScriptedImporter:
     sceneObjectCreation: 2
   assetDependencies:
   - type: 0
-    originalUri: Assets\Map\2ndRoom\cryopod\spaceshiproom.bin
-    assetPath: Assets\Map\2ndRoom\cryopod\spaceshiproom.bin
+    originalUri: Assets\Map\2ndRoom\cryopod\Cryo.bin
+    assetPath: Assets\Map\2ndRoom\cryopod\Cryo.bin
   - type: 1
     originalUri: Assets\Map\2ndRoom\cryopod\textures\lambert1_metallicRoughness.png
     assetPath: Assets\Map\2ndRoom\cryopod\textures\lambert1_metallicRoughness.png
