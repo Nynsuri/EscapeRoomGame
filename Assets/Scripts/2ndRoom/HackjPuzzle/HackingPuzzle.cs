@@ -24,8 +24,8 @@ public class HackingPuzzle : MonoBehaviour
     [Header("On Solved")]
     public UnityEngine.Events.UnityEvent onSolved;
 
-    // Grid
-    private static readonly int[,] Layout = new int[7, 9]
+    // ── GRID & RANDOMIZATION ─────────────────────────────────────────────────────
+    private static readonly int[,] BaseLayout = new int[7, 9]
     {
         { 0,1,1,1,0,1,1,1,0 },
         { 0,1,0,1,2,1,0,1,0 },
@@ -35,14 +35,13 @@ public class HackingPuzzle : MonoBehaviour
         { 0,1,0,1,2,1,0,1,0 },
         { 0,1,1,1,0,1,1,1,0 },
     };
-    private const int ROWS = 7, COLS = 9;
 
-    private static readonly Dictionary<Vector2Int, string[]> LockSequences = new Dictionary<Vector2Int, string[]>
-    {
-        { new Vector2Int(1, 4), new[] { "U", "D", "R" } },
-        { new Vector2Int(3, 1), new[] { "L", "U", "R", "D" } },
-        { new Vector2Int(5, 4), new[] { "R", "R", "U", "L" } },
-    };
+    private const int ROWS = 7, COLS = 9;
+    private readonly Vector2Int StartPosition = new Vector2Int(3, 0);
+
+    private int[,] _layout;
+    private Dictionary<Vector2Int, string[]> _lockSequences;
+    private List<Vector2Int> _pathPositions;
 
     private enum State { Idle, ZoomingIn, Active, ZoomingOut, Solved }
     private State _state = State.Idle;
@@ -60,6 +59,7 @@ public class HackingPuzzle : MonoBehaviour
     private Vector2Int _seqLock;
     private string[] _seqRequired;
     private List<string> _seqInput = new List<string>();
+
     private float _timeLeft;
     private bool _timerRunning;
 
@@ -78,16 +78,16 @@ public class HackingPuzzle : MonoBehaviour
     private Text _hintText;
     private RectTransform _timerFillRT;
     private float _timerBarMaxWidth = 580f;
-
     private float _feedbackTimer;
 
-    private static readonly Color ColWall     = new Color(0.04f, 0.05f, 0.10f);
-    private static readonly Color ColOpen     = new Color(0.06f, 0.11f, 0.18f);
-    private static readonly Color ColPlayer   = new Color(0.06f, 0.25f, 0.45f);
-    private static readonly Color ColGoal     = new Color(0.05f, 0.20f, 0.08f);
-    private static readonly Color ColLock     = new Color(0.18f, 0.07f, 0.00f);
+    private static readonly Color ColWall = new Color(0.04f, 0.05f, 0.10f);
+    private static readonly Color ColOpen = new Color(0.06f, 0.11f, 0.18f);
+    private static readonly Color ColPlayer = new Color(0.06f, 0.25f, 0.45f);
+    private static readonly Color ColGoal = new Color(0.05f, 0.20f, 0.08f);
+    private static readonly Color ColGoalLocked = new Color(0.18f, 0.07f, 0.00f);
+    private static readonly Color ColLock = new Color(0.18f, 0.07f, 0.00f);
     private static readonly Color ColUnlocked = new Color(0.05f, 0.18f, 0.07f);
-    private static readonly Color ColVisited  = new Color(0.04f, 0.08f, 0.13f);
+    private static readonly Color ColVisited = new Color(0.04f, 0.08f, 0.13f);
 
     private GUIStyle _promptStyle;
     private Renderer _renderer;
@@ -100,17 +100,28 @@ public class HackingPuzzle : MonoBehaviour
         if (playerCamera == null)
             playerCamera = Camera.main ?? FindFirstObjectByType<Camera>();
 
+        _layout = new int[ROWS, COLS];
+        _lockSequences = new Dictionary<Vector2Int, string[]>();
+        _pathPositions = new List<Vector2Int>();
+
+        for (int r = 0; r < ROWS; r++)
+            for (int c = 0; c < COLS; c++)
+                if (BaseLayout[r, c] != 0 && !(r == 3 && c == 0))
+                    _pathPositions.Add(new Vector2Int(r, c));
+
         BuildUI();
         _panel.SetActive(false);
     }
+
+    // ... (Update, UpdateIdle, UpdateZoomIn, ActivatePuzzle, UpdateActive, StartPuzzle, ExitPuzzle unchanged) ...
 
     void Update()
     {
         switch (_state)
         {
-            case State.Idle:      UpdateIdle();   break;
+            case State.Idle: UpdateIdle(); break;
             case State.ZoomingIn: UpdateZoomIn(); break;
-            case State.Active:    UpdateActive(); break;
+            case State.Active: UpdateActive(); break;
         }
 
         if (_feedbackTimer > 0f) _feedbackTimer -= Time.deltaTime;
@@ -129,10 +140,8 @@ public class HackingPuzzle : MonoBehaviour
     void UpdateZoomIn()
     {
         if (puzzleCameraPosition == null) { ActivatePuzzle(); return; }
-
         playerCamera.transform.position = Vector3.Lerp(playerCamera.transform.position, puzzleCameraPosition.position, Time.deltaTime * cameraZoomSpeed);
         playerCamera.transform.rotation = Quaternion.Slerp(playerCamera.transform.rotation, puzzleCameraPosition.rotation, Time.deltaTime * cameraZoomSpeed);
-
         if (Vector3.Distance(playerCamera.transform.position, puzzleCameraPosition.position) < 0.01f)
             ActivatePuzzle();
     }
@@ -172,7 +181,6 @@ public class HackingPuzzle : MonoBehaviour
             {
                 if (_timerFillRT != null)
                     _timerFillRT.sizeDelta = new Vector2(_timerBarMaxWidth * pct, 3f);
-
                 _timerBar.color = Color.Lerp(new Color(0.9f, 0.1f, 0.1f), new Color(1f, 0.55f, 0.1f), pct);
             }
             if (_timerText != null) _timerText.text = Mathf.CeilToInt(_timeLeft) + "s";
@@ -210,6 +218,7 @@ public class HackingPuzzle : MonoBehaviour
         float elapsed = 0f, dur = 1f / cameraZoomSpeed;
         Vector3 sp = playerCamera.transform.position;
         Quaternion sr = playerCamera.transform.rotation;
+
         while (elapsed < dur)
         {
             elapsed += Time.deltaTime;
@@ -218,6 +227,7 @@ public class HackingPuzzle : MonoBehaviour
             playerCamera.transform.rotation = Quaternion.Slerp(sr, _camOrigRot, t);
             yield return null;
         }
+
         playerCamera.transform.SetPositionAndRotation(_camOrigPos, _camOrigRot);
 
         foreach (var d in _detached)
@@ -231,8 +241,10 @@ public class HackingPuzzle : MonoBehaviour
 
         var pc = FindFirstObjectByType<PlayerController>();
         if (pc != null) pc.enabled = true;
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
         _state = solved ? State.Solved : State.Idle;
 
         if (solved)
@@ -242,15 +254,124 @@ public class HackingPuzzle : MonoBehaviour
         }
     }
 
+    // ── FIXED RANDOMIZATION: EXACTLY 3 LOCKS + 1 EXIT ───────────────────────────
+    void GenerateRandomPuzzle()
+    {
+        const int NUM_LOCKS = 3;
+        int attempts = 0;
+        const int MAX_ATTEMPTS = 100;
+
+        while (attempts < MAX_ATTEMPTS)
+        {
+            // FULL RESET every attempt
+            for (int r = 0; r < ROWS; r++)
+                for (int c = 0; c < COLS; c++)
+                    _layout[r, c] = BaseLayout[r, c] == 0 ? 0 : 1;
+
+            Shuffle(_pathPositions);
+            _lockSequences.Clear();
+
+            // Place exactly 3 locks
+            for (int i = 0; i < NUM_LOCKS && i < _pathPositions.Count; i++)
+            {
+                Vector2Int pos = _pathPositions[i];
+                _layout[pos.x, pos.y] = 2;
+
+                int seqLen = UnityEngine.Random.Range(3, 5);
+                string[] seq = new string[seqLen];
+                string[] dirs = { "U", "D", "L", "R" };
+                for (int k = 0; k < seqLen; k++)
+                    seq[k] = dirs[UnityEngine.Random.Range(0, dirs.Length)];
+
+                _lockSequences[pos] = seq;
+            }
+
+            // Place exactly 1 exit
+            if (NUM_LOCKS < _pathPositions.Count)
+            {
+                Vector2Int goalPos = _pathPositions[NUM_LOCKS];
+                _layout[goalPos.x, goalPos.y] = 3;
+            }
+
+            // Check if valid (cannot reach exit without hitting a lock)
+            if (!CanReachExitWithoutLocks())
+                break; // success!
+
+            attempts++;
+        }
+
+        if (attempts >= MAX_ATTEMPTS)
+            Debug.LogWarning("HackingPuzzle: Could not find a valid layout after " + MAX_ATTEMPTS + " attempts.");
+
+        // Debug confirmation (remove after testing)
+        int lockCount = 0, exitCount = 0;
+        for (int r = 0; r < ROWS; r++)
+            for (int c = 0; c < COLS; c++)
+            {
+                if (_layout[r, c] == 2) lockCount++;
+                if (_layout[r, c] == 3) exitCount++;
+            }
+        Debug.Log($"[HackingPuzzle] Generated → {lockCount} locks + {exitCount} exit");
+    }
+
+    private bool CanReachExitWithoutLocks()
+    {
+        bool[,] visited = new bool[ROWS, COLS];
+        Queue<Vector2Int> q = new Queue<Vector2Int>();
+
+        q.Enqueue(StartPosition);
+        visited[StartPosition.x, StartPosition.y] = true;
+
+        int[] dx = { -1, 1, 0, 0 };
+        int[] dy = { 0, 0, -1, 1 };
+
+        while (q.Count > 0)
+        {
+            Vector2Int cur = q.Dequeue();
+            if (_layout[cur.x, cur.y] == 3)
+                return true;
+
+            for (int d = 0; d < 4; d++)
+            {
+                int nx = cur.x + dx[d];
+                int ny = cur.y + dy[d];
+                if (nx >= 0 && nx < ROWS && ny >= 0 && ny < COLS && !visited[nx, ny])
+                {
+                    int t = _layout[nx, ny];
+                    if (t != 0 && t != 2)
+                    {
+                        visited[nx, ny] = true;
+                        q.Enqueue(new Vector2Int(nx, ny));
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private void Shuffle<T>(List<T> list)
+    {
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int j = UnityEngine.Random.Range(0, i + 1);
+            T temp = list[i];
+            list[i] = list[j];
+            list[j] = temp;
+        }
+    }
+
     void ResetPuzzleState()
     {
-        _player = new Vector2Int(3, 0);
+        _player = StartPosition;
+        GenerateRandomPuzzle();
+
         _visited.Clear();
         _unlocked.Clear();
         _seqInput.Clear();
         _inSequence = false;
         _timeLeft = totalTime;
         _timerRunning = true;
+
         SetStatus("NAVIGATE TO EXIT — WASD / ARROW KEYS", new Color(0.4f, 0.85f, 1f));
         ClearArrowUI();
         RefreshGrid();
@@ -260,14 +381,28 @@ public class HackingPuzzle : MonoBehaviour
     {
         var next = _player + delta;
         if (next.x < 0 || next.x >= ROWS || next.y < 0 || next.y >= COLS) return;
-        int t = Layout[next.x, next.y];
+
+        int t = _layout[next.x, next.y];
         if (t == 0) return;
+
+        if (t == 3)
+        {
+            if (_unlocked.Count == _lockSequences.Count)
+            {
+                StartCoroutine(SolvedExit());
+                return;
+            }
+            else
+            {
+                ShowFeedback("ALL LOCKS REQUIRED FIRST", new Color(1f, 0.15f, 0.25f));
+                return;
+            }
+        }
 
         if (t == 2 && !_unlocked.Contains(next)) { BeginSequence(next); return; }
 
         _player = next;
         _visited.Add(next);
-        if (t == 3) { StartCoroutine(SolvedExit()); return; }
         RefreshGrid();
     }
 
@@ -275,8 +410,9 @@ public class HackingPuzzle : MonoBehaviour
     {
         _inSequence = true;
         _seqLock = lockPos;
-        _seqRequired = LockSequences.ContainsKey(lockPos) ? LockSequences[lockPos] : new[] { "U", "R", "D" };
+        _seqRequired = _lockSequences.ContainsKey(lockPos) ? _lockSequences[lockPos] : new[] { "U", "R", "D" };
         _seqInput.Clear();
+
         SetStatus("INPUT SEQUENCE TO BYPASS LOCK", new Color(1f, 0.55f, 0.1f));
         RebuildArrowUI();
     }
@@ -284,10 +420,13 @@ public class HackingPuzzle : MonoBehaviour
     void SeqInput(string dir)
     {
         int idx = _seqInput.Count;
+        if (idx >= _seqRequired.Length) return;
+
         if (dir == _seqRequired[idx])
         {
             _seqInput.Add(dir);
             UpdateArrowBox(idx, true);
+
             if (_seqInput.Count == _seqRequired.Length)
             {
                 _unlocked.Add(_seqLock);
@@ -323,6 +462,7 @@ public class HackingPuzzle : MonoBehaviour
             _timeLeft -= Time.deltaTime;
             yield return null;
         }
+
         if (_timerRunning && _state == State.Active)
         {
             _timerRunning = false;
@@ -344,14 +484,17 @@ public class HackingPuzzle : MonoBehaviour
 
     void RefreshGrid()
     {
+        bool allUnlocked = _unlocked.Count == _lockSequences.Count;
+
         for (int r = 0; r < ROWS; r++)
         {
             for (int c = 0; c < COLS; c++)
             {
                 var pos = new Vector2Int(r, c);
-                int type = Layout[r, c];
+                int type = _layout[r, c];
                 var img = _cellImages[r, c];
                 var txt = _cellTexts[r, c];
+
                 bool isPlayer = pos == _player;
                 bool isLock = type == 2;
                 bool isUnlocked = _unlocked.Contains(pos);
@@ -359,16 +502,27 @@ public class HackingPuzzle : MonoBehaviour
 
                 if (type == 0) img.color = ColWall;
                 else if (isPlayer) img.color = ColPlayer;
-                else if (type == 3) img.color = ColGoal;
+                else if (type == 3)
+                {
+                    if (allUnlocked)
+                    {
+                        img.color = ColGoal;
+                        if (txt != null) { txt.text = "EXIT"; txt.color = new Color(0.3f, 1f, 0.5f); }
+                    }
+                    else
+                    {
+                        img.color = ColGoalLocked;
+                        if (txt != null) { txt.text = "EXIT"; txt.color = new Color(1f, 0.4f, 0.1f); }
+                    }
+                }
                 else if (isLock && !isUnlocked) img.color = ColLock;
                 else if (isLock && isUnlocked) img.color = ColUnlocked;
                 else if (isVisited) img.color = ColVisited;
                 else img.color = ColOpen;
 
-                if (txt != null)
+                if (txt != null && type != 3)
                 {
                     if (isPlayer) { txt.text = ">>"; txt.color = new Color(0.4f, 0.9f, 1f); }
-                    else if (type == 3) { txt.text = "EXIT"; txt.color = new Color(0.3f, 1f, 0.5f); }
                     else if (isLock && !isUnlocked) { txt.text = "LCK"; txt.color = new Color(1f, 0.55f, 0.1f); }
                     else if (isLock && isUnlocked) { txt.text = "OK"; txt.color = new Color(0.3f, 1f, 0.5f); }
                     else txt.text = "";
@@ -389,7 +543,6 @@ public class HackingPuzzle : MonoBehaviour
         for (int i = 0; i < _seqRequired.Length; i++)
         {
             string sym = _seqRequired[i] == "U" ? "▲" : _seqRequired[i] == "D" ? "▼" : _seqRequired[i] == "L" ? "◄" : "►";
-
             var box = MakeGO($"Arrow{i}", _seqParent);
             var rt = box.AddComponent<RectTransform>();
             rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
@@ -460,7 +613,7 @@ public class HackingPuzzle : MonoBehaviour
         GUI.color = Color.white; GUI.Label(new Rect(px, py, pw, ph), msg, _promptStyle);
     }
 
-    // ── UI BUILDER - Centered, thinner timer, better positioning ─────────────
+    // UI BUILDER (unchanged)
     void BuildUI()
     {
         var cgo = new GameObject("HackPuzzleCanvas");
@@ -478,7 +631,6 @@ public class HackingPuzzle : MonoBehaviour
         _panel.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
         _panel.AddComponent<Image>().color = new Color(0.015f, 0.03f, 0.09f, 0.97f);
 
-        // Top line
         var line = MakeGO("Line", _panel);
         var lineRT = line.AddComponent<RectTransform>();
         lineRT.anchorMin = new Vector2(0f, 1f);
@@ -487,13 +639,11 @@ public class HackingPuzzle : MonoBehaviour
         lineRT.anchoredPosition = new Vector2(0f, -22f);
         line.AddComponent<Image>().color = new Color(0f, 0.7f, 1f, 0.7f);
 
-        // Title - upper left
         _titleText = AddText(_panel, "Title", "// SYSTEM BREACH", 19, FontStyle.Bold,
             new Vector2(0f, 1f), new Vector2(380f, 40f), new Vector2(45f, -48f),
             new Color(0f, 0.85f, 1f), TextAnchor.MiddleLeft);
 
-        // Hint
-        _hintText = AddText(_panel, "Hint", "WASD / Arrows to move  •  Input sequences at LOCK nodes  •  Esc to abort", 
+        _hintText = AddText(_panel, "Hint", "WASD / Arrows to move • Input sequences at LOCK nodes • Esc to abort",
             12, FontStyle.Normal, new Vector2(0f, 1f), new Vector2(720f, 30f), new Vector2(45f, -78f),
             new Color(1f, 1f, 1f, 0.35f), TextAnchor.MiddleLeft);
 
@@ -513,7 +663,6 @@ public class HackingPuzzle : MonoBehaviour
         _timerFillRT.pivot = new Vector2(0f, 0.5f);
         _timerFillRT.sizeDelta = new Vector2(_timerBarMaxWidth, 3f);
         _timerFillRT.anchoredPosition = Vector2.zero;
-
         _timerBar = timerFill.AddComponent<Image>();
         _timerBar.type = Image.Type.Simple;
         _timerBar.color = new Color(1f, 0.55f, 0.1f);
@@ -522,11 +671,9 @@ public class HackingPuzzle : MonoBehaviour
             new Vector2(1f, 1f), new Vector2(100f, 35f), new Vector2(-45f, -122f),
             new Color(1f, 0.6f, 0.15f), TextAnchor.MiddleRight);
 
-        // Maze - moved down a bit
         float cellW = 64f, cellH = 54f, gap = 5.5f;
         float gridW = COLS * cellW + (COLS - 1) * gap;
-        float gridY = 10f;   // lowered from previous versions
-
+        float gridY = 10f;
         _cellImages = new Image[ROWS, COLS];
         _cellTexts = new Text[ROWS, COLS];
 
@@ -550,19 +697,16 @@ public class HackingPuzzle : MonoBehaviour
             }
         }
 
-        // Sequence arrows - moved higher (closer to maze)
         _seqParent = MakeGO("SeqParent", _panel);
         var seqRT = _seqParent.AddComponent<RectTransform>();
         seqRT.anchorMin = seqRT.anchorMax = seqRT.pivot = new Vector2(0.5f, 0f);
         seqRT.sizeDelta = new Vector2(560f, 62f);
-        seqRT.anchoredPosition = new Vector2(0f, -5f);   // raised
+        seqRT.anchoredPosition = new Vector2(0f, -5f);
 
-        // Status
         _statusText = AddText(_panel, "Status", "", 16, FontStyle.Bold,
             new Vector2(0.5f, 0f), new Vector2(800f, 42f), new Vector2(0f, -245f),
             new Color(0.45f, 0.9f, 1f), TextAnchor.MiddleCenter);
 
-        // Feedback
         var fbGO = MakeGO("Feedback", _panel);
         var fbRT = fbGO.AddComponent<RectTransform>();
         fbRT.anchorMin = new Vector2(0.5f, 0f);
