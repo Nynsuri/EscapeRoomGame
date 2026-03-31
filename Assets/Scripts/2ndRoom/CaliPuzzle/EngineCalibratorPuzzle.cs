@@ -19,6 +19,9 @@ using UnityEngine.UI;
 /// 9. Set specialAnswer[0..3] — the secret correct values (can be negative).
 ///    Sliders range 0–100 but keyboard allows any integer including negatives.
 /// 10. Player needs a PlayerController component (disabled during puzzle).
+/// 11. Setup reward chamber: assign doorLeft/doorRight transforms and their open Euler angles.
+/// 12. Assign rewardItem (initially disabled). Connect its ItemPickup.onPickup to OnRewardPickedUp.
+/// 13. For fast door opening, set doorOpenSpeed to a high value (e.g., 360).
 /// </summary>
 public class EngineCalibratorPuzzle : MonoBehaviour
 {
@@ -28,9 +31,9 @@ public class EngineCalibratorPuzzle : MonoBehaviour
     public float cameraZoomSpeed = 3f;
 
     [Header("Materials")]
-    public Material uncalibratedMaterial;   // default, shown before solve
-    public Material normalSolveMaterial;    // shown after normal correct answer
-    public Material specialSolveMaterial;   // shown after special correct answer
+    public Material uncalibratedMaterial;
+    public Material normalSolveMaterial;
+    public Material specialSolveMaterial;
 
     [Header("Engine Names (4 engines)")]
     public string engineName0 = "ENGINE 1";
@@ -49,6 +52,16 @@ public class EngineCalibratorPuzzle : MonoBehaviour
     public int specialAnswer1 = 100;
     public int specialAnswer2 = -25;
     public int specialAnswer3 = 33;
+
+    [Header("Special Reward Chamber")]
+    public Transform doorLeft;
+    public Transform doorRight;
+    public GameObject rewardItem;
+    public float doorOpenSpeed = 90f;
+
+    [Header("Door Open Rotations (Euler angles)")]
+    public Vector3 doorLeftOpenEuler = new Vector3(-17f, 120f, -8f);
+    public Vector3 doorRightOpenEuler = new Vector3(-17f, -120f, -8f);
 
     [Header("Interaction")]
     public float interactRange = 4f;
@@ -69,14 +82,18 @@ public class EngineCalibratorPuzzle : MonoBehaviour
     private List<DetachedChild> _detached = new List<DetachedChild>();
 
     // ── Engine values ──────────────────────────────────────────────────────
-    // These are the live values — can go below 0 or above 100 via keyboard
     private int[] _values = new int[4];
-
-    // Which engine slot is "focused" for keyboard input (-1 = none)
     private int _focused = -1;
-    // Keyboard input buffer (user types digits, we parse on Enter / Tab / click-away)
     private string _inputBuffer = "";
     private bool _typing = false;
+
+    // ── Chamber & Reward ───────────────────────────────────────────────────
+    private bool _solved = false;               // puzzle permanently solved
+    private bool _specialSolved = false;
+    private Quaternion _doorLeftClosedRot, _doorRightClosedRot;
+    private Quaternion _doorLeftOpenRot, _doorRightOpenRot;
+    private Coroutine _doorCoroutine;
+    private bool _rewardAvailable = false;
 
     // ── UI ─────────────────────────────────────────────────────────────────
     private GameObject _panel;
@@ -88,10 +105,10 @@ public class EngineCalibratorPuzzle : MonoBehaviour
     private Text _feedbackText;
     private float _feedbackTimer;
     private Text _typingText;
+    private Button _submitButton;
 
     private static readonly Color ColPanel = new Color(0.03f, 0.06f, 0.12f, 0.97f);
     private static readonly Color ColEngine = new Color(0.05f, 0.11f, 0.20f);
-    private static readonly Color ColSliderBg = new Color(0.04f, 0.08f, 0.15f);
     private static readonly Color ColAccent = new Color(0f, 0.65f, 1f);
     private static readonly Color ColWarning = new Color(1f, 0.55f, 0.1f);
     private static readonly Color ColOk = new Color(0.2f, 1f, 0.5f);
@@ -100,7 +117,6 @@ public class EngineCalibratorPuzzle : MonoBehaviour
     private GUIStyle _promptStyle;
     private Renderer _renderer;
 
-    // ── Awake ──────────────────────────────────────────────────────────────
     void Awake()
     {
         _renderer = GetComponent<Renderer>();
@@ -109,14 +125,27 @@ public class EngineCalibratorPuzzle : MonoBehaviour
         if (playerCamera == null)
             playerCamera = Camera.main ?? FindFirstObjectByType<Camera>();
 
-        // Default starting values all 0
+        if (doorLeft != null)
+        {
+            _doorLeftClosedRot = doorLeft.localRotation;
+            _doorLeftOpenRot = Quaternion.Euler(doorLeftOpenEuler);
+            Debug.Log($"[Puzzle] Door left closed: {_doorLeftClosedRot.eulerAngles}, open: {_doorLeftOpenRot.eulerAngles}");
+        }
+        if (doorRight != null)
+        {
+            _doorRightClosedRot = doorRight.localRotation;
+            _doorRightOpenRot = Quaternion.Euler(doorRightOpenEuler);
+            Debug.Log($"[Puzzle] Door right closed: {_doorRightClosedRot.eulerAngles}, open: {_doorRightOpenRot.eulerAngles}");
+        }
+
+        if (rewardItem != null) rewardItem.SetActive(false);
+
         for (int i = 0; i < 4; i++) _values[i] = 0;
 
         BuildUI();
         _panel.SetActive(false);
     }
 
-    // ── Update ─────────────────────────────────────────────────────────────
     void Update()
     {
         switch (_state)
@@ -134,6 +163,8 @@ public class EngineCalibratorPuzzle : MonoBehaviour
 
     void UpdateIdle()
     {
+        if (_solved) return;
+
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         if (Physics.Raycast(ray, out RaycastHit hit, interactRange))
             if (hit.collider.gameObject == gameObject && Input.GetKeyDown(interactKey))
@@ -161,7 +192,7 @@ public class EngineCalibratorPuzzle : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            CommitTyping(); // commit any in-progress value before exiting
+            CommitTyping();
             StartCoroutine(ExitPuzzle(false, false));
             return;
         }
@@ -169,12 +200,10 @@ public class EngineCalibratorPuzzle : MonoBehaviour
         HandleKeyboardInput();
     }
 
-    // ── Keyboard input ─────────────────────────────────────────────────────
     void HandleKeyboardInput()
     {
         if (_focused < 0) return;
 
-        // Number keys + minus sign
         foreach (char c in Input.inputString)
         {
             if (c == '-' && _inputBuffer.Length == 0)
@@ -187,18 +216,17 @@ public class EngineCalibratorPuzzle : MonoBehaviour
                 _inputBuffer += c;
                 _typing = true;
             }
-            else if (c == '\b' && _inputBuffer.Length > 0) // backspace
+            else if (c == '\b' && _inputBuffer.Length > 0)
             {
                 _inputBuffer = _inputBuffer.Substring(0, _inputBuffer.Length - 1);
             }
-            else if (c == '\n' || c == '\r') // Enter — commit
+            else if (c == '\n' || c == '\r')
             {
                 CommitTyping();
                 return;
             }
         }
 
-        // Tab — commit and move to next engine
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             CommitTyping();
@@ -207,7 +235,6 @@ public class EngineCalibratorPuzzle : MonoBehaviour
             return;
         }
 
-        // Update typing preview text
         if (_typingText != null)
         {
             if (_typing && _inputBuffer.Length > 0)
@@ -216,7 +243,6 @@ public class EngineCalibratorPuzzle : MonoBehaviour
                 _typingText.text = _focused >= 0 ? $"ENGINE {_focused + 1} SELECTED — TYPE VALUE, ENTER TO CONFIRM" : "";
         }
 
-        // Update slider visually to clamp (but don't commit typed value until Enter)
         RefreshUI();
     }
 
@@ -234,9 +260,10 @@ public class EngineCalibratorPuzzle : MonoBehaviour
             _typingText.text = _focused >= 0 ? $"ENGINE {_focused + 1} SELECTED — TYPE VALUE, ENTER TO CONFIRM" : "";
     }
 
-    // ── Start / Exit ────────────────────────────────────────────────────────
     void StartPuzzle()
     {
+        if (_solved) return;
+
         _camOrigPos = playerCamera.transform.position;
         _camOrigRot = playerCamera.transform.rotation;
         _state = State.ZoomingIn;
@@ -256,19 +283,26 @@ public class EngineCalibratorPuzzle : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        // Reset values
         for (int i = 0; i < 4; i++) _values[i] = 0;
         _focused = -1;
         _inputBuffer = "";
         _typing = false;
         RefreshUI();
         UpdateFocusHighlights();
+
+        if (doorLeft != null) doorLeft.localRotation = _doorLeftClosedRot;
+        if (doorRight != null) doorRight.localRotation = _doorRightClosedRot;
+        if (rewardItem != null) rewardItem.SetActive(false);
+        _rewardAvailable = false;
+
+        if (_submitButton != null) _submitButton.interactable = true;
     }
 
     IEnumerator ExitPuzzle(bool solved, bool special)
     {
+        Debug.Log($"[Puzzle] ExitPuzzle called: solved={solved}, special={special}");
         _state = State.ZoomingOut;
-        _panel.SetActive(false);
+        _panel.SetActive(false);                     // UI closes immediately
         _focused = -1;
 
         float elapsed = 0f, dur = 1f / cameraZoomSpeed;
@@ -312,11 +346,12 @@ public class EngineCalibratorPuzzle : MonoBehaviour
                 onNormalSolve?.Invoke();
             }
         }
+        Debug.Log("[Puzzle] ExitPuzzle finished");
     }
 
-    // ── Check solution ──────────────────────────────────────────────────────
     void CheckSolution()
     {
+        if (_solved) return;
         CommitTyping();
 
         int[] answers = GetAnswers();
@@ -329,13 +364,18 @@ public class EngineCalibratorPuzzle : MonoBehaviour
 
         if (isSpecial)
         {
+            _solved = true;
+            _specialSolved = true;
+            if (_submitButton != null) _submitButton.interactable = false;
             ShowFeedback("SPECIAL CALIBRATION SEQUENCE ACCEPTED", ColOk);
-            StartCoroutine(SolvedExit(true));
+            StartCoroutine(SpecialSolveSequence());
         }
         else if (isNormal)
         {
+            _solved = true;
+            if (_submitButton != null) _submitButton.interactable = false;
             ShowFeedback("ENGINES CALIBRATED SUCCESSFULLY", ColOk);
-            StartCoroutine(SolvedExit(false));
+            StartCoroutine(NormalSolveExit());
         }
         else
         {
@@ -344,31 +384,120 @@ public class EngineCalibratorPuzzle : MonoBehaviour
         }
     }
 
-    IEnumerator WrongFlash()
-    {
-        // Flash panel red briefly
-        var panelImg = _panel.GetComponent<Image>();
-        Color orig = panelImg.color;
-        panelImg.color = new Color(0.2f, 0.03f, 0.05f, 0.97f);
-        yield return new WaitForSeconds(0.4f);
-        panelImg.color = orig;
-    }
-
-    IEnumerator SolvedExit(bool special)
+    IEnumerator NormalSolveExit()
     {
         yield return new WaitForSeconds(1.5f);
-        yield return StartCoroutine(ExitPuzzle(true, special));
+        yield return StartCoroutine(ExitPuzzle(true, false));
     }
 
-    // ── Slider changed (called by slider OnValueChanged) ───────────────────
+    IEnumerator SpecialSolveSequence()
+    {
+        Debug.Log("[Puzzle] SpecialSolveSequence starting");
+        // Open chamber (doesn't wait for doors)
+        yield return StartCoroutine(OpenChamber());
+        Debug.Log("[Puzzle] OpenChamber finished, exiting puzzle");
+        yield return StartCoroutine(ExitPuzzle(true, true));
+        Debug.Log("[Puzzle] SpecialSolveSequence done");
+    }
+
+    // --- MODIFIED: does NOT wait for door animation to finish ---
+    IEnumerator OpenChamber()
+    {
+        Debug.Log("[Puzzle] Opening chamber");
+        if (rewardItem != null)
+        {
+            rewardItem.SetActive(true);
+            _rewardAvailable = true;
+        }
+
+        // Start door animation but don't wait for it to finish
+        if (doorLeft != null || doorRight != null)
+        {
+            if (_doorCoroutine != null) StopCoroutine(_doorCoroutine);
+            _doorCoroutine = StartCoroutine(AnimateDoors(true));
+            // Immediately continue; doors open in background
+        }
+        ShowFeedback("Reward chamber opened. Collect the item.", ColOk);
+        yield return null; // yield one frame to ensure animations have started
+    }
+
+    // --- WAITING version used for closing (reward pickup) ---
+    IEnumerator CloseChamber()
+    {
+        if (!_specialSolved) yield break;
+
+        Debug.Log("[Puzzle] Closing chamber");
+        if (doorLeft != null || doorRight != null)
+        {
+            if (_doorCoroutine != null) StopCoroutine(_doorCoroutine);
+            _doorCoroutine = StartCoroutine(AnimateDoors(false));
+            // Wait for door animation to finish
+            float timeout = 5f;
+            float startTime = Time.time;
+            while (_doorCoroutine != null && (Time.time - startTime) < timeout)
+                yield return null;
+            if (_doorCoroutine != null)
+            {
+                Debug.LogWarning("[Puzzle] Door animation timed out, forcing completion");
+                StopCoroutine(_doorCoroutine);
+                _doorCoroutine = null;
+                if (doorLeft != null) doorLeft.localRotation = _doorLeftClosedRot;
+                if (doorRight != null) doorRight.localRotation = _doorRightClosedRot;
+            }
+        }
+        if (rewardItem != null) rewardItem.SetActive(false);
+        _rewardAvailable = false;
+    }
+
+    IEnumerator AnimateDoors(bool open)
+    {
+        Quaternion targetLeft = open ? _doorLeftOpenRot : _doorLeftClosedRot;
+        Quaternion targetRight = open ? _doorRightOpenRot : _doorRightClosedRot;
+
+        float maxAngle = 0f;
+        if (doorLeft != null) maxAngle = Mathf.Max(maxAngle, Quaternion.Angle(doorLeft.localRotation, targetLeft));
+        if (doorRight != null) maxAngle = Mathf.Max(maxAngle, Quaternion.Angle(doorRight.localRotation, targetRight));
+
+        float duration = (doorOpenSpeed > 0 && maxAngle > 0) ? maxAngle / doorOpenSpeed : 0.2f;
+        float elapsed = 0f;
+
+        Quaternion startLeft = doorLeft != null ? doorLeft.localRotation : Quaternion.identity;
+        Quaternion startRight = doorRight != null ? doorRight.localRotation : Quaternion.identity;
+
+        Debug.Log($"[Puzzle] AnimateDoors: open={open}, duration={duration}, maxAngle={maxAngle}");
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            if (doorLeft != null) doorLeft.localRotation = Quaternion.Slerp(startLeft, targetLeft, t);
+            if (doorRight != null) doorRight.localRotation = Quaternion.Slerp(startRight, targetRight, t);
+            yield return null;
+        }
+
+        if (doorLeft != null) doorLeft.localRotation = targetLeft;
+        if (doorRight != null) doorRight.localRotation = targetRight;
+        _doorCoroutine = null;
+        Debug.Log("[Puzzle] Door animation finished");
+    }
+
+    // Called by the reward item's pickup event
+    public void OnRewardPickedUp()
+    {
+        if (_specialSolved && _rewardAvailable)
+        {
+            Debug.Log("[Puzzle] Reward picked up – closing chamber");
+            StartCoroutine(CloseChamber());
+        }
+    }
+
     void OnSliderChanged(int idx, float val)
     {
-        if (_typing && _focused == idx) return; // keyboard takes priority
+        if (_typing && _focused == idx) return;
         _values[idx] = Mathf.RoundToInt(val);
         RefreshValueText(idx);
     }
 
-    // ── Focus management ────────────────────────────────────────────────────
     void SetFocus(int idx)
     {
         CommitTyping();
@@ -389,7 +518,6 @@ public class EngineCalibratorPuzzle : MonoBehaviour
         }
     }
 
-    // ── UI refresh ──────────────────────────────────────────────────────────
     void RefreshUI()
     {
         for (int i = 0; i < 4; i++) RefreshValueText(i);
@@ -397,7 +525,6 @@ public class EngineCalibratorPuzzle : MonoBehaviour
 
     void RefreshValueText(int i)
     {
-        // If this slot is being typed into, show buffer instead
         if (_typing && _focused == i && _inputBuffer.Length > 0)
         {
             if (_valueTexts[i] != null) _valueTexts[i].text = _inputBuffer + "_";
@@ -406,7 +533,6 @@ public class EngineCalibratorPuzzle : MonoBehaviour
 
         if (_valueTexts[i] != null) _valueTexts[i].text = _values[i].ToString();
 
-        // Keep slider in 0-100 range visually (slider can't show negatives)
         if (_sliders[i] != null)
         {
             _sliders[i].onValueChanged.RemoveAllListeners();
@@ -419,14 +545,6 @@ public class EngineCalibratorPuzzle : MonoBehaviour
     int[] GetAnswers() => new[] { normalAnswer0, normalAnswer1, normalAnswer2, normalAnswer3 };
     int[] GetSpecialAnswers() => new[] { specialAnswer0, specialAnswer1, specialAnswer2, specialAnswer3 };
 
-    // ── Feedback ────────────────────────────────────────────────────────────
-    void SetStatus(string msg, Color col)
-    {
-        if (_statusText == null) return;
-        _statusText.text = msg;
-        _statusText.color = col;
-    }
-
     void ShowFeedback(string msg, Color col)
     {
         if (_feedbackText == null) return;
@@ -435,10 +553,18 @@ public class EngineCalibratorPuzzle : MonoBehaviour
         _feedbackTimer = 3f;
     }
 
-    // ── OnGUI prompt ────────────────────────────────────────────────────────
+    IEnumerator WrongFlash()
+    {
+        var panelImg = _panel.GetComponent<Image>();
+        Color orig = panelImg.color;
+        panelImg.color = new Color(0.2f, 0.03f, 0.05f, 0.97f);
+        yield return new WaitForSeconds(0.4f);
+        panelImg.color = orig;
+    }
+
     void OnGUI()
     {
-        if (_state != State.Idle) return;
+        if (_state != State.Idle || _solved) return;
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         if (!Physics.Raycast(ray, out RaycastHit hit, interactRange)) return;
         if (hit.collider.gameObject != gameObject) return;
@@ -460,7 +586,7 @@ public class EngineCalibratorPuzzle : MonoBehaviour
         GUI.color = Color.white; GUI.Label(new Rect(px, py, pw, ph), msg, _promptStyle);
     }
 
-    // ── UI Builder ───────────────────────────────────────────────────────────
+    // ── UI Builder (unchanged) ───────────────────────────────────────────────────────────
     void BuildUI()
     {
         string[] names = { engineName0, engineName1, engineName2, engineName3 };
@@ -473,8 +599,6 @@ public class EngineCalibratorPuzzle : MonoBehaviour
         cgo.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ConstantPixelSize;
         cgo.AddComponent<GraphicRaycaster>();
 
-        // ── Centered panel — matches HackingPuzzle sizing convention ──
-        // Panel is 980×480, scaled 1.2x so it fills nicely at 1080p
         _panel = MakeGO("EnginePanel", cgo);
         var panelRT = _panel.AddComponent<RectTransform>();
         panelRT.anchorMin = panelRT.anchorMax = panelRT.pivot = new Vector2(0.5f, 0.5f);
@@ -508,19 +632,16 @@ public class EngineCalibratorPuzzle : MonoBehaviour
             new Color(0.4f, 0.85f, 1f), TextAnchor.MiddleRight);
 
         // ── 4 Engine columns ──────────────────────────────────────────────────
-        // Panel is 980 wide. 4 cards × 180 + 3 gaps × 16 = 720 + 48 = 768 total
-        // Centered: startX = -768/2 + 90 = -294
         float colW = 180f, colH = 270f, spacing = 16f;
-        float totalW = 4 * colW + 3 * spacing;  // 768
-        float startX = -totalW / 2f + colW / 2f; // -294
-        float baseY = -30f; // vertical center of cards inside panel
+        float totalW = 4 * colW + 3 * spacing;
+        float startX = -totalW / 2f + colW / 2f;
+        float baseY = -30f;
 
         for (int i = 0; i < 4; i++)
         {
             int idx = i;
             float cx = startX + i * (colW + spacing);
 
-            // Engine card
             var card = MakeGO($"Engine{i}", _panel);
             var cardRT = card.AddComponent<RectTransform>();
             cardRT.anchorMin = cardRT.anchorMax = cardRT.pivot = new Vector2(0.5f, 0.5f);
@@ -528,7 +649,6 @@ public class EngineCalibratorPuzzle : MonoBehaviour
             cardRT.anchoredPosition = new Vector2(cx, baseY);
             card.AddComponent<Image>().color = ColEngine;
 
-            // Focus highlight
             var hl = MakeGO("Highlight", card);
             var hlRT = hl.AddComponent<RectTransform>();
             hlRT.anchorMin = Vector2.zero; hlRT.anchorMax = Vector2.one;
@@ -536,17 +656,14 @@ public class EngineCalibratorPuzzle : MonoBehaviour
             _focusHighlights[i] = hl.AddComponent<Image>();
             _focusHighlights[i].color = new Color(0f, 0f, 0f, 0f);
 
-            // Engine name — top of card
             _nameTexts[i] = AddText(card, "Name", names[i], 12, FontStyle.Bold,
                 new Vector2(0.5f, 1f), new Vector2(colW - 10f, 28f), new Vector2(0f, -14f),
                 ColAccent, TextAnchor.MiddleCenter);
 
-            // Big value number
             _valueTexts[i] = AddText(card, "Value", "0", 36, FontStyle.Bold,
                 new Vector2(0.5f, 1f), new Vector2(colW - 10f, 56f), new Vector2(0f, -52f),
                 Color.white, TextAnchor.MiddleCenter);
 
-            // Slider — positioned in the lower half of the card
             var sliderGO = MakeGO($"Slider{i}", card);
             var sliderRT = sliderGO.AddComponent<RectTransform>();
             sliderRT.anchorMin = sliderRT.anchorMax = sliderRT.pivot = new Vector2(0.5f, 1f);
@@ -560,7 +677,6 @@ public class EngineCalibratorPuzzle : MonoBehaviour
             slider.value = 0f;
             slider.direction = Slider.Direction.LeftToRight;
 
-            // Slider bg
             var bgImg = MakeGO("Background", sliderGO);
             var bgRT = bgImg.AddComponent<RectTransform>();
             bgRT.anchorMin = Vector2.zero; bgRT.anchorMax = Vector2.one;
@@ -568,7 +684,6 @@ public class EngineCalibratorPuzzle : MonoBehaviour
             bgImg.AddComponent<Image>().color = new Color(0.04f, 0.08f, 0.16f);
             slider.targetGraphic = bgImg.GetComponent<Image>();
 
-            // Fill area
             var fillArea = MakeGO("Fill Area", sliderGO);
             var faRT = fillArea.AddComponent<RectTransform>();
             faRT.anchorMin = new Vector2(0f, 0.25f); faRT.anchorMax = new Vector2(1f, 0.75f);
@@ -581,7 +696,6 @@ public class EngineCalibratorPuzzle : MonoBehaviour
             fillImg.color = ColAccent;
             slider.fillRect = fillRT;
 
-            // Handle area
             var handleArea = MakeGO("Handle Slide Area", sliderGO);
             var haRT = handleArea.AddComponent<RectTransform>();
             haRT.anchorMin = Vector2.zero; haRT.anchorMax = Vector2.one;
@@ -598,7 +712,6 @@ public class EngineCalibratorPuzzle : MonoBehaviour
             slider.onValueChanged.AddListener((v) => OnSliderChanged(idx, v));
             _sliders[i] = slider;
 
-            // Min / Max labels
             AddText(card, "Min", "0", 10, FontStyle.Normal,
                 new Vector2(0f, 1f), new Vector2(30f, 18f), new Vector2(12f, -152f),
                 new Color(1f, 1f, 1f, 0.35f), TextAnchor.MiddleLeft);
@@ -606,7 +719,6 @@ public class EngineCalibratorPuzzle : MonoBehaviour
                 new Vector2(1f, 1f), new Vector2(40f, 18f), new Vector2(-12f, -152f),
                 new Color(1f, 1f, 1f, 0.35f), TextAnchor.MiddleRight);
 
-            // Click-to-focus button
             var btn = card.AddComponent<Button>();
             btn.targetGraphic = card.GetComponent<Image>();
             var btnColors = btn.colors;
@@ -617,30 +729,28 @@ public class EngineCalibratorPuzzle : MonoBehaviour
             btn.onClick.AddListener(() => SetFocus(idx));
         }
 
-        // ── CONFIRM button — bottom center, below the cards ──
+        // Submit button
         var confirmGO = MakeGO("Confirm", _panel);
         var confirmRT = confirmGO.AddComponent<RectTransform>();
         confirmRT.anchorMin = confirmRT.anchorMax = confirmRT.pivot = new Vector2(0.5f, 0f);
         confirmRT.sizeDelta = new Vector2(200f, 54f);
         confirmRT.anchoredPosition = new Vector2(0f, 22f);
         confirmGO.AddComponent<Image>().color = new Color(0.05f, 0.22f, 0.08f);
-        var confirmBtn = confirmGO.AddComponent<Button>();
-        confirmBtn.targetGraphic = confirmGO.GetComponent<Image>();
-        var cc = confirmBtn.colors;
+        _submitButton = confirmGO.AddComponent<Button>();
+        _submitButton.targetGraphic = confirmGO.GetComponent<Image>();
+        var cc = _submitButton.colors;
         cc.highlightedColor = new Color(0.09f, 0.38f, 0.14f);
         cc.pressedColor = new Color(0.03f, 0.14f, 0.05f);
-        confirmBtn.colors = cc;
-        confirmBtn.onClick.AddListener(CheckSolution);
+        _submitButton.colors = cc;
+        _submitButton.onClick.AddListener(CheckSolution);
         AddText(confirmGO, "T", "CALIBRATE ENGINES", 14, FontStyle.Bold,
             new Vector2(0.5f, 0.5f), new Vector2(200f, 54f), Vector2.zero,
             Color.white, TextAnchor.MiddleCenter);
 
-        // ── Status text — just above confirm ──
         _statusText = AddText(_panel, "Status", "", 16, FontStyle.Bold,
             new Vector2(0.5f, 0f), new Vector2(880f, 36f), new Vector2(0f, 82f),
             new Color(0.45f, 0.9f, 1f), TextAnchor.MiddleCenter);
 
-        // ── Feedback text (fades out) ──
         var fbGO = MakeGO("Feedback", _panel);
         var fbRT = fbGO.AddComponent<RectTransform>();
         fbRT.anchorMin = new Vector2(0.5f, 1f); fbRT.anchorMax = new Vector2(0.5f, 1f);
@@ -655,7 +765,6 @@ public class EngineCalibratorPuzzle : MonoBehaviour
         _feedbackText.color = Color.clear;
     }
 
-    // ── Static helpers (identical to ClockPuzzle / HackingPuzzle) ────────────
     static GameObject MakeGO(string name, GameObject parent)
     {
         var go = new GameObject(name);

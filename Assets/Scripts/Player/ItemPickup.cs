@@ -13,6 +13,9 @@ public class ItemPickup : MonoBehaviour
     public float drawerCloseDistance = 0.3f;
     public float drawerCloseSpeed = 1.2f;
 
+    [Header("Events")]
+    public UnityEngine.Events.UnityEvent onPickup;
+
     private InventoryItem _item;
 
     void Awake()
@@ -40,6 +43,7 @@ public class ItemPickup : MonoBehaviour
 
         bool added = inventory.AddItem(_item);
         if (!added) return;
+        onPickup?.Invoke();
 
         if (drawerToClose != null)
             StartCoroutine(CloseDrawer());
