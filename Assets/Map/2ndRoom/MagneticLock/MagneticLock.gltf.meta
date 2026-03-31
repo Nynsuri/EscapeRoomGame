@@ -1,0 +1,56 @@
+fileFormatVersion: 2
+guid: f1f6dc1178d43e741b53d3d5442b27ad
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 715df9372183c47e389bb6e19fbc3b52, type: 3}
+  editorImportSettings:
+    generateSecondaryUVSet: 0
+  importSettings:
+    nodeNameMethod: 1
+    animationMethod: 2
+    generateMipMaps: 1
+    texturesReadable: 0
+    defaultMinFilterMode: 9729
+    defaultMagFilterMode: 9729
+    anisotropicFilterLevel: 1
+  instantiationSettings:
+    mask: -1
+    layer: 0
+    skinUpdateWhenOffscreen: 1
+    lightIntensityFactor: 1
+    sceneObjectCreation: 2
+  assetDependencies:
+  - type: 0
+    originalUri: Assets\Map\2ndRoom\MagneticLock\MagneticLock.bin
+    assetPath: Assets\Map\2ndRoom\MagneticLock\MagneticLock.bin
+  - type: 1
+    originalUri: Assets\Map\2ndRoom\MagneticLock\textures\repair_kit_normal.png
+    assetPath: Assets\Map\2ndRoom\MagneticLock\textures\repair_kit_normal.png
+  - type: 1
+    originalUri: Assets\Map\2ndRoom\MagneticLock\textures\control_panel_baseColor.jpg
+    assetPath: Assets\Map\2ndRoom\MagneticLock\textures\control_panel_baseColor.jpg
+  - type: 1
+    originalUri: Assets\Map\2ndRoom\MagneticLock\textures\Steel Glossy_SpecularLevel.jpg
+    assetPath: Assets\Map\2ndRoom\MagneticLock\textures\Steel Glossy_SpecularLevel.jpg
+  - type: 1
+    originalUri: Assets\Map\2ndRoom\MagneticLock\textures\Steel Glossy_BaseColor.jpg
+    assetPath: Assets\Map\2ndRoom\MagneticLock\textures\Steel Glossy_BaseColor.jpg
+  - type: 1
+    originalUri: Assets\Map\2ndRoom\MagneticLock\textures\Steel Glossy_Metallic-Steel
+      Glossy_Roughness.png
+    assetPath: Assets\Map\2ndRoom\MagneticLock\textures\Steel Glossy_Metallic-Steel
+      Glossy_Roughness.png
+  reportItems:
+  - type: 2
+    code: 20
+    messages:
+    - KHR_materials_specular
+  - type: 2
+    code: 20
+    messages:
+    - KHR_materials_ior

@@ -8,16 +8,15 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Brushed Gunmetal Steel Tiles
-  m_Shader: {fileID: -6465566751694194690, guid: b9d29dfa1474148e792ac720cbd45122, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 429ab83ee9ef05b4f8a76e58ea5d5ad4, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords:
-  - _UV_CHANNEL_SELECT
+  m_InvalidKeywords: []
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 1
-  m_CustomRenderQueue: 2000
+  m_CustomRenderQueue: -1
   stringTagMap:
     MotionVector: User
     RenderType: Opaque
@@ -29,6 +28,18 @@ Material:
     m_TexEnvs:
     - baseColorTexture:
         m_Texture: {fileID: 2800000, guid: 9d4085fed3d7ac54a9e5412c43d7c598, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - clearcoatNormalTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - clearcoatRoughnessTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - clearcoatTexture:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - emissiveTexture:
@@ -96,6 +107,12 @@ Material:
     - _ZWriteControl: 0
     - alphaCutoff: 0
     - baseColorTexture_texCoord: 1
+    - clearcoatFactor: 0
+    - clearcoatNormalTexture_Scale: 0
+    - clearcoatNormalTexture_texCoord: 0
+    - clearcoatRoughnessFactor: 0
+    - clearcoatRoughnessTexture_texCoord: 0
+    - clearcoatTexture_texCoord: 0
     - emissiveExposureWeight: 0
     - emissiveTexture_texCoord: 0
     - metallicFactor: 1
@@ -109,6 +126,9 @@ Material:
     m_Colors:
     - baseColorFactor: {r: 1, g: 1, b: 1, a: 1}
     - baseColorTexture_Rotation: {r: 0, g: 0, b: 0, a: 0}
+    - clearcoatNormalTextureRotation: {r: 0, g: 0, b: 0, a: 0}
+    - clearcoatRoughnessTexture_Rotation: {r: 0, g: 0, b: 0, a: 0}
+    - clearcoatTexture_Rotation: {r: 0, g: 0, b: 0, a: 0}
     - emissiveFactor: {r: 0, g: 0, b: 0, a: 1}
     - emissiveTexture_Rotation: {r: 0, g: 0, b: 0, a: 0}
     - metallicRoughnessTexture_Rotation: {r: 0, g: 0, b: 0, a: 0}
