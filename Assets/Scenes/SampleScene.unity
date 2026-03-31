@@ -1138,31 +1138,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 363911014207980322, guid: f1f6dc1178d43e741b53d3d5442b27ad, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 0.7071256
       objectReference: {fileID: 0}
     - target: {fileID: 363911014207980322, guid: f1f6dc1178d43e741b53d3d5442b27ad, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: 0.0027440658
       objectReference: {fileID: 0}
     - target: {fileID: 363911014207980322, guid: f1f6dc1178d43e741b53d3d5442b27ad, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7071068
+      value: 0.70706594
       objectReference: {fileID: 0}
     - target: {fileID: 363911014207980322, guid: f1f6dc1178d43e741b53d3d5442b27ad, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0.004883851
       objectReference: {fileID: 0}
     - target: {fileID: 363911014207980322, guid: f1f6dc1178d43e741b53d3d5442b27ad, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: 0.618
       objectReference: {fileID: 0}
     - target: {fileID: 363911014207980322, guid: f1f6dc1178d43e741b53d3d5442b27ad, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 90
+      value: 89.994
       objectReference: {fileID: 0}
     - target: {fileID: 363911014207980322, guid: f1f6dc1178d43e741b53d3d5442b27ad, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: -0.173
       objectReference: {fileID: 0}
     - target: {fileID: 8302884082550825740, guid: f1f6dc1178d43e741b53d3d5442b27ad, type: 3}
       propertyPath: m_Name
@@ -1175,6 +1175,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8302884082550825740, guid: f1f6dc1178d43e741b53d3d5442b27ad, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2138406233}
+    - targetCorrespondingSourceObject: {fileID: 8302884082550825740, guid: f1f6dc1178d43e741b53d3d5442b27ad, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2138406237}
     - targetCorrespondingSourceObject: {fileID: -9018168334575077948, guid: f1f6dc1178d43e741b53d3d5442b27ad, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1850388565}
@@ -2285,14 +2288,13 @@ MonoBehaviour:
   playerCamera: {fileID: 1294032726}
   puzzleCameraPosition: {fileID: 1050034861}
   cameraZoomSpeed: 3
-  targetVoltage: 4
-  slotCount: 6
-  interactRange: 3
-  interactKey: 101
+  targetVoltage: 7
   requireRepairKit: 1
   onSolved:
     m_PersistentCalls:
       m_Calls: []
+  interactRange: 3
+  interactKey: 101
 --- !u!4 &1792896277
 Transform:
   m_ObjectHideFlags: 0
@@ -2390,6 +2392,7 @@ MonoBehaviour:
   drawerCloseDirection: {x: -1, y: 0, z: 0}
   drawerCloseDistance: 0.3
   drawerCloseSpeed: 1.2
+  magneticLock: {fileID: 2138406237}
 --- !u!114 &1850388564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2695,7 +2698,19 @@ MonoBehaviour:
   totalTime: 60
   onSolved:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2138406237}
+        m_TargetAssemblyTypeName: MagneticLock, Assembly-CSharp
+        m_MethodName: Unlock
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2138406232 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8302884082550825740, guid: f1f6dc1178d43e741b53d3d5442b27ad, type: 3}
@@ -2722,6 +2737,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.0000005, y: 0.36370185, z: 2.0000005}
   m_Center: {x: 0, y: 0.15307356, z: 0}
+--- !u!114 &2138406237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2138406232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27092d18c5f0c0b42b9bae11fcc05c12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagneticLock
+  repairBox: {fileID: 1850388561}
 --- !u!1 &78881303842128902
 GameObject:
   m_ObjectHideFlags: 0

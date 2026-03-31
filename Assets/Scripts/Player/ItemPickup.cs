@@ -22,16 +22,56 @@ public class ItemPickup : MonoBehaviour
             Debug.LogWarning($"[ItemPickup] No InventoryItem on {gameObject.name}!");
     }
 
+    [Header("Magnetic Lock (optional — blocks pickup until unlocked)")]
+    public MagneticLock magneticLock;
+
+    public bool IsLocked => magneticLock != null && !magneticLock.IsUnlocked;
+
     public void TryPickup(Inventory inventory)
     {
         if (_item == null || inventory == null) return;
 
+        if (IsLocked)
+        {
+            _lockedMessage = "Magnetic Lock Disengaged";
+            _lockedMessageTimer = 2f;
+            return;
+        }
+
         bool added = inventory.AddItem(_item);
         if (!added) return;
 
-        // Close drawer if assigned
         if (drawerToClose != null)
             StartCoroutine(CloseDrawer());
+    }
+
+    private string _lockedMessage = "";
+    private float _lockedMessageTimer = 0f;
+    private GUIStyle _lockedStyle;
+
+    void Update()
+    {
+        if (_lockedMessageTimer > 0f) _lockedMessageTimer -= Time.deltaTime;
+    }
+
+    void OnGUI()
+    {
+        if (_lockedMessageTimer <= 0f || string.IsNullOrEmpty(_lockedMessage)) return;
+        if (_lockedStyle == null)
+            _lockedStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 22,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter,
+                normal = { textColor = Color.red }
+            };
+        float pw = 400f, ph = 40f;
+        float px = (Screen.width - pw) / 2f;
+        float py = (Screen.height - ph) / 2f - 40f;
+        GUI.color = Color.black;
+        GUI.Label(new Rect(px + 2, py + 2, pw, ph), _lockedMessage, _lockedStyle);
+        GUI.color = Color.white;
+        GUI.Label(new Rect(px, py, pw, ph), _lockedMessage, _lockedStyle);
     }
 
     IEnumerator CloseDrawer()
