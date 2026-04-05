@@ -1,0 +1,124 @@
+fileFormatVersion: 2
+guid: ee92720f1262bca48b8388db20723c78
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 715df9372183c47e389bb6e19fbc3b52, type: 3}
+  editorImportSettings:
+    generateSecondaryUVSet: 0
+  importSettings:
+    nodeNameMethod: 1
+    animationMethod: 2
+    generateMipMaps: 1
+    texturesReadable: 0
+    defaultMinFilterMode: 9729
+    defaultMagFilterMode: 9729
+    anisotropicFilterLevel: 1
+  instantiationSettings:
+    mask: -1
+    layer: 0
+    skinUpdateWhenOffscreen: 1
+    lightIntensityFactor: 1
+    sceneObjectCreation: 2
+  assetDependencies:
+  - type: 0
+    originalUri: Assets\Map\3rdRoom\saloon.bin
+    assetPath: Assets\Map\3rdRoom\saloon.bin
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\Brown Wood_Diffuse.jpg
+    assetPath: Assets\Map\3rdRoom\textures\Brown Wood_Diffuse.jpg
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\Wood_Roughness2.png
+    assetPath: Assets\Map\3rdRoom\textures\Wood_Roughness2.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\etiketks_normal.png
+    assetPath: Assets\Map\3rdRoom\textures\etiketks_normal.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\etiketks_baseColor.png
+    assetPath: Assets\Map\3rdRoom\textures\etiketks_baseColor.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\etiketks_metallicRoughness.png
+    assetPath: Assets\Map\3rdRoom\textures\etiketks_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\glassbilel_baseColor.png
+    assetPath: Assets\Map\3rdRoom\textures\glassbilel_baseColor.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\glassbilel_metallicRoughness.png
+    assetPath: Assets\Map\3rdRoom\textures\glassbilel_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\kriwki_normal.png
+    assetPath: Assets\Map\3rdRoom\textures\kriwki_normal.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\kriwki_baseColor.jpg
+    assetPath: Assets\Map\3rdRoom\textures\kriwki_baseColor.jpg
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\kriwki_metallicRoughness.png
+    assetPath: Assets\Map\3rdRoom\textures\kriwki_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\polka_baseColor.jpg
+    assetPath: Assets\Map\3rdRoom\textures\polka_baseColor.jpg
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\polka_metallicRoughness.png
+    assetPath: Assets\Map\3rdRoom\textures\polka_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\glass_normal.png
+    assetPath: Assets\Map\3rdRoom\textures\glass_normal.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\glass_baseColor.png
+    assetPath: Assets\Map\3rdRoom\textures\glass_baseColor.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\glass_metallicRoughness.png
+    assetPath: Assets\Map\3rdRoom\textures\glass_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\revolver_normal.png
+    assetPath: Assets\Map\3rdRoom\textures\revolver_normal.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\revolver_metallicRoughness.png
+    assetPath: Assets\Map\3rdRoom\textures\revolver_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\revolver_baseColor.png
+    assetPath: Assets\Map\3rdRoom\textures\revolver_baseColor.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\base_normal.png
+    assetPath: Assets\Map\3rdRoom\textures\base_normal.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\base_metallicRoughness.png
+    assetPath: Assets\Map\3rdRoom\textures\base_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\base_baseColor.jpg
+    assetPath: Assets\Map\3rdRoom\textures\base_baseColor.jpg
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\remainder_normal.png
+    assetPath: Assets\Map\3rdRoom\textures\remainder_normal.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\remainder_metallicRoughness.png
+    assetPath: Assets\Map\3rdRoom\textures\remainder_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\remainder_baseColor.jpg
+    assetPath: Assets\Map\3rdRoom\textures\remainder_baseColor.jpg
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\yizi_sp_yizi_BaseColor.jpg
+    assetPath: Assets\Map\3rdRoom\textures\yizi_sp_yizi_BaseColor.jpg
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\yizi_sp_yizi_Metallic-yizi_sp_yizi_Roughness.png
+    assetPath: Assets\Map\3rdRoom\textures\yizi_sp_yizi_Metallic-yizi_sp_yizi_Roughness.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\Material_normal.png
+    assetPath: Assets\Map\3rdRoom\textures\Material_normal.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\Material_metallicRoughness.png
+    assetPath: Assets\Map\3rdRoom\textures\Material_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\Material_baseColor.png
+    assetPath: Assets\Map\3rdRoom\textures\Material_baseColor.png
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\default_material_baseColor.jpg
+    assetPath: Assets\Map\3rdRoom\textures\default_material_baseColor.jpg
+  - type: 1
+    originalUri: Assets\Map\3rdRoom\textures\default_material_metallicRoughness.png
+    assetPath: Assets\Map\3rdRoom\textures\default_material_metallicRoughness.png
+  reportItems: []
