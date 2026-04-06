@@ -92,9 +92,6 @@ ScriptedImporter:
     originalUri: Assets\Map\3rdRoom\textures\base_baseColor.jpg
     assetPath: Assets\Map\3rdRoom\textures\base_baseColor.jpg
   - type: 1
-    originalUri: Assets\Map\3rdRoom\textures\remainder_normal.png
-    assetPath: Assets\Map\3rdRoom\textures\remainder_normal.png
-  - type: 1
     originalUri: Assets\Map\3rdRoom\textures\remainder_metallicRoughness.png
     assetPath: Assets\Map\3rdRoom\textures\remainder_metallicRoughness.png
   - type: 1

@@ -52,7 +52,9 @@ public class ItemPickupScanner : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, pickupRange))
         {
-            _focused = hit.collider.GetComponent<ItemPickup>();
+            // Walk up the hierarchy so pickup works even when the collider
+            // is on a child mesh (bottles, gun pieces, etc.)
+            _focused = hit.collider.GetComponentInParent<ItemPickup>();
         }
     }
 
@@ -64,10 +66,10 @@ public class ItemPickupScanner : MonoBehaviour
         {
             _promptStyle = new GUIStyle(GUI.skin.label)
             {
-                fontSize  = 22,
+                fontSize = 22,
                 fontStyle = FontStyle.Bold,
                 alignment = TextAnchor.MiddleCenter,
-                normal    = { textColor = Color.white }
+                normal = { textColor = Color.white }
             };
         }
 
@@ -75,7 +77,7 @@ public class ItemPickupScanner : MonoBehaviour
         string msg = $"[{pickupKey}]  Pick up  {itemName}";
 
         float w = 400f, h = 40f;
-        float x = (Screen.width  - w) / 2f;
+        float x = (Screen.width - w) / 2f;
         float y = (Screen.height - h) / 2f + 60f;
 
         // Shadow

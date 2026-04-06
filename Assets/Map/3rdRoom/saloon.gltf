@@ -5944,18 +5944,15 @@
 		{
 			"doubleSided":true,
 			"name":"remainder",
-			"normalTexture":{
-				"index":23
-			},
 			"occlusionTexture":{
-				"index":24
+				"index":23
 			},
 			"pbrMetallicRoughness":{
 				"baseColorTexture":{
-					"index":25
+					"index":24
 				},
 				"metallicRoughnessTexture":{
-					"index":24
+					"index":23
 				}
 			}
 		},
@@ -5964,10 +5961,10 @@
 			"name":"Chair",
 			"pbrMetallicRoughness":{
 				"baseColorTexture":{
-					"index":26
+					"index":25
 				},
 				"metallicRoughnessTexture":{
-					"index":27
+					"index":26
 				}
 			}
 		},
@@ -5998,7 +5995,7 @@
 						]
 					}
 				},
-				"index":28
+				"index":27
 			},
 			"occlusionTexture":{
 				"extensions":{
@@ -6009,7 +6006,7 @@
 						]
 					}
 				},
-				"index":29
+				"index":28
 			},
 			"pbrMetallicRoughness":{
 				"baseColorTexture":{
@@ -6021,10 +6018,10 @@
 							]
 						}
 					},
-					"index":30
+					"index":29
 				},
 				"metallicRoughnessTexture":{
-					"index":29
+					"index":28
 				}
 			}
 		},
@@ -6033,11 +6030,11 @@
 			"name":"default_material",
 			"pbrMetallicRoughness":{
 				"baseColorTexture":{
-					"index":31
+					"index":30
 				},
 				"metallicFactor":0,
 				"metallicRoughnessTexture":{
-					"index":32
+					"index":31
 				}
 			}
 		}
@@ -9410,10 +9407,6 @@
 		{
 			"sampler":0,
 			"source":29
-		},
-		{
-			"sampler":0,
-			"source":30
 		}
 	],
 	"images":[
@@ -9521,11 +9514,6 @@
 			"mimeType":"image/jpeg",
 			"name":"base_baseColor",
 			"uri":"textures/base_baseColor.jpg"
-		},
-		{
-			"mimeType":"image/png",
-			"name":"remainder_normal",
-			"uri":"textures/remainder_normal.png"
 		},
 		{
 			"mimeType":"image/png",
