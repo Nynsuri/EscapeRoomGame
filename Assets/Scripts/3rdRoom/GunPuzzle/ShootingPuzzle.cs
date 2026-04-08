@@ -112,6 +112,7 @@ public class ShootingPuzzle : MonoBehaviour
         {
             _solved = true;
             BarRoomState.OnGunPuzzleCompleted(secretCondition: true);
+            ReturnGunToWorld();
             onSolved?.Invoke();
             onSecretSolved?.Invoke();
             if (rewardObject != null) rewardObject.SetActive(true);
@@ -127,10 +128,29 @@ public class ShootingPuzzle : MonoBehaviour
         {
             _solved = true;
             BarRoomState.OnGunPuzzleCompleted(secretCondition: false);
+            ReturnGunToWorld();
             onSolved?.Invoke();
             if (rewardObject != null) rewardObject.SetActive(true);
             Debug.Log("[ShootingPuzzle] SOLVED -- normal condition met.");
         }
+    }
+
+    void ReturnGunToWorld()
+    {
+        var inventory = FindFirstObjectByType<Inventory>();
+        if (inventory == null) return;
+
+        // Find the GunItem in inventory
+        GunItem gun = null;
+        foreach (var item in inventory.Items)
+        {
+            if (item is GunItem g) { gun = g; break; }
+        }
+
+        if (gun != null)
+            gun.ReturnToWorld(inventory);
+        else
+            Debug.LogWarning("[ShootingPuzzle] Gun not found in inventory on solve.");
     }
 
     // -- Reset a target type ---------------------------------------------------

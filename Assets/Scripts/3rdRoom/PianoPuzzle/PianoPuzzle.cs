@@ -99,6 +99,13 @@ public class PianoPuzzle : MonoBehaviour
         _cam = Camera.main ?? FindFirstObjectByType<Camera>();
         _audio = GetComponent<AudioSource>();
         if (_audio == null) _audio = gameObject.AddComponent<AudioSource>();
+        // Keep audio 2D and non-spatial so Unity doesn't run distance calculations
+        _audio.spatialBlend = 0f;
+        _audio.playOnAwake = false;
+        _audio.bypassEffects = true;  // skip reverb/effects chain -- big perf win
+        _audio.bypassListenerEffects = true;
+        _audio.bypassReverbZones = true;
+        _audio.priority = 0;     // highest priority so it never gets culled
 
         if (normalRewardObject != null) normalRewardObject.SetActive(false);
         if (secretRewardObject != null) secretRewardObject.SetActive(false);

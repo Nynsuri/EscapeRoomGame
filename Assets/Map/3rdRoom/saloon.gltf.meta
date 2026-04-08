@@ -35,9 +35,6 @@ ScriptedImporter:
     originalUri: Assets\Map\3rdRoom\textures\Wood_Roughness2.png
     assetPath: Assets\Map\3rdRoom\textures\Wood_Roughness2.png
   - type: 1
-    originalUri: Assets\Map\3rdRoom\textures\etiketks_normal.png
-    assetPath: Assets\Map\3rdRoom\textures\etiketks_normal.png
-  - type: 1
     originalUri: Assets\Map\3rdRoom\textures\etiketks_baseColor.png
     assetPath: Assets\Map\3rdRoom\textures\etiketks_baseColor.png
   - type: 1
@@ -50,9 +47,6 @@ ScriptedImporter:
     originalUri: Assets\Map\3rdRoom\textures\glassbilel_metallicRoughness.png
     assetPath: Assets\Map\3rdRoom\textures\glassbilel_metallicRoughness.png
   - type: 1
-    originalUri: Assets\Map\3rdRoom\textures\kriwki_normal.png
-    assetPath: Assets\Map\3rdRoom\textures\kriwki_normal.png
-  - type: 1
     originalUri: Assets\Map\3rdRoom\textures\kriwki_baseColor.jpg
     assetPath: Assets\Map\3rdRoom\textures\kriwki_baseColor.jpg
   - type: 1
@@ -64,9 +58,6 @@ ScriptedImporter:
   - type: 1
     originalUri: Assets\Map\3rdRoom\textures\polka_metallicRoughness.png
     assetPath: Assets\Map\3rdRoom\textures\polka_metallicRoughness.png
-  - type: 1
-    originalUri: Assets\Map\3rdRoom\textures\glass_normal.png
-    assetPath: Assets\Map\3rdRoom\textures\glass_normal.png
   - type: 1
     originalUri: Assets\Map\3rdRoom\textures\glass_baseColor.png
     assetPath: Assets\Map\3rdRoom\textures\glass_baseColor.png

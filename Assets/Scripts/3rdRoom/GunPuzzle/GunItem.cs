@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -53,6 +54,7 @@ public class GunItem : InventoryItem
     private AudioSource _audio;
     private float _nextFireTime;
     private bool _inHand;
+    private bool _locked = false; // true after puzzle solved -- blocks re-pickup
 
     // The root transform we move to the camera (RootNode.001 or whichever child
     // sits directly under the pickup GO and contains all the meshes)
@@ -108,6 +110,8 @@ public class GunItem : InventoryItem
 
     public override void OnPickup()
     {
+        if (_locked) return; // puzzle solved -- no re-pickup
+
         // Hide all renderers + colliders via base (keeps GO active)
         base.OnPickup();
 
@@ -174,6 +178,46 @@ public class GunItem : InventoryItem
     {
         DestroyCrosshair();
         base.OnConsume();
+    }
+
+    /// <summary>
+    /// Called by ShootingPuzzle on solve -- returns gun to its original world
+    /// position/rotation/scale and permanently blocks re-pickup.
+    /// </summary>
+    public void ReturnToWorld(Inventory inventory)
+    {
+        _inHand = false;
+        _locked = true;
+
+        DestroyCrosshair();
+
+        // Remove from inventory without destroying
+        if (inventory != null && inventory.Items.Contains(this))
+        {
+            // Use DropSelected logic manually -- we don't want Destroy called
+            var items = inventory.Items;
+            int idx = -1;
+            for (int i = 0; i < items.Count; i++)
+                if (items[i] == this) { idx = i; break; }
+            if (idx >= 0)
+                inventory.DropSelected(); // drops at player feet first, we reposition below
+        }
+
+        // Return to original position/rotation/scale
+        _gunRoot.SetParent(_originalParent, false);
+        _gunRoot.localPosition = _originalLocalPos;
+        _gunRoot.localRotation = _originalLocalRot;
+        _gunRoot.localScale = _originalLocalScale;
+
+        // Show all renderers
+        foreach (var r in _gunRoot.GetComponentsInChildren<Renderer>(true))
+            r.enabled = true;
+
+        // Disable the pickup collider permanently -- gun can't be picked up again
+        var col = GetComponent<BoxCollider>();
+        if (col != null) col.enabled = false;
+
+        Debug.Log("[GunItem] Returned to world. Pickup disabled.");
     }
 
     public override void OnInventoryUpdate()
