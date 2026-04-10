@@ -23,7 +23,7 @@ using UnityEngine.UI;
 /// 12. Assign rewardItem (initially disabled). Connect its ItemPickup.onPickup to OnRewardPickedUp.
 /// 13. For fast door opening, set doorOpenSpeed to a high value (e.g., 360).
 /// </summary>
-public class EngineCalibratorPuzzle : MonoBehaviour
+public class EngineCalibratorPuzzle : BasePuzzle
 {
     [Header("Camera")]
     public Camera playerCamera;
@@ -146,8 +146,9 @@ public class EngineCalibratorPuzzle : MonoBehaviour
         _panel.SetActive(false);
     }
 
-    void Update()
+    protected override void Update()
     {
+        base.Update();
         switch (_state)
         {
             case State.Idle: UpdateIdle(); break;
@@ -264,6 +265,12 @@ public class EngineCalibratorPuzzle : MonoBehaviour
     {
         if (_solved) return;
 
+        OpenPuzzle();
+
+        // Disable inventory so its hotkeys (Tab, 1-8, scroll) don't fire during puzzle
+        var inv = FindFirstObjectByType<Inventory>();
+        if (inv != null) inv.enabled = false;
+
         _camOrigPos = playerCamera.transform.position;
         _camOrigRot = playerCamera.transform.rotation;
         _state = State.ZoomingIn;
@@ -329,6 +336,11 @@ public class EngineCalibratorPuzzle : MonoBehaviour
 
         var pc = FindFirstObjectByType<PlayerController>();
         if (pc != null) pc.enabled = true;
+
+        var inv = FindFirstObjectByType<Inventory>();
+        if (inv != null) inv.enabled = true;
+
+        ClosePuzzle();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         _state = solved ? State.Solved : State.Idle;

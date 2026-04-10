@@ -16,6 +16,10 @@ public class BarBottleRoomManager : MonoBehaviour
     public UnityEvent onAllFilled;
     public GameObject rewardObject;
 
+    [Header("Symphony Note")]
+    [Tooltip("Assign the SymphonyNote (Normal) GameObject — hidden at start, shown when all bottles placed")]
+    public SymphonyNote normalSymphonyNote;
+
     private int _filledCount = 0;
     private bool _done = false;
 
@@ -37,7 +41,9 @@ public class BarBottleRoomManager : MonoBehaviour
             BarRoomState.OnBottlePuzzleCompleted();
             onAllFilled?.Invoke();
             if (rewardObject != null) rewardObject.SetActive(true);
-            Debug.Log("[BarBottleRoomManager] All zones filled -- bottle puzzle complete!");
+            // Spawn the note — player must read it to unlock normal syphons
+            if (normalSymphonyNote != null) normalSymphonyNote.Activate();
+            Debug.Log("[BarBottleRoomManager] All zones filled. Note spawned for normal syphons.");
         }
     }
 }

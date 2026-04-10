@@ -16,7 +16,7 @@ using UnityEngine.Events;
 /// Player clicks syphon cards to select, clicks slots to place.
 /// All 4 in correct order -> music plays -> puzzle solved.
 /// </summary>
-public class PianoPuzzle : MonoBehaviour
+public class PianoPuzzle : BasePuzzle
 {
     [Header("Interaction")]
     public float interactRange = 3f;
@@ -114,8 +114,9 @@ public class PianoPuzzle : MonoBehaviour
         _panel.SetActive(false);
     }
 
-    void Update()
+    protected override void Update()
     {
+        base.Update();
         if (_solved) return;
 
         if (_isOpen)
@@ -177,6 +178,7 @@ public class PianoPuzzle : MonoBehaviour
 
     void OpenUI()
     {
+        OpenPuzzle();
         _isOpen = true;
         _panel.SetActive(true);
 
@@ -198,6 +200,7 @@ public class PianoPuzzle : MonoBehaviour
     {
         _isOpen = false;
         _panel.SetActive(false);
+        ClosePuzzle();
 
         var pc = FindFirstObjectByType<PlayerController>();
         if (pc != null) pc.enabled = true;

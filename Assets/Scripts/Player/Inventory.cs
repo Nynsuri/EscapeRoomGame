@@ -34,6 +34,9 @@ public class Inventory : MonoBehaviour
 
     private bool _isOpen = false;
 
+    /// <summary>True when the inventory panel is visible.</summary>
+    public bool IsOpen => _isOpen;
+
     // ───────────────────────────────────────────────────────────
 
     void Update()
@@ -147,5 +150,15 @@ public class Inventory : MonoBehaviour
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll > 0f) SelectSlot(_selectedIndex - 1 < 0 ? _items.Count - 1 : _selectedIndex - 1);
         if (scroll < 0f) SelectSlot((_selectedIndex + 1) % Mathf.Max(1, _items.Count));
+    }
+
+    /// <summary>Close the inventory from an external script (e.g. PauseMenuManager).</summary>
+    public void ForceClose()
+    {
+        if (!_isOpen) return;
+        _isOpen = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        OnInventoryToggled?.Invoke(false);
     }
 }

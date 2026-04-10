@@ -7,7 +7,7 @@ using UnityEngine.UI;
 /// ClockPuzzle.cs — Unity 6000.3.9f1
 /// Clean bottom-bar UI, hands stay at initial position, drawer opens on solve.
 /// </summary>
-public class ClockPuzzle : MonoBehaviour
+public class ClockPuzzle : BasePuzzle
 {
     [Header("Camera")]
     public Camera playerCamera;
@@ -107,8 +107,9 @@ public class ClockPuzzle : MonoBehaviour
     }
 
     // ── Update ────────────────────────────────────────────────────
-    void Update()
+    protected override void Update()
     {
+        base.Update();
         switch (_state)
         {
             case State.Idle: UpdateIdle(); break;
@@ -131,7 +132,7 @@ public class ClockPuzzle : MonoBehaviour
 
     void UpdateZoomIn()
     {
-        if (puzzleCameraPosition == null) { _state = State.Active; _panel.SetActive(true); return; }
+        if (puzzleCameraPosition == null) { _state = State.Active; _panel.SetActive(true); OpenPuzzle(); return; }
 
         playerCamera.transform.position = Vector3.Lerp(
             playerCamera.transform.position, puzzleCameraPosition.position, Time.deltaTime * cameraZoomSpeed);
@@ -180,6 +181,7 @@ public class ClockPuzzle : MonoBehaviour
     // ── Start / Exit ──────────────────────────────────────────────
     void StartPuzzle()
     {
+        OpenPuzzle();
         _camOrigPos = playerCamera.transform.position;
         _camOrigRot = playerCamera.transform.rotation;
         _state = State.ZoomingIn;
@@ -208,6 +210,7 @@ public class ClockPuzzle : MonoBehaviour
 
     IEnumerator ExitPuzzle(bool solved)
     {
+        ClosePuzzle();
         _state = State.ZoomingOut;
         _panel.SetActive(false);
 

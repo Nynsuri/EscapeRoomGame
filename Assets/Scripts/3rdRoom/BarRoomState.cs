@@ -1,11 +1,9 @@
 /// <summary>
-/// BarRoomState -- singleton that tracks cross-puzzle progression for the bar room.
-/// No MonoBehaviour needed -- pure static state, no scene setup required.
+/// BarRoomState -- static state tracker for the bar room puzzles.
 ///
-/// Flow:
-///   NORMAL:  Bottle puzzle done -> player receives normal syphons -> piano normal song -> normal reward
-///   SECRET:  Gun puzzle done with ONLY X targets hit (no stars/circles) -> player receives secret syphons
-///            -> piano secret song -> secret reward  (only if bottle puzzle NOT yet completed)
+/// Syphons are NO LONGER granted automatically on puzzle completion.
+/// Instead, the puzzle spawns a SymphonyNote. The player reads it,
+/// which calls GrantNormalSyphons() or GrantSecretSyphons() here.
 /// </summary>
 public static class BarRoomState
 {
@@ -13,8 +11,8 @@ public static class BarRoomState
     public static bool BottlePuzzleDone { get; private set; } = false;
 
     // -- Gun puzzle ------------------------------------------------------------
-    public static bool GunPuzzleDone          { get; private set; } = false;
-    public static bool GunSecretConditionMet  { get; private set; } = false; // only X targets hit
+    public static bool GunPuzzleDone { get; private set; } = false;
+    public static bool GunSecretConditionMet { get; private set; } = false;
 
     // -- Piano syphons ---------------------------------------------------------
     public static bool HasNormalSyphons { get; private set; } = false;
@@ -23,38 +21,45 @@ public static class BarRoomState
     // -- Piano -----------------------------------------------------------------
     public static bool PianoSolved { get; private set; } = false;
 
-    // -- Called by BottlePuzzleZone (or a room manager) when all bottles placed -
+    // -- Called by BarBottleRoomManager when all bottles placed ----------------
+    // Does NOT grant syphons anymore — just marks puzzle done.
+    // Syphons are granted when player reads the normal SymphonyNote.
     public static void OnBottlePuzzleCompleted()
     {
         if (BottlePuzzleDone) return;
         BottlePuzzleDone = true;
-
-        // Grant normal syphons -- secret path is now locked forever
-        HasNormalSyphons = true;
-        HasSecretSyphons = false;
-
-        UnityEngine.Debug.Log("[BarRoomState] Bottle puzzle done. Normal syphons granted. Secret path locked.");
+        UnityEngine.Debug.Log("[BarRoomState] Bottle puzzle done. Awaiting note read for syphons.");
     }
 
-    // -- Called by ShootingPuzzle when the gun puzzle is completed -------------
-    //    secretCondition = true means ONLY the 5 X targets were hit, nothing else
+    // -- Called by ShootingPuzzle when gun puzzle completed --------------------
+    // Does NOT grant syphons anymore — just marks puzzle done.
+    // Syphons are granted when player reads the secret SymphonyNote.
     public static void OnGunPuzzleCompleted(bool secretCondition)
     {
         if (GunPuzzleDone) return;
-        GunPuzzleDone         = true;
+        GunPuzzleDone = true;
         GunSecretConditionMet = secretCondition;
+        UnityEngine.Debug.Log($"[BarRoomState] Gun puzzle done. Secret={secretCondition}. Awaiting note read.");
+    }
 
-        if (secretCondition && !BottlePuzzleDone)
-        {
-            // Secret path: player hit only X targets AND bottle puzzle not done yet
-            HasSecretSyphons = true;
-            UnityEngine.Debug.Log("[BarRoomState] Gun puzzle done (secret condition). Secret syphons granted.");
-        }
-        else
-        {
-            // Normal gun completion or bottle already done -- no secret syphons
-            UnityEngine.Debug.Log($"[BarRoomState] Gun puzzle done. Secret={secretCondition}, BottleDone={BottlePuzzleDone}. No secret syphons.");
-        }
+    // -- Called by SymphonyNote (normal) when player reads the normal note -----
+    public static void GrantNormalSyphons()
+    {
+        if (HasNormalSyphons) return;
+        HasNormalSyphons = true;
+        HasSecretSyphons = false; // normal path locks secret forever
+        UnityEngine.Debug.Log("[BarRoomState] Normal syphons granted.");
+    }
+
+    // Kept for backward compatibility — same as GrantNormalSyphons
+    // (BarBottleRoomManager still calls OnBottlePuzzleCompleted which no longer
+    //  auto-grants; the note calls this instead)
+    public static void GrantSecretSyphons()
+    {
+        if (HasSecretSyphons) return;
+        if (BottlePuzzleDone) return; // bottle done = secret locked
+        HasSecretSyphons = true;
+        UnityEngine.Debug.Log("[BarRoomState] Secret syphons granted.");
     }
 
     // -- Called by PianoPuzzle when solved ------------------------------------

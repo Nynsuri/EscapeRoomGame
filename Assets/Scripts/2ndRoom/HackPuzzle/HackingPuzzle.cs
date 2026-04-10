@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HackingPuzzle : MonoBehaviour
+public class HackingPuzzle : BasePuzzle
 {
     [Header("Camera")]
     public Camera playerCamera;
@@ -115,8 +115,9 @@ public class HackingPuzzle : MonoBehaviour
 
     // ... (Update, UpdateIdle, UpdateZoomIn, ActivatePuzzle, UpdateActive, StartPuzzle, ExitPuzzle unchanged) ...
 
-    void Update()
+    protected override void Update()
     {
+        base.Update();
         switch (_state)
         {
             case State.Idle: UpdateIdle(); break;
@@ -189,6 +190,7 @@ public class HackingPuzzle : MonoBehaviour
 
     void StartPuzzle()
     {
+        OpenPuzzle();
         _camOrigPos = playerCamera.transform.position;
         _camOrigRot = playerCamera.transform.rotation;
         _state = State.ZoomingIn;
@@ -245,6 +247,7 @@ public class HackingPuzzle : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
+        ClosePuzzle();
         _state = solved ? State.Solved : State.Idle;
 
         if (solved)

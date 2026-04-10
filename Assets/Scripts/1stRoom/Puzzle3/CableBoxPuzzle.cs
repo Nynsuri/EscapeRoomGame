@@ -26,7 +26,7 @@ using UnityEngine.UI;
 ///   * All straight (top-to-top etc.) = straight solve
 ///   * Wrong → flash red, reset
 /// </summary>
-public class CableBoxPuzzle : MonoBehaviour
+public class CableBoxPuzzle : BasePuzzle
 {
     [Header("Camera")]
     public Camera playerCamera;
@@ -160,8 +160,9 @@ public class CableBoxPuzzle : MonoBehaviour
             }
     }
 
-    void Update()
+    protected override void Update()
     {
+        base.Update();
         switch (_state)
         {
             case State.Idle: UpdateIdle(); break;
@@ -243,6 +244,7 @@ public class CableBoxPuzzle : MonoBehaviour
 
     void StartPuzzle()
     {
+        OpenPuzzle();
         _camOrigPos = playerCamera.transform.position;
         _camOrigRot = playerCamera.transform.rotation;
         _state = State.ZoomingIn;
@@ -277,7 +279,7 @@ public class CableBoxPuzzle : MonoBehaviour
     void UpdateZoomIn()
     {
         if (_panel.activeSelf) UpdateButtonPositions();
-        if (puzzleCameraPosition == null) { _state = State.Puzzle; _panel.SetActive(true); return; }
+        if (puzzleCameraPosition == null) { _state = State.Puzzle; _panel.SetActive(true); OpenPuzzle(); return; }
 
         playerCamera.transform.position = Vector3.Lerp(
             playerCamera.transform.position, puzzleCameraPosition.position, Time.deltaTime * cameraZoomSpeed);
@@ -520,6 +522,7 @@ public class CableBoxPuzzle : MonoBehaviour
     IEnumerator ExitPuzzle()
     {
         _panel.SetActive(false);
+        ClosePuzzle();
 
         // Only zoom camera back if StartPuzzle actually moved it
         if (_detached.Count > 0 || _camOrigPos != Vector3.zero)
@@ -784,18 +787,5 @@ public class CableBoxPuzzle : MonoBehaviour
         rt.offsetMin = rt.offsetMax = Vector2.zero;
         go.GetComponent<Image>().color = color;
         return go;
-    }
-
-    static void AddLabel(GameObject parent, string text, int size, FontStyle style, Color color,
-        Vector2 anchor, Vector2 sizeDelta, Vector2 pos, TextAnchor align = TextAnchor.MiddleLeft)
-    {
-        var go = new GameObject("Label", typeof(RectTransform), typeof(Text));
-        go.transform.SetParent(parent.transform, false);
-        var rt = go.GetComponent<RectTransform>();
-        rt.anchorMin = rt.anchorMax = rt.pivot = anchor;
-        rt.sizeDelta = sizeDelta; rt.anchoredPosition = pos;
-        var t = go.GetComponent<Text>();
-        t.text = text; t.fontSize = size; t.fontStyle = style; t.color = color; t.alignment = align;
-        t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
     }
 }

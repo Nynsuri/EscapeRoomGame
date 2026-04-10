@@ -7,7 +7,7 @@ using UnityEngine;
 /// Fixed for 3D wires: uses closest-point-on-ray-to-path-segment
 /// instead of projecting onto a flat plane.
 /// </summary>
-public class WireTracePuzzle : MonoBehaviour
+public class WireTracePuzzle : BasePuzzle
 {
     [Header("Wire Path")]
     public Transform[] pathPoints;
@@ -67,8 +67,9 @@ public class WireTracePuzzle : MonoBehaviour
         }
     }
 
-    void Update()
+    protected override void Update()
     {
+        base.Update();
         switch (_state)
         {
             case PuzzleState.Idle: UpdateIdle(); break;
@@ -90,6 +91,7 @@ public class WireTracePuzzle : MonoBehaviour
 
     void StartPuzzle()
     {
+        OpenPuzzle();
         _camOriginalPos = playerCamera.transform.position;
         _camOriginalRot = playerCamera.transform.rotation;
         _currentPoint = 0;
@@ -124,7 +126,7 @@ public class WireTracePuzzle : MonoBehaviour
 
     void UpdateZoomIn()
     {
-        if (puzzleCameraPosition == null) { _state = PuzzleState.Playing; return; }
+        if (puzzleCameraPosition == null) { _state = PuzzleState.Playing; OpenPuzzle(); return; }
 
         playerCamera.transform.position = Vector3.Lerp(
             playerCamera.transform.position, puzzleCameraPosition.position,
@@ -303,6 +305,7 @@ public class WireTracePuzzle : MonoBehaviour
         if (drawer != null)
             yield return StartCoroutine(OpenDrawer());
 
+        ClosePuzzle();
         _state = PuzzleState.Done;
         ShowMessage("A drawer has opened...");
 
@@ -372,6 +375,7 @@ public class WireTracePuzzle : MonoBehaviour
         if (pc != null) pc.enabled = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        ClosePuzzle();
         _state = PuzzleState.Idle;
     }
 

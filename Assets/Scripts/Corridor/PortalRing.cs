@@ -39,7 +39,27 @@ public class PortalRing : MonoBehaviour
     [Header("Room Blockers (optional)")]
     public PortalBlocker[] roomBlockers;
 
+    [Header("Portal Veil Particles")]
+    [Tooltip("ParticleSystem parented to this RingMesh — assign in Inspector")]
+    public ParticleSystem veilParticles;
+    [Tooltip("Emission rate when fully veiled (player can't see through)")]
+    public float veilEmissionRate = 80f;
+    [Tooltip("Emission rate during/after transition (partially see-through)")]
+    public float openEmissionRate = 20f;
+
     private Coroutine _transitionCoroutine;
+    private ParticleSystem.EmissionModule _emission;
+    private bool _particlesInitialised;
+
+    void Start()
+    {
+        if (veilParticles != null)
+        {
+            _emission = veilParticles.emission;
+            _emission.rateOverTime = veilEmissionRate;
+            _particlesInitialised = true;
+        }
+    }
 
     void Update()
     {
@@ -56,9 +76,15 @@ public class PortalRing : MonoBehaviour
 
         SetBlockers(blocking: isSideA);
 
-        // Leaving room back to corridor — clear inventory
         if (isSideA)
             ClearInventory();
+    }
+
+    /// <summary>Call this any time you want to programmatically set veil opacity.</summary>
+    public void SetVeil(float emission)
+    {
+        if (!_particlesInitialised) return;
+        _emission.rateOverTime = emission;
     }
 
     void ClearInventory()
@@ -66,17 +92,23 @@ public class PortalRing : MonoBehaviour
         var inventory = FindFirstObjectByType<Inventory>();
         if (inventory == null) return;
 
-        // Collect all items into a temp list to avoid modifying while iterating
         var toRemove = new System.Collections.Generic.List<InventoryItem>();
         foreach (var item in inventory.Items)
             toRemove.Add(item);
 
         foreach (var item in toRemove)
+        {
+            item.OnConsume();
             inventory.RemoveItem(item);
+        }
     }
 
     IEnumerator TransitionTo(Material skybox, float targetReflection)
     {
+        // Thin the veil so the skybox swap doesn't look like a hard cut
+        if (_particlesInitialised)
+            _emission.rateOverTime = openEmissionRate;
+
         if (skybox != null)
             RenderSettings.skybox = skybox;
 
@@ -94,6 +126,10 @@ public class PortalRing : MonoBehaviour
 
         RenderSettings.reflectionIntensity = targetReflection;
         DynamicGI.UpdateEnvironment();
+
+        // Restore full veil after transition settles
+        if (_particlesInitialised)
+            _emission.rateOverTime = veilEmissionRate;
     }
 
     void SetBlockers(bool blocking)

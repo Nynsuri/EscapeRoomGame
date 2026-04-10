@@ -24,7 +24,7 @@ using UnityEngine.EventSystems;
 ///   • Inventory component on the Player
 ///   • PlayerController component on the Player (disabled while puzzle is open)
 /// </summary>
-public class ChemistryPuzzle : MonoBehaviour
+public class ChemistryPuzzle : BasePuzzle
 {
     // ── Inspector ────────────────────────────────────────────────────────────────
 
@@ -139,8 +139,9 @@ public class ChemistryPuzzle : MonoBehaviour
         _panel.SetActive(false);
     }
 
-    void Update()
+    protected override void Update()
     {
+        base.Update();
         switch (_state)
         {
             case State.Idle: UpdateIdle(); break;
@@ -270,6 +271,7 @@ public class ChemistryPuzzle : MonoBehaviour
 
     void StartPuzzle()
     {
+        OpenPuzzle();
         _camOrigPos = playerCamera.transform.position;
         _camOrigRot = playerCamera.transform.rotation;
         _state = State.ZoomingIn;
@@ -496,6 +498,7 @@ public class ChemistryPuzzle : MonoBehaviour
     {
         _state = State.ZoomingOut;
         _panel.SetActive(false);
+        ClosePuzzle();
 
         float elapsed = 0f, dur = 1f / cameraZoomSpeed;
         Vector3 sp = playerCamera.transform.position;

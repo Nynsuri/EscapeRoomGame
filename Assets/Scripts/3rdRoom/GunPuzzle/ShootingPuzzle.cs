@@ -1,29 +1,23 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
 /// ShootingPuzzle -- Unity 6000.3.9f1
 ///
-/// Scene has: 3 stars, 3 circles, 5 X targets.
+/// 3 stars, 3 circles, 5 X targets.
+/// NORMAL:  exactly 2 stars + 2 circles + 1 X
+/// SECRET:  exactly all 5 Xs, no stars or circles ever hit
 ///
-/// NORMAL solution:  exactly 2 stars + 2 circles + 1 X hit.
-///                   If player hits a 3rd star or 3rd circle or 2nd X -> that type resets.
-///
-/// SECRET condition: ONLY the 5 X targets hit, nothing else at all.
-///                   Hitting any star or circle invalidates the secret condition forever.
-///                   Hitting more than 5 X is impossible since there are only 5.
-///
-/// Assign all targets in Inspector with correct TargetType on each ShootingTarget.
+/// Per-type overflow resets that type only.
+/// If after a per-type reset the remaining combination can never reach
+/// the normal solution, everything resets.
 /// </summary>
 public class ShootingPuzzle : MonoBehaviour
 {
     [Header("All Targets in Scene")]
-    [Tooltip("All 3 star targets")]
     public ShootingTarget[] allStars = new ShootingTarget[3];
-    [Tooltip("All 3 circle targets")]
     public ShootingTarget[] allCircles = new ShootingTarget[3];
-    [Tooltip("All 5 X targets")]
     public ShootingTarget[] allXs = new ShootingTarget[5];
 
     [Header("Normal Solution Requirements")]
@@ -35,23 +29,22 @@ public class ShootingPuzzle : MonoBehaviour
     public UnityEvent onSolved;
     public GameObject rewardObject;
 
-    [Header("On Secret Solved (only Xs hit, all 5)")]
+    [Header("On Secret Solved")]
     public UnityEvent onSecretSolved;
     public GameObject secretRewardObject;
 
+    [Header("Symphony Note")]
+    [Tooltip("Assign the SymphonyNote (Secret) GameObject — hidden at start, shown on secret solve")]
+    public SymphonyNote secretSymphonyNote;
+
     // -- State -----------------------------------------------------------------
-
     private bool _solved = false;
-    private bool _secretFailed = false; // true the moment any star or circle is hit
-
-    // how many of each type are currently "down"
+    private bool _secretFailed = false;
     private int _starsHit = 0;
     private int _circlesHit = 0;
     private int _xsHit = 0;
 
     public bool IsSolved => _solved;
-
-    // -- Unity -----------------------------------------------------------------
 
     void Start()
     {
@@ -65,17 +58,21 @@ public class ShootingPuzzle : MonoBehaviour
     {
         if (_solved) return;
 
-        TargetCategory cat = GetCategory(target);
-
-        switch (cat)
+        switch (GetCategory(target))
         {
             case TargetCategory.Star:
                 _secretFailed = true;
                 _starsHit++;
                 if (_starsHit > requiredStars)
                 {
-                    Debug.Log("[ShootingPuzzle] Too many stars hit -- resetting stars.");
-                    ResetTargets(allStars, TargetCategory.Star);
+                    ResetType(allStars, TargetCategory.Star);
+                    CheckIfHopeless();
+                    return;
+                }
+                // Hitting a star while already having too many Xs down = hopeless
+                if (_xsHit > requiredXs)
+                {
+                    StartCoroutine(ResetAll());
                     return;
                 }
                 break;
@@ -85,15 +82,26 @@ public class ShootingPuzzle : MonoBehaviour
                 _circlesHit++;
                 if (_circlesHit > requiredCircles)
                 {
-                    Debug.Log("[ShootingPuzzle] Too many circles hit -- resetting circles.");
-                    ResetTargets(allCircles, TargetCategory.Circle);
+                    ResetType(allCircles, TargetCategory.Circle);
+                    CheckIfHopeless();
+                    return;
+                }
+                // Hitting a circle while already having too many Xs down = hopeless
+                if (_xsHit > requiredXs)
+                {
+                    StartCoroutine(ResetAll());
                     return;
                 }
                 break;
 
             case TargetCategory.X:
                 _xsHit++;
-                // No reset needed for X -- there are exactly 5 and max required is 5
+                // If secret already failed, normal needs exactly requiredXs — more than that is hopeless
+                if (_secretFailed && _xsHit > requiredXs)
+                {
+                    StartCoroutine(ResetAll());
+                    return;
+                }
                 break;
 
             default:
@@ -103,11 +111,29 @@ public class ShootingPuzzle : MonoBehaviour
         CheckSolution();
     }
 
-    // -- Solution check --------------------------------------------------------
+    // -- After resetting a type, check if normal solution is still reachable --
+    void CheckIfHopeless()
+    {
+        // If secret failed AND we can no longer reach 2s+2c+1x, reset everything
+        // (e.g. hit 3 stars, reset stars — but also already shot 2 circles and 2 Xs,
+        //  now need 2 more stars but secret is gone too)
+        if (_secretFailed)
+        {
+            // Normal still needs: requiredStars - starsHit more stars, etc.
+            // But since we just reset a type to 0, it's still reachable unless
+            // we have TOO MANY of another type that can't be undone
+            bool xsAlreadyOverNormal = _xsHit > requiredXs;
+            if (xsAlreadyOverNormal)
+            {
+                StartCoroutine(ResetAll());
+            }
+        }
+    }
 
+    // -- Solution check --------------------------------------------------------
     void CheckSolution()
     {
-        // Secret: all 5 Xs hit and no stars/circles ever touched
+        // Secret: all 5 Xs, no stars or circles ever touched
         if (!_secretFailed && _xsHit == allXs.Length)
         {
             _solved = true;
@@ -117,47 +143,29 @@ public class ShootingPuzzle : MonoBehaviour
             onSecretSolved?.Invoke();
             if (rewardObject != null) rewardObject.SetActive(true);
             if (secretRewardObject != null) secretRewardObject.SetActive(true);
-            Debug.Log("[ShootingPuzzle] SOLVED -- SECRET condition met!");
+            if (secretSymphonyNote != null) secretSymphonyNote.Activate();
+            Debug.Log("[ShootingPuzzle] SOLVED — SECRET! Note spawned.");
             return;
         }
 
-        // Normal: exactly required stars + circles + Xs hit
+        // Normal: EXACTLY 2 stars + 2 circles + 1 X
         if (_starsHit == requiredStars &&
             _circlesHit == requiredCircles &&
-            _xsHit >= requiredXs)
+            _xsHit == requiredXs)
         {
             _solved = true;
             BarRoomState.OnGunPuzzleCompleted(secretCondition: false);
             ReturnGunToWorld();
             onSolved?.Invoke();
             if (rewardObject != null) rewardObject.SetActive(true);
-            Debug.Log("[ShootingPuzzle] SOLVED -- normal condition met.");
+            Debug.Log("[ShootingPuzzle] SOLVED — normal!");
+            // Normal gun solve: no note here, bottle room handles normal syphons
         }
     }
 
-    void ReturnGunToWorld()
+    // -- Reset one type --------------------------------------------------------
+    void ResetType(ShootingTarget[] targets, TargetCategory cat)
     {
-        var inventory = FindFirstObjectByType<Inventory>();
-        if (inventory == null) return;
-
-        // Find the GunItem in inventory
-        GunItem gun = null;
-        foreach (var item in inventory.Items)
-        {
-            if (item is GunItem g) { gun = g; break; }
-        }
-
-        if (gun != null)
-            gun.ReturnToWorld(inventory);
-        else
-            Debug.LogWarning("[ShootingPuzzle] Gun not found in inventory on solve.");
-    }
-
-    // -- Reset a target type ---------------------------------------------------
-
-    void ResetTargets(ShootingTarget[] targets, TargetCategory cat)
-    {
-        // Zero the counter immediately so new hits count fresh
         switch (cat)
         {
             case TargetCategory.Star: _starsHit = 0; break;
@@ -171,15 +179,37 @@ public class ShootingPuzzle : MonoBehaviour
     {
         yield return new WaitForSeconds(0.3f);
         foreach (var t in targets)
-        {
-            if (t == null) continue;
-            t.ResetTarget();
-        }
-        Debug.Log("[ShootingPuzzle] Targets reset and back up.");
+            if (t != null) t.ResetTarget();
     }
 
-    // -- Category helper -------------------------------------------------------
+    // -- Reset everything ------------------------------------------------------
+    IEnumerator ResetAll()
+    {
+        _starsHit = 0;
+        _circlesHit = 0;
+        _xsHit = 0;
+        _secretFailed = false;
 
+        yield return new WaitForSeconds(0.4f);
+
+        foreach (var t in allStars) if (t != null) { t.gameObject.SetActive(true); t.ResetTarget(); }
+        foreach (var t in allCircles) if (t != null) { t.gameObject.SetActive(true); t.ResetTarget(); }
+        foreach (var t in allXs) if (t != null) { t.gameObject.SetActive(true); t.ResetTarget(); }
+
+        Debug.Log("[ShootingPuzzle] Full reset.");
+    }
+
+    // -- Gun return ------------------------------------------------------------
+    void ReturnGunToWorld()
+    {
+        var inventory = FindFirstObjectByType<Inventory>();
+        if (inventory == null) return;
+        foreach (var item in inventory.Items)
+            if (item is GunItem g) { g.ReturnToWorld(inventory); return; }
+        Debug.LogWarning("[ShootingPuzzle] Gun not found in inventory.");
+    }
+
+    // -- Helpers ---------------------------------------------------------------
     enum TargetCategory { Star, Circle, X, Unknown }
 
     TargetCategory GetCategory(ShootingTarget t)

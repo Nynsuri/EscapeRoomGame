@@ -10,7 +10,7 @@ using UnityEngine.UI;
 /// Player places pieces on slots — running total must equal target at END node.
 /// Multiple valid paths/combinations work.
 /// </summary>
-public class CircuitRepairPuzzle : MonoBehaviour
+public class CircuitRepairPuzzle : BasePuzzle
 {
     [Header("Camera")]
     public Camera playerCamera;
@@ -112,8 +112,9 @@ public class CircuitRepairPuzzle : MonoBehaviour
         _panel.SetActive(false);
     }
 
-    void Update()
+    protected override void Update()
     {
+        base.Update();
         switch (_state)
         {
             case State.Idle: UpdateIdle(); break;
@@ -166,6 +167,7 @@ public class CircuitRepairPuzzle : MonoBehaviour
 
     void StartPuzzle()
     {
+        OpenPuzzle();
         _camOrigPos = playerCamera.transform.position;
         _camOrigRot = playerCamera.transform.rotation;
         _state = State.ZoomingIn;
@@ -288,6 +290,7 @@ public class CircuitRepairPuzzle : MonoBehaviour
     IEnumerator ExitPuzzle(bool solved)
     {
         _panel.SetActive(false);
+        ClosePuzzle();
         float elapsed = 0f, dur = 1f / cameraZoomSpeed;
         Vector3 sp = playerCamera.transform.position;
         Quaternion sr = playerCamera.transform.rotation;

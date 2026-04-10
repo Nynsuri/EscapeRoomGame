@@ -156,6 +156,26 @@ public class TorchItem : InventoryItem
         Debug.Log($"[Torch] {(_isOn ? "ON" : "OFF")}");
     }
 
+    /// <summary>
+    /// Called by Inventory.RemoveItem → cleans up camera-parented mesh and light
+    /// before the GameObject is destroyed.
+    /// </summary>
+    public override void OnConsume()
+    {
+        // Turn off light
+        SetTorch(false);
+
+        // Destroy the mesh child that was reparented to the camera
+        if (_meshTransform != null)
+            Destroy(_meshTransform.gameObject);
+
+        // Destroy the light child that was reparented to the camera
+        if (torchLight != null)
+            Destroy(torchLight.gameObject);
+
+        base.OnConsume(); // disables the root GameObject
+    }
+
     public override void OnSelect() => Debug.Log("[Torch] Press T to toggle.");
     public override void OnDeselect() => Debug.Log("[Torch] Deselected.");
 }
