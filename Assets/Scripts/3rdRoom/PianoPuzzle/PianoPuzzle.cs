@@ -58,6 +58,8 @@ public class PianoPuzzle : BasePuzzle
 
     [Header("Music")]
     public float musicVolume = 1f;
+    [Tooltip("Assign the Master group from your MainMixer asset so volume is controlled by the mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
 
     // -- Runtime state ---------------------------------------------------------
 
@@ -99,13 +101,16 @@ public class PianoPuzzle : BasePuzzle
         _cam = Camera.main ?? FindFirstObjectByType<Camera>();
         _audio = GetComponent<AudioSource>();
         if (_audio == null) _audio = gameObject.AddComponent<AudioSource>();
-        // Keep audio 2D and non-spatial so Unity doesn't run distance calculations
+        // Keep audio 2D and non-spatial
         _audio.spatialBlend = 0f;
         _audio.playOnAwake = false;
-        _audio.bypassEffects = true;  // skip reverb/effects chain -- big perf win
-        _audio.bypassListenerEffects = true;
-        _audio.bypassReverbZones = true;
-        _audio.priority = 0;     // highest priority so it never gets culled
+        _audio.bypassEffects = false;
+        _audio.bypassListenerEffects = false;
+        _audio.bypassReverbZones = false;
+        _audio.priority = 0;
+        // Route through AudioMixer so the volume slider works
+        if (audioMixerGroup != null)
+            _audio.outputAudioMixerGroup = audioMixerGroup;
 
         if (normalRewardObject != null) normalRewardObject.SetActive(false);
         if (secretRewardObject != null) secretRewardObject.SetActive(false);
@@ -269,7 +274,6 @@ public class PianoPuzzle : BasePuzzle
         if (clip != null)
         {
             _audio.clip = clip;
-            _audio.volume = musicVolume;
             _audio.loop = false;
             _audio.Play();
         }

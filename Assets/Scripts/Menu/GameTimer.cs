@@ -33,6 +33,7 @@ public class GameTimer : MonoBehaviour
     // UI refs 
     private Text _timerText;
     private Text _difficultyText;
+    private GameObject _canvas;
 
     private void Awake()
     {
@@ -72,12 +73,23 @@ public class GameTimer : MonoBehaviour
         UpdateTimerUI();
     }
 
+    // Cleanup
+
+    private void OnDestroy()
+    {
+        if (_canvas != null) Destroy(_canvas);
+    }
+
     // UI builder
 
     private void BuildUI()
     {
+        // Destroy any existing GameTimerCanvas from a previous scene load
+        var existing = GameObject.Find("GameTimerCanvas");
+        if (existing != null) Destroy(existing);
+
         var cgo = new GameObject("GameTimerCanvas");
-        DontDestroyOnLoad(cgo);
+        _canvas = cgo;
         var cv = cgo.AddComponent<Canvas>();
         cv.renderMode = RenderMode.ScreenSpaceOverlay;
         cv.sortingOrder = 50;

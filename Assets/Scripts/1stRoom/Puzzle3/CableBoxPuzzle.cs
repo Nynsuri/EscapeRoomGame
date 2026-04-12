@@ -226,19 +226,41 @@ public class CableBoxPuzzle : BasePuzzle
 
     bool HasAllCablePieces()
     {
-        var inventory = FindFirstObjectByType<Inventory>();
-        if (inventory == null) return false;
+        // Count cables in inventory AND cables already connected (consumed from inventory).
+        // This allows the player to re-enter the puzzle after partially connecting cables.
         bool hasRed = false, hasBlue = false, hasYellow = false, hasGreen = false;
-        foreach (var item in inventory.Items)
+
+        // Check inventory
+        var inventory = FindFirstObjectByType<Inventory>();
+        if (inventory != null)
         {
-            if (item is CablePieceItem cp)
+            foreach (var item in inventory.Items)
             {
-                if (cp.cableColor == CableColor.Red) hasRed = true;
-                if (cp.cableColor == CableColor.Blue) hasBlue = true;
-                if (cp.cableColor == CableColor.Yellow) hasYellow = true;
-                if (cp.cableColor == CableColor.Green) hasGreen = true;
+                if (item is CablePieceItem cp)
+                {
+                    if (cp.cableColor == CableColor.Red) hasRed = true;
+                    if (cp.cableColor == CableColor.Blue) hasBlue = true;
+                    if (cp.cableColor == CableColor.Yellow) hasYellow = true;
+                    if (cp.cableColor == CableColor.Green) hasGreen = true;
+                }
             }
         }
+
+        // Also count cables already connected in the puzzle (consumed from inventory earlier)
+        for (int i = 0; i < 4; i++)
+        {
+            if (_connections[i] >= 0)
+            {
+                switch (LeftColors[i])
+                {
+                    case CableColor.Red: hasRed = true; break;
+                    case CableColor.Blue: hasBlue = true; break;
+                    case CableColor.Yellow: hasYellow = true; break;
+                    case CableColor.Green: hasGreen = true; break;
+                }
+            }
+        }
+
         return hasRed && hasBlue && hasYellow && hasGreen;
     }
 
@@ -259,16 +281,6 @@ public class CableBoxPuzzle : BasePuzzle
         {
             _detached.Add(new DetachedChild { child = c, parent = playerCamera.transform, pos = c.position, rot = c.rotation });
             c.SetParent(null, true);
-        }
-
-        // Remove all cable pieces from inventory — they are now being connected
-        var inv = FindFirstObjectByType<Inventory>();
-        if (inv != null)
-        {
-            var toRemove = new List<InventoryItem>();
-            foreach (var item in inv.Items)
-                if (item is CablePieceItem) toRemove.Add(item);
-            foreach (var item in toRemove) inv.RemoveItem(item);
         }
 
         Cursor.lockState = CursorLockMode.None;
@@ -353,6 +365,10 @@ public class CableBoxPuzzle : BasePuzzle
 
         _connections[_selectedLeft] = rightIdx;
         ShowCableVisual(_selectedLeft, rightIdx);
+
+        // Consume the cable piece from inventory that matches this left cable color
+        ConsumeMatchingCablePiece(LeftColors[_selectedLeft]);
+
         _selectedLeft = -1;
         RefreshHighlights();
         DrawConnectionLines();
@@ -476,6 +492,7 @@ public class CableBoxPuzzle : BasePuzzle
         _leverPulled = false;
         var li = FindFirstObjectByType<LeverInteractable>();
         if (li != null) li.ResetPull();
+        ReturnConsumedCablePieces();  // return ALL cables since connections are being reset
         ResetConnections();
         _state = State.DoorOpen;
     }
@@ -519,10 +536,65 @@ public class CableBoxPuzzle : BasePuzzle
         drawerTransform.localPosition = endPos;
     }
 
+    // Remove one cable piece of matching color from inventory when a cable is connected
+    void ConsumeMatchingCablePiece(CableColor color)
+    {
+        var inv = FindFirstObjectByType<Inventory>();
+        if (inv == null) return;
+        foreach (var item in inv.Items)
+        {
+            if (item is CablePieceItem cp && cp.cableColor == color)
+            {
+                inv.RemoveItem(cp);
+                return;
+            }
+        }
+    }
+
+    // Return any cable pieces whose connections were reset (called on wrong solve or ESC)
+    void ReturnConsumedCablePieces()
+    {
+        // Spawn back one piece per color that is NOT currently connected
+        // We track which colors were already connected to avoid double-returning
+        var inv = FindFirstObjectByType<Inventory>();
+        if (inv == null) return;
+
+        CableColor[] rightColors = { rightColor0, rightColor1, rightColor2, rightColor3 };
+        var connectedColors = new System.Collections.Generic.HashSet<CableColor>();
+        for (int i = 0; i < 4; i++)
+            if (_connections[i] >= 0) connectedColors.Add(LeftColors[i]);
+
+        // Check which colors the player is missing in inventory
+        var inInventory = new System.Collections.Generic.HashSet<CableColor>();
+        foreach (var item in inv.Items)
+            if (item is CablePieceItem cp) inInventory.Add(cp.cableColor);
+
+        // For each color that was consumed (not in inventory) and not connected, return it
+        foreach (CableColor color in System.Enum.GetValues(typeof(CableColor)))
+        {
+            if (!inInventory.Contains(color) && !connectedColors.Contains(color))
+            {
+                // Find the original CablePieceItem prefab in the scene (disabled) and re-add
+                // Instead, create a fresh inventory entry via AddItem with a runtime item
+                var tempGO = new GameObject($"ReturnedCable_{color}");
+                var cp = tempGO.AddComponent<CablePieceItem>();
+                cp.cableColor = color;
+                cp.itemName = $"{color} Cable";
+                cp.description = $"A {color.ToString().ToLower()} cable.";
+                if (!inv.AddItem(cp))
+                    Destroy(tempGO); // inventory full fallback
+            }
+        }
+    }
+
     IEnumerator ExitPuzzle()
     {
         _panel.SetActive(false);
         ClosePuzzle();
+
+        // Return any cable pieces that were consumed but not yet permanently connected
+        if (_state != State.Solved)
+            ReturnConsumedCablePieces();
 
         // Only zoom camera back if StartPuzzle actually moved it
         if (_detached.Count > 0 || _camOrigPos != Vector3.zero)
@@ -721,6 +793,22 @@ public class CableBoxPuzzle : BasePuzzle
         _feedbackText.fontStyle = FontStyle.Bold;
         _feedbackText.alignment = TextAnchor.MiddleCenter;
         _feedbackText.color = Color.white;
+
+        // Hint text — above feedback, always visible while puzzle is open
+        var hintGO = new GameObject("Hint", typeof(RectTransform), typeof(Text));
+        hintGO.transform.SetParent(_panel.transform, false);
+        var hintRT = hintGO.GetComponent<RectTransform>();
+        hintRT.anchorMin = hintRT.anchorMax = new Vector2(0.5f, 0f);
+        hintRT.pivot = new Vector2(0.5f, 0f);
+        hintRT.sizeDelta = new Vector2(700f, 24f);
+        hintRT.anchoredPosition = new Vector2(0f, 96f);
+        var hintText = hintGO.GetComponent<Text>();
+        hintText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        hintText.fontSize = 13;
+        hintText.fontStyle = FontStyle.Normal;
+        hintText.alignment = TextAnchor.MiddleCenter;
+        hintText.color = new Color(1f, 1f, 1f, 0.55f);
+        hintText.text = "Click a colour on the LEFT  →  then click a colour on the RIGHT to connect  |  ESC to exit";
 
     }
 

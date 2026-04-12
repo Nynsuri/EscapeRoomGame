@@ -347,14 +347,13 @@ public class ClockPuzzle : BasePuzzle
     void BuildUI()
     {
         var cgo = new GameObject("ClockPuzzleCanvas");
-        DontDestroyOnLoad(cgo);
         var cv = cgo.AddComponent<Canvas>();
         cv.renderMode = RenderMode.ScreenSpaceOverlay;
         cv.sortingOrder = 20;
         cgo.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ConstantPixelSize;
         cgo.AddComponent<GraphicRaycaster>();
 
-        // ── Bottom bar panel ──
+        // Bottom bar panel
         _panel = MakeGO("ClockPanel", cgo);
         var panelRT = _panel.AddComponent<RectTransform>();
         panelRT.anchorMin = new Vector2(0f, 0f);
@@ -362,148 +361,110 @@ public class ClockPuzzle : BasePuzzle
         panelRT.pivot = new Vector2(0.5f, 0f);
         panelRT.offsetMin = Vector2.zero;
         panelRT.offsetMax = Vector2.zero;
-        panelRT.sizeDelta = new Vector2(0f, 160f);
-        var panelImg = _panel.AddComponent<Image>();
-        panelImg.color = new Color(0.04f, 0.04f, 0.06f, 0.92f);
+        panelRT.sizeDelta = new Vector2(0f, 180f);
+        _panel.AddComponent<Image>().color = new Color(0.04f, 0.04f, 0.06f, 0.93f);
 
-        // Top divider line
+        // Top divider
         var line = MakeGO("Line", _panel);
         var lineRT = line.AddComponent<RectTransform>();
-        lineRT.anchorMin = new Vector2(0f, 1f);
-        lineRT.anchorMax = new Vector2(1f, 1f);
+        lineRT.anchorMin = new Vector2(0f, 1f); lineRT.anchorMax = new Vector2(1f, 1f);
         lineRT.pivot = new Vector2(0.5f, 1f);
         lineRT.sizeDelta = new Vector2(0f, 2f);
         lineRT.anchoredPosition = Vector2.zero;
         line.AddComponent<Image>().color = new Color(0.6f, 0.5f, 0.3f, 0.6f);
 
-        // Title label
-        var titleGO = MakeGO("Title", _panel);
-        var titleRT = titleGO.AddComponent<RectTransform>();
-        titleRT.anchorMin = new Vector2(0f, 1f);
-        titleRT.anchorMax = new Vector2(0.3f, 1f);
-        titleRT.pivot = new Vector2(0f, 1f);
-        titleRT.sizeDelta = new Vector2(0f, 30f);
-        titleRT.anchoredPosition = new Vector2(20f, -16f);
-        var titleTxt = titleGO.AddComponent<Text>();
-        titleTxt.text = "SET THE TIME";
-        titleTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        titleTxt.fontSize = 15;
-        titleTxt.fontStyle = FontStyle.Bold;
-        titleTxt.color = new Color(0.8f, 0.68f, 0.4f);
-        titleTxt.alignment = TextAnchor.MiddleLeft;
+        // Legend — anchored to left edge, fixed 180px wide, won't overlap dials
+        var legendGO = MakeGO("Legend", _panel);
+        var legendRT = legendGO.AddComponent<RectTransform>();
+        legendRT.anchorMin = new Vector2(0f, 0f);
+        legendRT.anchorMax = new Vector2(0f, 1f);
+        legendRT.pivot = new Vector2(0f, 0.5f);
+        legendRT.sizeDelta = new Vector2(180f, -16f);
+        legendRT.anchoredPosition = new Vector2(12f, 0f);
+        legendGO.AddComponent<Image>().color = new Color(0.07f, 0.07f, 0.10f, 0.9f);
 
-        // Hint
-        var hintGO = MakeGO("Hint", _panel);
-        var hintRT = hintGO.AddComponent<RectTransform>();
-        hintRT.anchorMin = new Vector2(0f, 1f);
-        hintRT.anchorMax = new Vector2(0.5f, 1f);
-        hintRT.pivot = new Vector2(0f, 1f);
-        hintRT.sizeDelta = new Vector2(0f, 22f);
-        hintRT.anchoredPosition = new Vector2(20f, -44f);
-        var hintTxt = hintGO.AddComponent<Text>();
-        hintTxt.text = "Scroll or click  ▲ ▼  to adjust  •  Esc to exit";
-        hintTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        hintTxt.fontSize = 11;
-        hintTxt.color = new Color(1f, 1f, 1f, 0.35f);
-        hintTxt.alignment = TextAnchor.MiddleLeft;
+        var legTitle = AddText(legendGO, "Title", "SET THE TIME", 15, FontStyle.Bold,
+            new Vector2(0f, 1f), new Vector2(160f, 26f), new Vector2(10f, -10f),
+            new Color(0.8f, 0.68f, 0.4f), TextAnchor.MiddleLeft);
+        legTitle.raycastTarget = false;
 
-        // Three dials — centered horizontally
+        var legBody = AddText(legendGO, "Body",
+            "Hover a dial\nand scroll\nup/down\n\nHOUR  1-12\nMIN   0-59\nSEC   0-59",
+            12, FontStyle.Normal,
+            new Vector2(0f, 1f), new Vector2(160f, 130f), new Vector2(10f, -40f),
+            new Color(1f, 1f, 1f, 0.7f), TextAnchor.UpperLeft);
+        legBody.raycastTarget = false;
+
+        // Three dials — truly centered on screen
         string[] names = { "HOUR", "MIN", "SEC" };
-        float dialW = 90f, dialH = 110f, spacing = 20f;
-        float totalW = 3 * dialW + 2 * spacing;
-        float startX = -totalW / 2f - 60f; // offset left to leave room for button
+        float dialW = 120f, dialH = 150f, spacing = 20f;
+        // Total width of 3 dials + 2 gaps = 3*120 + 2*20 = 400px
+        // Center each dial: leftmost at -200+60=-140, middle at 0, rightmost at +140
+        float[] dialCX = { -(dialW + spacing), 0f, (dialW + spacing) };
 
         for (int i = 0; i < 3; i++)
         {
-            int idx = i;
-            float cx = startX + i * (dialW + spacing) + dialW / 2f;
-
-            // Dial container
-            var dial = MakeGO($"Dial{i}", _panel);
+            var dial = MakeGO("Dial" + i, _panel);
             var dialRT = dial.AddComponent<RectTransform>();
             dialRT.anchorMin = dialRT.anchorMax = new Vector2(0.5f, 0.5f);
             dialRT.pivot = new Vector2(0.5f, 0.5f);
             dialRT.sizeDelta = new Vector2(dialW, dialH);
-            dialRT.anchoredPosition = new Vector2(cx, 0f);
-            dial.AddComponent<Image>().color = new Color(0.12f, 0.12f, 0.16f, 1f);
+            dialRT.anchoredPosition = new Vector2(dialCX[i], 0f);
+            dial.AddComponent<Image>().color = new Color(0.12f, 0.12f, 0.17f, 1f);
             _dialRects[i] = dialRT;
 
-            // Dial label (HOUR/MIN/SEC)
-            var lbl = AddText(dial, "Lbl", names[i], 10, FontStyle.Bold,
-                new Vector2(0.5f, 1f), new Vector2(dialW, 18f), new Vector2(0f, -9f),
-                new Color(0.7f, 0.7f, 0.7f), TextAnchor.MiddleCenter);
+            var lbl = AddText(dial, "Lbl", names[i], 13, FontStyle.Bold,
+                new Vector2(0.5f, 1f), new Vector2(dialW, 26f), new Vector2(0f, 0f),
+                new Color(0.55f, 0.65f, 0.85f), TextAnchor.MiddleCenter);
+            lbl.raycastTarget = false;
 
-            // Up button
-            var upGO = MakeGO("Up", dial);
-            var upRT = upGO.AddComponent<RectTransform>();
-            upRT.anchorMin = upRT.anchorMax = new Vector2(0.5f, 1f);
-            upRT.pivot = new Vector2(0.5f, 1f);
-            upRT.sizeDelta = new Vector2(dialW - 4f, 24f);
-            upRT.anchoredPosition = new Vector2(0f, -20f);
-            upGO.AddComponent<Image>().color = new Color(0.2f, 0.2f, 0.25f);
-            var upBtn = upGO.AddComponent<Button>();
-            upBtn.targetGraphic = upGO.GetComponent<Image>();
-            SetBtnColors(upBtn);
-            AddText(upGO, "T", "▲", 14, FontStyle.Normal,
-                new Vector2(0.5f, 0.5f), new Vector2(dialW, 24f), Vector2.zero,
+            Text valTxt = AddText(dial, "Val", i == 0 ? "12" : "00", 48, FontStyle.Bold,
+                new Vector2(0.5f, 0.5f), new Vector2(dialW - 4f, 70f), new Vector2(0f, -4f),
                 Color.white, TextAnchor.MiddleCenter);
-            upBtn.onClick.AddListener(() => { AdjustDial(idx, 1); });
-
-            // Value
-            Text valTxt = AddText(dial, "Val", "00", 28, FontStyle.Bold,
-                new Vector2(0.5f, 0.5f), new Vector2(dialW, 36f), new Vector2(0f, 4f),
-                Color.white, TextAnchor.MiddleCenter);
+            valTxt.raycastTarget = false;
             if (i == 0) _hourLabel = valTxt;
             if (i == 1) _minuteLabel = valTxt;
             if (i == 2) _secondLabel = valTxt;
 
-            // Down button
-            var dnGO = MakeGO("Dn", dial);
-            var dnRT = dnGO.AddComponent<RectTransform>();
-            dnRT.anchorMin = dnRT.anchorMax = new Vector2(0.5f, 0f);
-            dnRT.pivot = new Vector2(0.5f, 0f);
-            dnRT.sizeDelta = new Vector2(dialW - 4f, 24f);
-            dnRT.anchoredPosition = new Vector2(0f, 20f);
-            dnGO.AddComponent<Image>().color = new Color(0.2f, 0.2f, 0.25f);
-            var dnBtn = dnGO.AddComponent<Button>();
-            dnBtn.targetGraphic = dnGO.GetComponent<Image>();
-            SetBtnColors(dnBtn);
-            AddText(dnGO, "T", "▼", 14, FontStyle.Normal,
-                new Vector2(0.5f, 0.5f), new Vector2(dialW, 24f), Vector2.zero,
-                Color.white, TextAnchor.MiddleCenter);
-            dnBtn.onClick.AddListener(() => { AdjustDial(idx, -1); });
+            var hint = AddText(dial, "Hint", "scroll up/down", 10, FontStyle.Normal,
+                new Vector2(0.5f, 0f), new Vector2(dialW, 20f), new Vector2(0f, 0f),
+                new Color(1f, 1f, 1f, 0.3f), TextAnchor.MiddleCenter);
+            hint.raycastTarget = false;
         }
 
-        // Submit button — right side
+        // Check Time button — to the right of the rightmost dial
+        float btnX = dialCX[2] + dialW / 2f + 20f + 60f;  // right edge of dial[2] + gap + half button width
         var subGO = MakeGO("Submit", _panel);
         var subRT = subGO.AddComponent<RectTransform>();
         subRT.anchorMin = subRT.anchorMax = new Vector2(0.5f, 0.5f);
         subRT.pivot = new Vector2(0.5f, 0.5f);
-        subRT.sizeDelta = new Vector2(120f, 44f);
-        subRT.anchoredPosition = new Vector2(startX + 3 * (dialW + spacing) + 80f, 0f);
-        subGO.AddComponent<Image>().color = new Color(0.15f, 0.4f, 0.15f);
+        subRT.sizeDelta = new Vector2(120f, 70f);
+        subRT.anchoredPosition = new Vector2(btnX, 0f);
+        subGO.AddComponent<Image>().color = new Color(0.10f, 0.36f, 0.12f);
         var subBtn = subGO.AddComponent<Button>();
         subBtn.targetGraphic = subGO.GetComponent<Image>();
-        SetBtnColors(subBtn, new Color(0.2f, 0.55f, 0.2f));
+        SetBtnColors(subBtn, new Color(0.16f, 0.52f, 0.20f));
         subBtn.onClick.AddListener(CheckSolution);
-        AddText(subGO, "T", "CHECK\nTIME", 13, FontStyle.Bold,
-            new Vector2(0.5f, 0.5f), new Vector2(120f, 44f), Vector2.zero,
+        var subTxt = AddText(subGO, "T", "CHECK\nTIME", 14, FontStyle.Bold,
+            new Vector2(0.5f, 0.5f), new Vector2(120f, 70f), Vector2.zero,
             Color.white, TextAnchor.MiddleCenter);
+        subTxt.raycastTarget = false;
 
-        // Feedback text
+        // Feedback text — just above panel top edge
         var fbGO = MakeGO("Feedback", _panel);
         var fbRT = fbGO.AddComponent<RectTransform>();
-        fbRT.anchorMin = new Vector2(0f, 0f);
-        fbRT.anchorMax = new Vector2(1f, 0f);
+        fbRT.anchorMin = new Vector2(0f, 1f);
+        fbRT.anchorMax = new Vector2(1f, 1f);
         fbRT.pivot = new Vector2(0.5f, 0f);
-        fbRT.sizeDelta = new Vector2(0f, 24f);
-        fbRT.anchoredPosition = new Vector2(0f, 162f);
+        fbRT.sizeDelta = new Vector2(0f, 26f);
+        fbRT.anchoredPosition = new Vector2(0f, 4f);
         _feedbackText = fbGO.AddComponent<Text>();
         _feedbackText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         _feedbackText.fontSize = 15;
         _feedbackText.fontStyle = FontStyle.Bold;
         _feedbackText.alignment = TextAnchor.MiddleCenter;
         _feedbackText.color = new Color(1f, 1f, 1f, 0f);
+        _feedbackText.raycastTarget = false;
 
         RefreshLabels();
     }

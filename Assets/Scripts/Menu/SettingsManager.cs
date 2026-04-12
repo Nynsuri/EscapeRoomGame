@@ -22,6 +22,7 @@ public class SettingsManager : MonoBehaviour
     private const string PREF_REFRESH_RATE = "RefreshRate";
     private const string PREF_AUDIO_DEVICE = "AudioDevice";
     private const string PREF_VOLUME = "MasterVolume";      // 0-1 float
+    private const string PREF_MOUSE_SENS = "MouseSensitivity";
 
     // Inspector references 
     [Header("Display Mode")]
@@ -39,6 +40,12 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private Slider volumeSlider;
     [SerializeField] private AudioMixer audioMixer;           // assign in Inspector
     [SerializeField] private string mixerVolumeParam = "MasterVolume";
+
+    [Header("Mouse Sensitivity")]
+    [SerializeField] private Slider mouseSensitivitySlider;
+    [Tooltip("Min and max sensitivity values the slider maps to")]
+    [SerializeField] private float minSensitivity = 10f;
+    [SerializeField] private float maxSensitivity = 500f;
 
     // State 
     private Resolution[] _resolutions;
@@ -213,6 +220,16 @@ public class SettingsManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
+    public void OnMouseSensitivityChanged(float value)
+    {
+        PlayerPrefs.SetFloat(PREF_MOUSE_SENS, value);
+        PlayerPrefs.Save();
+
+        // Apply to PlayerController if in game scene
+        var pc = FindFirstObjectByType<PlayerController>();
+        if (pc != null) pc.mouseSensitivity = value;
+    }
+
     //  LOAD SAVED SETTINGS ON START
 
     private void LoadSavedSettings()
@@ -238,6 +255,18 @@ public class SettingsManager : MonoBehaviour
             volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
         }
         OnVolumeChanged(vol); // apply immediately to mixer
+
+        // --- Mouse sensitivity ---
+        float sens = PlayerPrefs.GetFloat(PREF_MOUSE_SENS, 100f);
+        if (mouseSensitivitySlider != null)
+        {
+            mouseSensitivitySlider.minValue = minSensitivity;
+            mouseSensitivitySlider.maxValue = maxSensitivity;
+            mouseSensitivitySlider.value = sens;
+            mouseSensitivitySlider.onValueChanged.RemoveAllListeners();
+            mouseSensitivitySlider.onValueChanged.AddListener(OnMouseSensitivityChanged);
+        }
+        OnMouseSensitivityChanged(sens);
     }
 
     //  CALLED ON APP LAUNCH (from MainMenuManager.Awake or a separate

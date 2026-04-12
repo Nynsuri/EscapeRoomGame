@@ -46,6 +46,11 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private AudioMixer audioMixer;
     [SerializeField] private string mixerVolumeParam = "MasterVolume";
 
+    [Header("Settings — Mouse Sensitivity")]
+    [SerializeField] private Slider mouseSensitivitySlider;
+    [SerializeField] private float minSensitivity = 10f;
+    [SerializeField] private float maxSensitivity = 500f;
+
     [Header("Settings — Back Button")]
     [SerializeField] private Button settingsBackButton;
 
@@ -58,6 +63,7 @@ public class PauseMenuManager : MonoBehaviour
     private const string PREF_RES_HEIGHT = "ResolutionHeight";
     private const string PREF_AUDIO_DEVICE = "AudioDevice";
     private const string PREF_VOLUME = "MasterVolume";
+    private const string PREF_MOUSE_SENS = "MouseSensitivity";
 
     // Runtime state 
     private bool _isPaused = false;
@@ -88,6 +94,9 @@ public class PauseMenuManager : MonoBehaviour
 
         if (audioDeviceDropdown != null)
             audioDeviceDropdown.onValueChanged.AddListener(OnAudioDeviceChanged);
+
+        if (mouseSensitivitySlider != null)
+            mouseSensitivitySlider.onValueChanged.AddListener(OnMouseSensitivityChanged);
     }
 
     private void Update()
@@ -311,6 +320,15 @@ public class PauseMenuManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
+    public void OnMouseSensitivityChanged(float value)
+    {
+        PlayerPrefs.SetFloat(PREF_MOUSE_SENS, value);
+        PlayerPrefs.Save();
+
+        var pc = FindFirstObjectByType<PlayerController>();
+        if (pc != null) pc.mouseSensitivity = value;
+    }
+
     //  LOAD SAVED SETTINGS INTO UI
 
     private void LoadCurrentSettings()
@@ -322,6 +340,15 @@ public class PauseMenuManager : MonoBehaviour
         float vol = PlayerPrefs.GetFloat(PREF_VOLUME, 1f);
         if (volumeSlider != null)
             volumeSlider.SetValueWithoutNotify(vol);
+
+        // Mouse sensitivity
+        float sens = PlayerPrefs.GetFloat(PREF_MOUSE_SENS, 100f);
+        if (mouseSensitivitySlider != null)
+        {
+            mouseSensitivitySlider.minValue = minSensitivity;
+            mouseSensitivitySlider.maxValue = maxSensitivity;
+            mouseSensitivitySlider.SetValueWithoutNotify(sens);
+        }
     }
 
     //  CLEANUP — make sure time scale is restored if this object is destroyed

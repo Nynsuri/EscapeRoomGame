@@ -6,7 +6,7 @@ using UnityEngine;
 /// Attach to a GameObject that has a CharacterController component.
 /// </summary>
 [RequireComponent(typeof(CharacterController))]
-public class PlayerController : MonoBehaviour
+public class PlayerController1 : MonoBehaviour
 {
     // ─────────────────────────────────────────────
     //  MOVEMENT
@@ -112,11 +112,7 @@ public class PlayerController : MonoBehaviour
         // Save standing defaults so crouch can restore them
         _standColliderHeight = colliderHeight;
         _standColliderCenter = colliderCenter;
-        _standCameraHeight = cameraHeight;
-
-        // Apply saved mouse sensitivity if one exists
-        if (PlayerPrefs.HasKey("MouseSensitivity"))
-            mouseSensitivity = PlayerPrefs.GetFloat("MouseSensitivity", mouseSensitivity);
+        _standCameraHeight   = cameraHeight;
 
         ApplyColliderSettings();
         ApplyCameraHeight();
@@ -140,7 +136,7 @@ public class PlayerController : MonoBehaviour
             _velocity.y = -2f;
 
         float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
+        float vertical   = Input.GetAxis("Vertical");
 
         Vector3 direction = transform.right * horizontal + transform.forward * vertical;
 
@@ -183,14 +179,14 @@ public class PlayerController : MonoBehaviour
         }
 
         // Smoothly lerp collider and camera toward target values
-        float targetColliderH = _isCrouching ? crouchColliderHeight : _standColliderHeight;
-        Vector3 targetCenter = _isCrouching ? crouchColliderCenter : _standColliderCenter;
-        float targetCameraH = _isCrouching ? crouchCameraHeight : _standCameraHeight;
+        float targetColliderH  = _isCrouching ? crouchColliderHeight  : _standColliderHeight;
+        Vector3 targetCenter   = _isCrouching ? crouchColliderCenter  : _standColliderCenter;
+        float targetCameraH    = _isCrouching ? crouchCameraHeight    : _standCameraHeight;
 
         float t = crouchTransitionSpeed * Time.deltaTime;
-        colliderHeight = Mathf.Lerp(colliderHeight, targetColliderH, t);
-        colliderCenter = Vector3.Lerp(colliderCenter, targetCenter, t);
-        cameraHeight = Mathf.Lerp(cameraHeight, targetCameraH, t);
+        colliderHeight  = Mathf.Lerp(colliderHeight,  targetColliderH, t);
+        colliderCenter  = Vector3.Lerp(colliderCenter, targetCenter,    t);
+        cameraHeight    = Mathf.Lerp(cameraHeight,    targetCameraH,   t);
     }
 
     void StartCrouch()
@@ -246,32 +242,5 @@ public class PlayerController : MonoBehaviour
         _cc.height = colliderHeight;
         _cc.radius = colliderRadius;
         _cc.center = colliderCenter;
-    }
-
-    // ─── Dev / external teleport support ──────────────────────────
-
-    /// <summary>
-    /// Resets accumulated velocity. Call after teleporting the player
-    /// so gravity and momentum don't carry over from the previous position.
-    /// </summary>
-    public void ResetVelocity()
-    {
-        _velocity = Vector3.zero;
-    }
-
-    /// <summary>
-    /// Teleport-safe position setter. Disables the CharacterController,
-    /// moves the transform, resets velocity, then re-enables it.
-    /// Use this instead of setting transform.position directly.
-    /// </summary>
-    public void TeleportTo(Vector3 worldPosition)
-    {
-        // Disable CC, warp, sync physics, reset velocity, re-enable
-        _cc.enabled = false;
-        transform.position = worldPosition;
-        Physics.SyncTransforms();   // forces physics engine to accept the new position immediately
-        _velocity = Vector3.zero;
-        _cc.enabled = true;
-        Debug.Log($"[PlayerController] Teleported to {worldPosition}");
     }
 }

@@ -17,8 +17,6 @@ public class Inventory : MonoBehaviour
     [Tooltip("Key to open / close the inventory UI")]
     public KeyCode toggleKey = KeyCode.Tab;
 
-    [Tooltip("Key to drop the currently selected item")]
-    public KeyCode dropKey = KeyCode.G;
 
     // Public read-only access for the UI
     public IReadOnlyList<InventoryItem> Items => _items;
@@ -44,10 +42,6 @@ public class Inventory : MonoBehaviour
         // Toggle UI
         if (Input.GetKeyDown(toggleKey))
             ToggleInventory();
-
-        // Drop selected item
-        if (Input.GetKeyDown(dropKey))
-            DropSelected();
 
         // Scroll wheel / number keys to change selection
         HandleSelectionInput();
@@ -81,33 +75,28 @@ public class Inventory : MonoBehaviour
     {
         if (!_items.Contains(item)) return;
 
-        int idx = _items.IndexOf(item);
         _items.Remove(item);
-        Destroy(item.gameObject);  // or pool it
+        Destroy(item.gameObject);
 
-        // Clamp selection
         if (_selectedIndex >= _items.Count)
             SelectSlot(_items.Count - 1);
 
         OnInventoryChanged?.Invoke();
     }
 
-    /// <summary>Drop selected item into the world.</summary>
-    public void DropSelected()
+    /// <summary>Remove an item from inventory without destroying it (used by GunItem.ReturnToWorld).</summary>
+    public void RemoveItemNoDestroy(InventoryItem item)
     {
-        if (_selectedIndex < 0 || _selectedIndex >= _items.Count) return;
+        if (!_items.Contains(item)) return;
 
-        var item = _items[_selectedIndex];
-        _items.RemoveAt(_selectedIndex);
-
-        Vector3 dropPos = transform.position + transform.forward * 1.5f;
-        item.OnDrop(dropPos);
+        _items.Remove(item);
 
         if (_selectedIndex >= _items.Count)
             SelectSlot(_items.Count - 1);
 
         OnInventoryChanged?.Invoke();
     }
+
 
     public void SelectSlot(int index)
     {
@@ -131,6 +120,11 @@ public class Inventory : MonoBehaviour
         _isOpen = !_isOpen;
         Cursor.lockState = _isOpen ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = _isOpen;
+
+        // Block player movement and camera look while inventory is open
+        var pc = GetComponent<PlayerController>();
+        if (pc != null) pc.enabled = !_isOpen;
+
         OnInventoryToggled?.Invoke(_isOpen);
     }
 
@@ -159,6 +153,10 @@ public class Inventory : MonoBehaviour
         _isOpen = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        var pc = GetComponent<PlayerController>();
+        if (pc != null) pc.enabled = true;
+
         OnInventoryToggled?.Invoke(false);
     }
 }

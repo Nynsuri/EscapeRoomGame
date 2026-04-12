@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -148,31 +148,6 @@ public class GunItem : InventoryItem
         _inHand = true;
     }
 
-    public override void OnDrop(Vector3 worldPosition)
-    {
-        _inHand = false;
-
-        DestroyCrosshair();
-
-        // Re-enable pickup collider
-        var col = GetComponent<BoxCollider>();
-        if (col != null) col.enabled = true;
-
-        // Detach from camera first, place at drop position in world space
-        _gunRoot.SetParent(null, true);
-        _gunRoot.position = worldPosition;
-        _gunRoot.localRotation = _originalLocalRot;
-        _gunRoot.localScale = _originalLocalScale;
-
-        // Re-enable all renderers and colliders (base would do this but on wrong transform)
-        foreach (var r in _gunRoot.GetComponentsInChildren<Renderer>(true))
-            r.enabled = true;
-        foreach (var c in _gunRoot.GetComponentsInChildren<Collider>(true))
-            c.enabled = true;
-
-        // Don't call base.OnDrop — it would move transform.position again and
-        // fight with what we just set. Manually re-enable the pickup collider (done above).
-    }
 
     public override void OnConsume()
     {
@@ -193,15 +168,7 @@ public class GunItem : InventoryItem
 
         // Remove from inventory without destroying
         if (inventory != null && inventory.Items.Contains(this))
-        {
-            // Use DropSelected logic manually -- we don't want Destroy called
-            var items = inventory.Items;
-            int idx = -1;
-            for (int i = 0; i < items.Count; i++)
-                if (items[i] == this) { idx = i; break; }
-            if (idx >= 0)
-                inventory.DropSelected(); // drops at player feet first, we reposition below
-        }
+            inventory.RemoveItemNoDestroy(this);
 
         // Return to original position/rotation/scale
         _gunRoot.SetParent(_originalParent, false);
@@ -321,7 +288,7 @@ public class GunItem : InventoryItem
             new Vector2(0f, -half),
         };
 
-        // Hit confirm — full screen red flash, starts invisible
+        // Hit confirm ï¿½ full screen red flash, starts invisible
         var hitGO = new GameObject("HitConfirm");
         hitGO.transform.SetParent(_crosshairCanvas.transform, false);
         _hitConfirmImage = hitGO.AddComponent<Image>();
