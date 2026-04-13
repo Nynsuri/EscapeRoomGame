@@ -41,6 +41,9 @@ public class ChemistryPuzzle : BasePuzzle
     [Tooltip("Prefab of the SuperAcidItem (must derive from InventoryItem)")]
     public InventoryItem superAcidPrefab;
 
+    [Header("Sound Effects")]
+    public AudioClip completedSound;
+
     [Header("On Solved")]
     public UnityEngine.Events.UnityEvent onSolved;
 
@@ -533,7 +536,11 @@ public class ChemistryPuzzle : BasePuzzle
         _state = solved ? State.Solved : State.Idle;
 
         if (solved)
+        {
+            if (completedSound != null)
+                AudioSource.PlayClipAtPoint(completedSound, transform.position);
             onSolved?.Invoke();
+        }
     }
 
     // ── UI Refresh ───────────────────────────────────────────────────────────────

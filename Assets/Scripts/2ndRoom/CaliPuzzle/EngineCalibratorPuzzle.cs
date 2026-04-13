@@ -67,6 +67,9 @@ public class EngineCalibratorPuzzle : BasePuzzle
     public float interactRange = 4f;
     public KeyCode interactKey = KeyCode.E;
 
+    [Header("Sound Effects")]
+    public AudioClip completedSound;
+
     [Header("On Solved (optional)")]
     public UnityEngine.Events.UnityEvent onNormalSolve;
     public UnityEngine.Events.UnityEvent onSpecialSolve;
@@ -380,6 +383,8 @@ public class EngineCalibratorPuzzle : BasePuzzle
             _specialSolved = true;
             if (_submitButton != null) _submitButton.interactable = false;
             ShowFeedback("SPECIAL CALIBRATION SEQUENCE ACCEPTED", ColOk);
+            if (completedSound != null)
+                AudioSource.PlayClipAtPoint(completedSound, transform.position);
             StartCoroutine(SpecialSolveSequence());
         }
         else if (isNormal)
@@ -387,6 +392,8 @@ public class EngineCalibratorPuzzle : BasePuzzle
             _solved = true;
             if (_submitButton != null) _submitButton.interactable = false;
             ShowFeedback("ENGINES CALIBRATED SUCCESSFULLY", ColOk);
+            if (completedSound != null)
+                AudioSource.PlayClipAtPoint(completedSound, transform.position);
             StartCoroutine(NormalSolveExit());
         }
         else

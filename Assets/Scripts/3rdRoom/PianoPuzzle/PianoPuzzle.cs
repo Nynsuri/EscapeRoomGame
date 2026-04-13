@@ -61,6 +61,16 @@ public class PianoPuzzle : BasePuzzle
     [Tooltip("Assign the Master group from your MainMixer asset so volume is controlled by the mixer")]
     public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
 
+    [Header("3D Audio / Occlusion")]
+    [Tooltip("Optional: assign an empty child GameObject placed at the piano body to use as the audio origin. Leave empty to use this object's origin.")]
+    public Transform audioSourceOrigin;
+    [Tooltip("Max distance at which the music is audible")]
+    public float maxAudioDistance = 20f;
+    [Tooltip("Cutoff frequency applied when a wall is between the listener and the piano (muffled)")]
+    public float occludedCutoffFreq = 800f;
+    [Tooltip("Layers considered as walls for occlusion raycasting")]
+    public LayerMask occlusionLayers = ~0;
+
     // -- Runtime state ---------------------------------------------------------
 
     private bool _isOpen = false;
@@ -93,24 +103,54 @@ public class PianoPuzzle : BasePuzzle
 
     private Camera _cam;
     private AudioSource _audio;
+    private AudioLowPassFilter _lowPass;
+    private Collider[] _selfColliders;
+    private GameObject _audioHost;
+    private bool _pausedByCorridor;
 
     // -- Unity -----------------------------------------------------------------
 
-    void Start()
+    void InitAudio()
     {
-        _cam = Camera.main ?? FindFirstObjectByType<Camera>();
-        _audio = GetComponent<AudioSource>();
-        if (_audio == null) _audio = gameObject.AddComponent<AudioSource>();
-        // Keep audio 2D and non-spatial
-        _audio.spatialBlend = 0f;
+        // Destroy stale host if it exists (e.g. after hot-reload rebuild)
+        if (_audioHost != null) Destroy(_audioHost);
+
+        // Scene-root object — no parent, so no transform inheritance from the piano root
+        _audioHost = new GameObject("_PianoAudioHost");
+
+        // Place at the user-specified origin; fall back to this object's world position
+        _audioHost.transform.position = audioSourceOrigin != null
+            ? audioSourceOrigin.position
+            : transform.position;
+
+        _audio = _audioHost.AddComponent<AudioSource>();
+        _audio.spatialBlend = 1f;
+        _audio.rolloffMode = AudioRolloffMode.Logarithmic; // gentler falloff, less sensitive to head-bob
+        _audio.minDistance = 2f;
+        _audio.maxDistance = maxAudioDistance;
+        _audio.dopplerLevel = 0f;   // no pitch wobble as the player moves
+        _audio.spread = 0f;
         _audio.playOnAwake = false;
         _audio.bypassEffects = false;
         _audio.bypassListenerEffects = false;
         _audio.bypassReverbZones = false;
         _audio.priority = 0;
-        // Route through AudioMixer so the volume slider works
         if (audioMixerGroup != null)
             _audio.outputAudioMixerGroup = audioMixerGroup;
+
+        _lowPass = _audioHost.AddComponent<AudioLowPassFilter>();
+        _lowPass.cutoffFrequency = 22000f;
+        _lowPass.enabled = false;
+    }
+
+    void Start()
+    {
+        _cam = Camera.main ?? FindFirstObjectByType<Camera>();
+
+        InitAudio();
+
+        // Cache own colliders so the occlusion raycast never hits itself
+        _selfColliders = GetComponentsInChildren<Collider>(true);
 
         if (normalRewardObject != null) normalRewardObject.SetActive(false);
         if (secretRewardObject != null) secretRewardObject.SetActive(false);
@@ -122,6 +162,7 @@ public class PianoPuzzle : BasePuzzle
     protected override void Update()
     {
         base.Update();
+        UpdateOcclusion();
         if (_solved) return;
 
         if (_isOpen)
@@ -132,6 +173,56 @@ public class PianoPuzzle : BasePuzzle
 
         if (!IsLookingAtPiano()) return;
         if (Input.GetKeyDown(interactKey)) TryOpen();
+    }
+
+    void UpdateOcclusion()
+    {
+        if (_audio == null || _cam == null || _lowPass == null) return;
+
+        // Player crossed to corridor — pause music
+        if (BarRoomState.PlayerInCorridor)
+        {
+            if (_audio.isPlaying)
+            {
+                _audio.Pause();
+                _pausedByCorridor = true;
+            }
+            _lowPass.enabled = false;
+            return;
+        }
+
+        // Player back in room — resume if we were the ones who paused it
+        if (_pausedByCorridor)
+        {
+            _pausedByCorridor = false;
+            if (!_audio.isPlaying) _audio.UnPause();
+        }
+
+        if (!_audio.isPlaying) return;
+
+        _audio.volume = musicVolume;
+
+        Vector3 listenerPos = _cam.transform.position;
+        Vector3 sourcePos = _audio.transform.position;
+        Vector3 dir = sourcePos - listenerPos;
+        float dist = dir.magnitude;
+
+        // RaycastAll so we can skip the piano's own colliders
+        RaycastHit[] hits = Physics.RaycastAll(listenerPos, dir.normalized, dist,
+            occlusionLayers, QueryTriggerInteraction.Ignore);
+
+        bool occluded = false;
+        foreach (var hit in hits)
+        {
+            bool isSelf = false;
+            foreach (var c in _selfColliders)
+                if (hit.collider == c) { isSelf = true; break; }
+            if (!isSelf) { occluded = true; break; }
+        }
+
+        float targetCutoff = occluded ? occludedCutoffFreq : 22000f;
+        _lowPass.enabled = true; // always enabled; we lerp to 22 kHz instead of toggling
+        _lowPass.cutoffFrequency = Mathf.Lerp(_lowPass.cutoffFrequency, targetCutoff, Time.deltaTime * 8f);
     }
 
     // -- Interaction -----------------------------------------------------------
@@ -183,6 +274,7 @@ public class PianoPuzzle : BasePuzzle
 
     void OpenUI()
     {
+        if (_panel == null) BuildUI();
         OpenPuzzle();
         _isOpen = true;
         _panel.SetActive(true);
@@ -201,9 +293,27 @@ public class PianoPuzzle : BasePuzzle
         RefreshUI();
     }
 
+    void RebuildIfNeeded()
+    {
+        // Runtime state was lost (editor hot-reload). Re-run the same init as Start().
+        _cam = Camera.main ?? FindFirstObjectByType<Camera>();
+        InitAudio();
+        _selfColliders = GetComponentsInChildren<Collider>(true);
+
+        BuildUI();
+        _panel.SetActive(false);
+        ClosePuzzle();
+        var pc = FindFirstObjectByType<PlayerController>();
+        if (pc != null) pc.enabled = true;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        _selected = -1;
+    }
+
     void CloseUI()
     {
         _isOpen = false;
+        if (_panel == null) { RebuildIfNeeded(); return; }
         _panel.SetActive(false);
         ClosePuzzle();
 

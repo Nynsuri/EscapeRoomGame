@@ -1156,6 +1156,8 @@ MonoBehaviour:
   onUnlocked:
     m_PersistentCalls:
       m_Calls: []
+  cardReadSound: {fileID: 0}
+  unlockSound: {fileID: 0}
   doorTransform: {fileID: 3015387452404749683}
   doorTransform1: {fileID: 863247368246634473}
   doorOpenOffset: {x: 0, y: 3, z: 0}
@@ -3190,6 +3192,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 9080603702706105919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
+--- !u!198 &637948110 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 8965944266260914982, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+  m_PrefabInstance: {fileID: 814908968}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &655475088
 GameObject:
   m_ObjectHideFlags: 0
@@ -3442,6 +3449,10 @@ PrefabInstance:
     - target: {fileID: 332574851063739522, guid: 45ac4ed65c2b2264cacedbbb7ea80aad, type: 3}
       propertyPath: m_Name
       value: wall
+      objectReference: {fileID: 0}
+    - target: {fileID: 332574851063739522, guid: 45ac4ed65c2b2264cacedbbb7ea80aad, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 332574851063739522, guid: 45ac4ed65c2b2264cacedbbb7ea80aad, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -4861,6 +4872,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5312381281414388789}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!198 &778587136 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 8965944266260914982, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+  m_PrefabInstance: {fileID: 1402927759}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &789916204
 GameObject:
   m_ObjectHideFlags: 0
@@ -5129,6 +5145,38 @@ PrefabInstance:
       propertyPath: sideBSkybox
       value: 
       objectReference: {fileID: 2100000, guid: 10612b95cabd3954caf89d180ee940ce, type: 2}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: veilParticles
+      value: 
+      objectReference: {fileID: 637948110}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: idleMaxDistance
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: idleAmbientSound
+      value: 
+      objectReference: {fileID: 8300000, guid: f9513fd6df59216419a7918fbab132d9, type: 3}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: sideACrossingSound
+      value: 
+      objectReference: {fileID: 8300000, guid: d3a46f017410037419367a07b344fade, type: 3}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: sideBCrossingSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 9b01315c43dd5fb43b8a2acb1a727c0b, type: 3}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: audioProximityRadius
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: occlusionMinClearRays
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: occlusionLayers.m_Bits
+      value: 384
+      objectReference: {fileID: 0}
     - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
       propertyPath: sideAReflectionIntensity
       value: 1
@@ -8039,7 +8087,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -6242739252137209316, guid: d0856647e656c0c43a26eb1dd82ae96d, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.8858279
+      value: 1.9424027
       objectReference: {fileID: 0}
     - target: {fileID: -6242739252137209316, guid: d0856647e656c0c43a26eb1dd82ae96d, type: 3}
       propertyPath: m_LocalScale.z
@@ -8047,15 +8095,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -6242739252137209316, guid: d0856647e656c0c43a26eb1dd82ae96d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 463.3
+      value: 457
       objectReference: {fileID: 0}
     - target: {fileID: -6242739252137209316, guid: d0856647e656c0c43a26eb1dd82ae96d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -11.78
       objectReference: {fileID: 0}
     - target: {fileID: -6242739252137209316, guid: d0856647e656c0c43a26eb1dd82ae96d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 604.54
+      value: 609
       objectReference: {fileID: 0}
     - target: {fileID: -6242739252137209316, guid: d0856647e656c0c43a26eb1dd82ae96d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -9363,6 +9411,30 @@ PrefabInstance:
       propertyPath: sideBSkybox
       value: 
       objectReference: {fileID: 2100000, guid: c5672dc2bfea5ad4b91a5074149827f1, type: 2}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: veilParticles
+      value: 
+      objectReference: {fileID: 778587136}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: idleMaxDistance
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: idleAmbientSound
+      value: 
+      objectReference: {fileID: 8300000, guid: f9513fd6df59216419a7918fbab132d9, type: 3}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: sideACrossingSound
+      value: 
+      objectReference: {fileID: 8300000, guid: d3a46f017410037419367a07b344fade, type: 3}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: sideBCrossingSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 9b01315c43dd5fb43b8a2acb1a727c0b, type: 3}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: occlusionLayers.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
     - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
       propertyPath: sideAReflectionIntensity
       value: 1
@@ -10877,7 +10949,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -5156751774353894289, guid: fd9f7246c5d9e754aa4ca92722f1f029, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.9862391
+      value: 2.0458262
       objectReference: {fileID: 0}
     - target: {fileID: -5156751774353894289, guid: fd9f7246c5d9e754aa4ca92722f1f029, type: 3}
       propertyPath: m_LocalScale.z
@@ -10885,15 +10957,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -5156751774353894289, guid: fd9f7246c5d9e754aa4ca92722f1f029, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 316.3
+      value: 316
       objectReference: {fileID: 0}
     - target: {fileID: -5156751774353894289, guid: fd9f7246c5d9e754aa4ca92722f1f029, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -14.14
       objectReference: {fileID: 0}
     - target: {fileID: -5156751774353894289, guid: fd9f7246c5d9e754aa4ca92722f1f029, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 28.6
+      value: 36
       objectReference: {fileID: 0}
     - target: {fileID: -5156751774353894289, guid: fd9f7246c5d9e754aa4ca92722f1f029, type: 3}
       propertyPath: m_LocalRotation.w
@@ -10929,7 +11001,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2774220344278030320, guid: fd9f7246c5d9e754aa4ca92722f1f029, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13.702209
+      value: 13.771
       objectReference: {fileID: 0}
     - target: {fileID: 2774220344278030320, guid: fd9f7246c5d9e754aa4ca92722f1f029, type: 3}
       propertyPath: m_LocalPosition.y
@@ -10937,7 +11009,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2774220344278030320, guid: fd9f7246c5d9e754aa4ca92722f1f029, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.3301163
+      value: -1.301
       objectReference: {fileID: 0}
     - target: {fileID: 2774220344278030320, guid: fd9f7246c5d9e754aa4ca92722f1f029, type: 3}
       propertyPath: m_LocalRotation.w
@@ -11578,7 +11650,7 @@ Transform:
   m_GameObject: {fileID: 1688028201}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.39, z: 0}
+  m_LocalPosition: {x: 0, y: 3.39, z: -0.22}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11738,9 +11810,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HeldItemDisplay
   boxSize: {x: 90, y: 90}
   screenPadding: {x: 20, y: 20}
-  boxColor: {r: 0.08, g: 0.08, b: 0.08, a: 0.82}
-  borderColor: {r: 0.9, g: 0.8, b: 0.3, a: 1}
+  boxColor:
+    r: 0.08
+    g: 0.08
+    b: 0.08
+    a: 0.82
+  borderColor:
+    r: 0.9
+    g: 0.8
+    b: 0.3
+    a: 1
   popAnimSpeed: 8
+  _inventory: {fileID: 0}
+  _canvas: {fileID: 0}
+  _root: {fileID: 0}
+  _border: {fileID: 0}
+  _background: {fileID: 0}
+  _icon: {fileID: 0}
+  _nameLabel: {fileID: 0}
+  _popScale: 1
+  _popTarget: 1
 --- !u!114 &1694967399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11876,6 +11965,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1708149195
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1708149196}
+  m_Layer: 7
+  m_Name: PianoSoundOrigin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1708149196
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1708149195}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.05907289, y: -0.7514548, z: -0.65521115, w: -0.050245322}
+  m_LocalPosition: {x: -4.932434, y: -0.23352052, z: 1.291213}
+  m_LocalScale: {x: 0.45328367, y: 0.45328382, z: 0.45328373}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1847558116801198059}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1726080196
 GameObject:
@@ -12868,6 +12988,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1828701113}
   m_CullTransparentMesh: 1
+--- !u!198 &1831927726 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 8965944266260914982, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+  m_PrefabInstance: {fileID: 671486072041656991}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1856764332
 GameObject:
   m_ObjectHideFlags: 0
@@ -20570,6 +20695,7 @@ MonoBehaviour:
   drawer: {fileID: 4688466227801470976}
   drawerOpenDistance: 0.7
   drawerOpenSpeed: 1.5
+  completedSound: {fileID: 0}
   cursorDotPrefab: {fileID: 0}
 --- !u!23 &75912697475682545
 MeshRenderer:
@@ -21632,7 +21758,7 @@ GameObject:
   - component: {fileID: 4206883951866465941}
   - component: {fileID: 2725586523239815507}
   - component: {fileID: 4278959629532464251}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Entrance
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24041,6 +24167,7 @@ MonoBehaviour:
   interactRange: 4
   interactKey: 101
   totalTime: 60
+  completedSound: {fileID: 0}
   onSolved:
     m_PersistentCalls:
       m_Calls:
@@ -24867,6 +24994,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2089553983}
     - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: veilParticles
+      value: 
+      objectReference: {fileID: 1831927726}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
       propertyPath: openFogDensity
       value: 1
       objectReference: {fileID: 0}
@@ -24875,9 +25006,33 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: idleMaxDistance
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
       propertyPath: playerTransform
       value: 
       objectReference: {fileID: 1694967395}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: idleAmbientSound
+      value: 
+      objectReference: {fileID: 8300000, guid: f9513fd6df59216419a7918fbab132d9, type: 3}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: occludedCutoffFreq
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: sideACrossingSound
+      value: 
+      objectReference: {fileID: 8300000, guid: d3a46f017410037419367a07b344fade, type: 3}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: sideBCrossingSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 9b01315c43dd5fb43b8a2acb1a727c0b, type: 3}
+    - target: {fileID: 9014379880705702687, guid: c907ab05cea94dc4195f16cf89bacdf4, type: 3}
+      propertyPath: occlusionLayers.m_Bits
+      value: 512
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -26009,7 +26164,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2148641870390456695}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: handel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26712,6 +26867,7 @@ MonoBehaviour:
   openRotation: {x: 0, y: 0, z: -110}
   openSpeed: 2
   cablePieceInside: {fileID: 2634850850406938821}
+  openSound: {fileID: 0}
   interactRange: 3
   interactKey: 101
 --- !u!23 &905253750698635011
@@ -26947,6 +27103,7 @@ MonoBehaviour:
   openRotation: {x: 0, y: -110, z: 0}
   openSpeed: 2
   cablePieceInside: {fileID: 0}
+  openSound: {fileID: 0}
   interactRange: 3
   interactKey: 101
 --- !u!33 &945560871278697534
@@ -28046,7 +28203,7 @@ GameObject:
   - component: {fileID: 6870657550131917554}
   - component: {fileID: 8478562825118534849}
   - component: {fileID: 4949989830522064760}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Exit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29609,6 +29766,7 @@ GameObject:
   - component: {fileID: 7269441056476241030}
   - component: {fileID: 3649415367826207732}
   - component: {fileID: 4703718505222811814}
+  - component: {fileID: 7269441056476241031}
   m_Layer: 0
   m_Name: Cable_bundle (2)
   m_TagString: Untagged
@@ -31531,7 +31689,7 @@ GameObject:
   - component: {fileID: 8098609450329887226}
   - component: {fileID: 1213180252}
   - component: {fileID: 1213180251}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: door_door_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33130,7 +33288,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1708149196}
   m_Father: {fileID: 2670122175074359620}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1848107252364196630
@@ -38807,6 +38966,7 @@ GameObject:
   - component: {fileID: 2799296478457874305}
   - component: {fileID: 1791429635907092706}
   - component: {fileID: 7468415560104009712}
+  - component: {fileID: 8849896633033827671}
   m_Layer: 0
   m_Name: Cable_bundle (1)
   m_TagString: Untagged
@@ -40388,6 +40548,7 @@ MonoBehaviour:
   openRotation: {x: 0, y: -110, z: 0}
   openSpeed: 2
   cablePieceInside: {fileID: 0}
+  openSound: {fileID: 0}
   interactRange: 3
   interactKey: 101
 --- !u!1 &2853926095679236197
@@ -41499,6 +41660,7 @@ MonoBehaviour:
   resetFadeDuration: 0.4
   hitColour: {r: 1, g: 0, b: 0, a: 1}
   hitColourDuration: 0.12
+  hitSound: {fileID: 0}
   colliderSize: {x: 0.5, y: 0.5, z: 0.5}
   colliderCenter: {x: 0, y: 0, z: 0}
 --- !u!64 &2969757350515952885
@@ -43031,6 +43193,7 @@ MonoBehaviour:
   openRotation: {x: 0, y: -110, z: 0}
   openSpeed: 2
   cablePieceInside: {fileID: 0}
+  openSound: {fileID: 0}
   interactRange: 3
   interactKey: 101
 --- !u!23 &3196601082972150247
@@ -44484,7 +44647,7 @@ GameObject:
   - component: {fileID: 5824786644866114250}
   - component: {fileID: 8899931535224188956}
   - component: {fileID: 2969757350515952885}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Walls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45334,6 +45497,7 @@ MonoBehaviour:
   resetFadeDuration: 0.4
   hitColour: {r: 1, g: 0, b: 0, a: 0.31764707}
   hitColourDuration: 0.15
+  hitSound: {fileID: 0}
   colliderSize: {x: 0.5, y: 0.5, z: 0.5}
   colliderCenter: {x: 0, y: 0, z: 0}
 --- !u!65 &3488643244986141753
@@ -46196,7 +46360,7 @@ GameObject:
   - component: {fileID: 8887031911252033093}
   - component: {fileID: 8228074899254309634}
   - component: {fileID: 420478173959679610}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: exitDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50238,6 +50402,7 @@ MonoBehaviour:
   drawerOpenDistance: 0.7
   drawerOpenSpeed: 1.2
   drawerOpenDirection: {x: -1, y: 0, z: 0}
+  correctCableSound: {fileID: 0}
   interactRange: 4
   interactKey: 101
 --- !u!4 &4128607207073973112
@@ -51000,7 +51165,7 @@ GameObject:
   - component: {fileID: 2620899639924623287}
   - component: {fileID: 8312926460508620857}
   - component: {fileID: 2977100245560608572}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: entranceDoor1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52202,6 +52367,7 @@ MonoBehaviour:
   resetFadeDuration: 0.4
   hitColour: {r: 1, g: 0, b: 0, a: 1}
   hitColourDuration: 0.12
+  hitSound: {fileID: 0}
   colliderSize: {x: 0.5, y: 0.5, z: 0.5}
   colliderCenter: {x: 0, y: 0, z: 0}
 --- !u!4 &4369411943566849550
@@ -58172,6 +58338,7 @@ MonoBehaviour:
   drawerOpenSpeed: 1.2
   interactRange: 4
   interactKey: 101
+  solvedSound: {fileID: 0}
   onSolved:
     m_PersistentCalls:
       m_Calls: []
@@ -60320,7 +60487,7 @@ GameObject:
   - component: {fileID: 4870016914100040116}
   - component: {fileID: 945560871278697534}
   - component: {fileID: 9198245953738119073}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: handel_door_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -63033,6 +63200,8 @@ MonoBehaviour:
   secretDrawerOpenSpeed: 1.2
   secretDrawerDirection: {x: -1, y: 0, z: 0}
   specialItem: {fileID: 4863526734149978385}
+  piecePlacedSound: {fileID: 0}
+  drawerOpenSound: {fileID: 0}
   interactRange: 3
   interactKey: 101
 --- !u!1 &5911194457788671452
@@ -63746,6 +63915,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   bottleID: Bottle_B
   bottleLabel: Absinthe
+  pickupSound: {fileID: 0}
 --- !u!114 &5978921477621548431
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64489,6 +64659,7 @@ MonoBehaviour:
   doorRightOpenEuler: {x: -17, y: -120, z: -8}
   interactRange: 4
   interactKey: 101
+  completedSound: {fileID: 0}
   onNormalSolve:
     m_PersistentCalls:
       m_Calls:
@@ -66071,6 +66242,7 @@ MonoBehaviour:
   cameraZoomSpeed: 3
   targetVoltage: 7
   requireRepairKit: 1
+  completedSound: {fileID: 0}
   onSolved:
     m_PersistentCalls:
       m_Calls:
@@ -66785,6 +66957,7 @@ MonoBehaviour:
   resetFadeDuration: 0.4
   hitColour: {r: 1, g: 0, b: 0, a: 0.3137255}
   hitColourDuration: 0.15
+  hitSound: {fileID: 0}
   colliderSize: {x: 0.5, y: 0.5, z: 0.5}
   colliderCenter: {x: 0, y: 0, z: 0}
 --- !u!65 &6394055269033395728
@@ -67387,6 +67560,7 @@ MonoBehaviour:
   glassScale: {x: 0.0005, y: 0.0005, z: 0.0005}
   interactRange: 3
   interactKey: 101
+  placeSound: {fileID: 0}
   onSolved:
     m_PersistentCalls:
       m_Calls:
@@ -67852,6 +68026,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   bottleID: Bottle_A
   bottleLabel: Rum
+  pickupSound: {fileID: 0}
 --- !u!114 &6509962912242900838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69946,8 +70121,14 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   secretRewardObject: {fileID: 0}
-  musicVolume: 1
+  musicVolume: 10
   audioMixerGroup: {fileID: 24300002, guid: e1a3e19a194f15049a66e34da286d635, type: 2}
+  audioSourceOrigin: {fileID: 1708149196}
+  maxAudioDistance: 20
+  occludedCutoffFreq: 800
+  occlusionLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!65 &6783028656859206261
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -71694,6 +71875,7 @@ MonoBehaviour:
   openRotation: {x: 0, y: 0, z: 110}
   openSpeed: 2
   cablePieceInside: {fileID: 1320093002990908914}
+  openSound: {fileID: 0}
   interactRange: 3
   interactKey: 101
 --- !u!23 &7011248274829535194
@@ -72877,6 +73059,7 @@ MonoBehaviour:
   resetFadeDuration: 0.4
   hitColour: {r: 1, g: 0, b: 0, a: 0.33333334}
   hitColourDuration: 0.15
+  hitSound: {fileID: 0}
   colliderSize: {x: 0.5, y: 0.5, z: 0.5}
   colliderCenter: {x: 0, y: 0, z: 0}
 --- !u!65 &7148578464825343304
@@ -73549,6 +73732,40 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   cableColor: 2
+--- !u!114 &7269441056476241031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1320093002990908914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6b9b965e82ce824497e54a2e1b853a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HeldItemDisplay
+  boxSize: {x: 90, y: 90}
+  screenPadding: {x: 20, y: 20}
+  boxColor:
+    r: 0.08
+    g: 0.08
+    b: 0.08
+    a: 0.82
+  borderColor:
+    r: 0.9
+    g: 0.8
+    b: 0.3
+    a: 1
+  popAnimSpeed: 8
+  _inventory: {fileID: 0}
+  _canvas: {fileID: 0}
+  _root: {fileID: 0}
+  _border: {fileID: 0}
+  _background: {fileID: 0}
+  _icon: {fileID: 0}
+  _nameLabel: {fileID: 0}
+  _popScale: 1
+  _popTarget: 1
 --- !u!4 &7274555682599241242
 Transform:
   m_ObjectHideFlags: 0
@@ -74137,6 +74354,7 @@ MonoBehaviour:
   glassScale: {x: 0.0005, y: 0.0005, z: 0.0005}
   interactRange: 3
   interactKey: 101
+  placeSound: {fileID: 0}
   onSolved:
     m_PersistentCalls:
       m_Calls:
@@ -75262,6 +75480,7 @@ MonoBehaviour:
   puzzle: {fileID: 4120523929136533746}
   leverTargetX: 0
   leverSpeed: 2
+  leverPullSound: {fileID: 0}
   interactRange: 3
   interactKey: 101
 --- !u!33 &7454724125634705755
@@ -75568,6 +75787,7 @@ MonoBehaviour:
   openRotation: {x: 0, y: 0, z: -110}
   openSpeed: 2
   cablePieceInside: {fileID: 7501716222418724360}
+  openSound: {fileID: 0}
   interactRange: 3
   interactKey: 101
 --- !u!1 &7490373218955161315
@@ -75752,6 +75972,8 @@ GameObject:
   - component: {fileID: 410679012046220043}
   - component: {fileID: 4152771303288454915}
   - component: {fileID: 6479851418976577766}
+  - component: {fileID: 7501716222418724362}
+  - component: {fileID: 7501716222418724361}
   m_Layer: 0
   m_Name: Cable_bundle
   m_TagString: Untagged
@@ -75759,6 +75981,63 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &7501716222418724361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7501716222418724360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6b9b965e82ce824497e54a2e1b853a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HeldItemDisplay
+  boxSize: {x: 90, y: 90}
+  screenPadding: {x: 20, y: 20}
+  boxColor:
+    r: 0.08
+    g: 0.08
+    b: 0.08
+    a: 0.82
+  borderColor:
+    r: 0.9
+    g: 0.8
+    b: 0.3
+    a: 1
+  popAnimSpeed: 8
+  _inventory: {fileID: 0}
+  _canvas: {fileID: 0}
+  _root: {fileID: 0}
+  _border: {fileID: 0}
+  _background: {fileID: 0}
+  _icon: {fileID: 0}
+  _nameLabel: {fileID: 0}
+  _popScale: 1
+  _popTarget: 1
+--- !u!114 &7501716222418724362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7501716222418724360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f710b88d65352b247b9523c0a775f71e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HUDManager
+  crosshairArmLength: 9
+  crosshairThickness: 2
+  crosshairGap: 5
+  crosshairDotSize: 3
+  crosshairColor: {r: 1, g: 1, b: 1, a: 0.9}
+  crosshairShadowColor: {r: 0, g: 0, b: 0, a: 0.45}
+  hintsFadeDuration: 0.6
+  hintsBgColor: {r: 0, g: 0, b: 0, a: 0.55}
+  hintsTextColor: {r: 0.93, g: 0.93, b: 0.93, a: 1}
+  keyBadgeColor: {r: 0.18, g: 0.18, b: 0.18, a: 0.92}
+  keyBadgeBorderColor: {r: 0.7, g: 0.65, b: 0.25, a: 1}
 --- !u!1 &7502215644304404052
 GameObject:
   m_ObjectHideFlags: 0
@@ -76429,6 +76708,7 @@ MonoBehaviour:
   openRotation: {x: 0, y: -110, z: 0}
   openSpeed: 2
   cablePieceInside: {fileID: 0}
+  openSound: {fileID: 0}
   interactRange: 3
   interactKey: 101
 --- !u!23 &7608405775464148894
@@ -76968,7 +77248,7 @@ GameObject:
   - component: {fileID: 3416883570123786151}
   - component: {fileID: 3180304523867941848}
   - component: {fileID: 4407420524303687832}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: exitDoor1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -77730,6 +78010,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   bottleID: Bottle_C
   bottleLabel: Whiskey Special
+  pickupSound: {fileID: 0}
 --- !u!65 &7751276327631580571
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -78130,6 +78411,7 @@ GameObject:
   - component: {fileID: 8417452915195307201}
   - component: {fileID: 6058719583813217099}
   - component: {fileID: 2424718834074005468}
+  - component: {fileID: 8417452915195307202}
   m_Layer: 0
   m_Name: Cable_bundle (3)
   m_TagString: Untagged
@@ -78983,7 +79265,7 @@ GameObject:
   - component: {fileID: 7104343973232451062}
   - component: {fileID: 7832147979348798548}
   - component: {fileID: 7141912384317120697}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Window
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -80479,6 +80761,7 @@ MonoBehaviour:
   resetFadeDuration: 0.4
   hitColour: {r: 1, g: 0, b: 0, a: 1}
   hitColourDuration: 0.12
+  hitSound: {fileID: 0}
   colliderSize: {x: 0.5, y: 0.5, z: 0.5}
   colliderCenter: {x: 0, y: 0, z: 0}
 --- !u!4 &8071927301930996660
@@ -80582,6 +80865,7 @@ MonoBehaviour:
   resetFadeDuration: 0.4
   hitColour: {r: 1, g: 0, b: 0, a: 1}
   hitColourDuration: 0.12
+  hitSound: {fileID: 0}
   colliderSize: {x: 0.5, y: 0.5, z: 0.5}
   colliderCenter: {x: 0, y: 0, z: 0}
 --- !u!23 &8079514388861689043
@@ -80701,6 +80985,7 @@ MonoBehaviour:
   resetFadeDuration: 0.4
   hitColour: {r: 1, g: 0, b: 0, a: 0.31764707}
   hitColourDuration: 0.15
+  hitSound: {fileID: 0}
   colliderSize: {x: 0.5, y: 0.5, z: 0.5}
   colliderCenter: {x: 0, y: 0, z: 0}
 --- !u!65 &8085089437301304957
@@ -81712,6 +81997,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   bottleID: Bottle_D
   bottleLabel: Whiskey
+  pickupSound: {fileID: 0}
 --- !u!114 &8205183781412856687
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83624,6 +83910,40 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   cableColor: 3
+--- !u!114 &8417452915195307202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7792340220437196419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6b9b965e82ce824497e54a2e1b853a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HeldItemDisplay
+  boxSize: {x: 90, y: 90}
+  screenPadding: {x: 20, y: 20}
+  boxColor:
+    r: 0.08
+    g: 0.08
+    b: 0.08
+    a: 0.82
+  borderColor:
+    r: 0.9
+    g: 0.8
+    b: 0.3
+    a: 1
+  popAnimSpeed: 8
+  _inventory: {fileID: 0}
+  _canvas: {fileID: 0}
+  _root: {fileID: 0}
+  _border: {fileID: 0}
+  _background: {fileID: 0}
+  _icon: {fileID: 0}
+  _nameLabel: {fileID: 0}
+  _popScale: 1
+  _popTarget: 1
 --- !u!1 &8419982270708561610
 GameObject:
   m_ObjectHideFlags: 0
@@ -83938,6 +84258,7 @@ MonoBehaviour:
   resetFadeDuration: 0.4
   hitColour: {r: 1, g: 0, b: 0, a: 0.3137255}
   hitColourDuration: 0.15
+  hitSound: {fileID: 0}
   colliderSize: {x: 0.5, y: 0.5, z: 0.5}
   colliderCenter: {x: 0, y: 0, z: 0}
 --- !u!65 &8470633312630831895
@@ -84508,6 +84829,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagneticLock
   repairBox: {fileID: 1758603440}
+  unlockSound: {fileID: 0}
 --- !u!4 &8534685056453838009
 Transform:
   m_ObjectHideFlags: 0
@@ -84930,6 +85252,7 @@ MonoBehaviour:
   openRotation: {x: 0, y: 0, z: 110}
   openSpeed: 2
   cablePieceInside: {fileID: 7792340220437196419}
+  openSound: {fileID: 0}
   interactRange: 3
   interactKey: 101
 --- !u!4 &8586313361610328541
@@ -85142,7 +85465,7 @@ GameObject:
   - component: {fileID: 3575310376366976714}
   - component: {fileID: 8176555505199059525}
   - component: {fileID: 717708220}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: F_f_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -85552,6 +85875,7 @@ MonoBehaviour:
   resetFadeDuration: 0.4
   hitColour: {r: 1, g: 0, b: 0, a: 1}
   hitColourDuration: 0.12
+  hitSound: {fileID: 0}
   colliderSize: {x: 0.5, y: 0.5, z: 0.5}
   colliderCenter: {x: 0, y: 0, z: 0}
 --- !u!4 &8686715486708565540
@@ -85687,7 +86011,7 @@ GameObject:
   - component: {fileID: 2990873318734412255}
   - component: {fileID: 3927417226570655214}
   - component: {fileID: 7191216334429044024}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: entranceDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -85863,6 +86187,7 @@ MonoBehaviour:
   playerCamera: {fileID: 1294032726}
   interactDistance: 3
   interactKey: 101
+  swapSound: {fileID: 0}
   promptText: Press E to interact
   promptYOffset: 60
 --- !u!65 &8703840973734287120
@@ -86849,6 +87174,7 @@ MonoBehaviour:
   glassScale: {x: 0.0005, y: 0.0005, z: 0.0005}
   interactRange: 3
   interactKey: 101
+  placeSound: {fileID: 0}
   onSolved:
     m_PersistentCalls:
       m_Calls:
@@ -87158,6 +87484,7 @@ MonoBehaviour:
   resetFadeDuration: 0.4
   hitColour: {r: 1, g: 0, b: 0, a: 1}
   hitColourDuration: 0.12
+  hitSound: {fileID: 0}
   colliderSize: {x: 0.5, y: 0.5, z: 0.5}
   colliderCenter: {x: 0, y: 0, z: 0}
 --- !u!1 &8843400913194835419
@@ -87239,6 +87566,40 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4828400315639892938}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8849896633033827671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2634850850406938821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6b9b965e82ce824497e54a2e1b853a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HeldItemDisplay
+  boxSize: {x: 90, y: 90}
+  screenPadding: {x: 20, y: 20}
+  boxColor:
+    r: 0.08
+    g: 0.08
+    b: 0.08
+    a: 0.82
+  borderColor:
+    r: 0.9
+    g: 0.8
+    b: 0.3
+    a: 1
+  popAnimSpeed: 8
+  _inventory: {fileID: 0}
+  _canvas: {fileID: 0}
+  _root: {fileID: 0}
+  _border: {fileID: 0}
+  _background: {fileID: 0}
+  _icon: {fileID: 0}
+  _nameLabel: {fileID: 0}
+  _popScale: 1
+  _popTarget: 1
 --- !u!1 &8852331431296081426
 GameObject:
   m_ObjectHideFlags: 0
@@ -87430,6 +87791,19 @@ MonoBehaviour:
   veilParticles: {fileID: 1940212641}
   veilEmissionRate: 80
   openEmissionRate: 20
+  idleAmbientSound: {fileID: 8300000, guid: f9513fd6df59216419a7918fbab132d9, type: 3}
+  idleVolume: 0.4
+  idleMaxDistance: 2
+  sideACrossingEnabled: 1
+  sideACrossingSound: {fileID: 8300000, guid: d3a46f017410037419367a07b344fade, type: 3}
+  sideBCrossingEnabled: 1
+  sideBCrossingSound: {fileID: 8300000, guid: 9b01315c43dd5fb43b8a2acb1a727c0b, type: 3}
+  occlusionLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  occlusionSampleOffset: 0.6
+  occlusionMinClearRays: 2
+  audioProximityRadius: 6
 --- !u!4 &8885466258175852588
 Transform:
   m_ObjectHideFlags: 0
@@ -88053,6 +88427,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   bottleID: Bottle_E
   bottleLabel: Vodka
+  pickupSound: {fileID: 0}
 --- !u!114 &8966387951748928857
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -89187,6 +89562,7 @@ MonoBehaviour:
   glassScale: {x: 0.0005, y: 0.0005, z: 0.0005}
   interactRange: 3
   interactKey: 101
+  placeSound: {fileID: 0}
   onSolved:
     m_PersistentCalls:
       m_Calls:
@@ -89686,6 +90062,7 @@ MonoBehaviour:
   interactRange: 4
   interactKey: 101
   superAcidPrefab: {fileID: 6615137473423304739, guid: e664f100c7f51f347a0c2e2b96a34da9, type: 3}
+  completedSound: {fileID: 0}
   onSolved:
     m_PersistentCalls:
       m_Calls: []

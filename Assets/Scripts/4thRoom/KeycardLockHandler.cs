@@ -12,6 +12,12 @@ public class KeycardLockHandler : MonoBehaviour
     [Header("Events")]
     public UnityEngine.Events.UnityEvent onUnlocked;
 
+    [Header("Sound Effects")]
+    [Tooltip("Played when the keycard is swiped (before unlock check)")]
+    public AudioClip cardReadSound;
+    [Tooltip("Played when the lock successfully unlocks")]
+    public AudioClip unlockSound;
+
     [Header("Optional Door Animation")]
     [Tooltip("If assigned, the door will slide/rotate open")]
     public Transform doorTransform;
@@ -28,10 +34,16 @@ public class KeycardLockHandler : MonoBehaviour
 
     public void Unlock()
     {
+        if (cardReadSound != null)
+            AudioSource.PlayClipAtPoint(cardReadSound, transform.position);
+
         if (_unlocked) return;
         _unlocked = true;
 
         Debug.Log($"[KeycardLockHandler] {gameObject.name} unlocked!");
+
+        if (unlockSound != null)
+            AudioSource.PlayClipAtPoint(unlockSound, transform.position);
 
         onUnlocked?.Invoke();
 

@@ -31,6 +31,9 @@ public class HologramMaterialToggle : MonoBehaviour
     public float interactDistance = 3f;
     public KeyCode interactKey = KeyCode.E;
 
+    [Header("Sound Effects")]
+    public AudioClip swapSound;
+
     [Header("HUD")]
     public string promptText = "Press E to interact";
     public float promptYOffset = 60f;
@@ -72,6 +75,8 @@ public class HologramMaterialToggle : MonoBehaviour
         _onB = !_onB;
         if (targetRenderer != null)
             targetRenderer.material = _onB ? materialB : materialA;
+        if (swapSound != null)
+            AudioSource.PlayClipAtPoint(swapSound, transform.position);
     }
 
     void OnGUI()

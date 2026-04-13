@@ -23,6 +23,9 @@ public class CabinetDoor : MonoBehaviour
     [Header("Cable Inside (assign the CablePieceItem world object)")]
     public GameObject cablePieceInside;
 
+    [Header("Sound Effects")]
+    public AudioClip openSound;
+
     [Header("Interaction")]
     public float interactRange = 3f;
     public KeyCode interactKey = KeyCode.E;
@@ -68,6 +71,9 @@ public class CabinetDoor : MonoBehaviour
     IEnumerator OpenDoor()
     {
         _opening = true;
+
+        if (openSound != null)
+            AudioSource.PlayClipAtPoint(openSound, transform.position);
 
         // Nudge player out of the door's swing arc before it moves
         NudgePlayerClear();

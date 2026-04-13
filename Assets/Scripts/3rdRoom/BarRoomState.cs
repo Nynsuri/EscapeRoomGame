@@ -22,7 +22,7 @@ public static class BarRoomState
     public static bool PianoSolved { get; private set; } = false;
 
     // -- Called by BarBottleRoomManager when all bottles placed ----------------
-    // Does NOT grant syphons anymore — just marks puzzle done.
+    // Does NOT grant syphons anymore ï¿½ just marks puzzle done.
     // Syphons are granted when player reads the normal SymphonyNote.
     public static void OnBottlePuzzleCompleted()
     {
@@ -32,7 +32,7 @@ public static class BarRoomState
     }
 
     // -- Called by ShootingPuzzle when gun puzzle completed --------------------
-    // Does NOT grant syphons anymore — just marks puzzle done.
+    // Does NOT grant syphons anymore ï¿½ just marks puzzle done.
     // Syphons are granted when player reads the secret SymphonyNote.
     public static void OnGunPuzzleCompleted(bool secretCondition)
     {
@@ -51,7 +51,7 @@ public static class BarRoomState
         UnityEngine.Debug.Log("[BarRoomState] Normal syphons granted.");
     }
 
-    // Kept for backward compatibility — same as GrantNormalSyphons
+    // Kept for backward compatibility ï¿½ same as GrantNormalSyphons
     // (BarBottleRoomManager still calls OnBottlePuzzleCompleted which no longer
     //  auto-grants; the note calls this instead)
     public static void GrantSecretSyphons()
@@ -66,6 +66,15 @@ public static class BarRoomState
     public static void OnPianoSolved()
     {
         PianoSolved = true;
+    }
+
+    // -- Portal side -----------------------------------------------------------
+    /// <summary>True while the player is on the corridor side of the portal ring.</summary>
+    public static bool PlayerInCorridor { get; private set; } = false;
+
+    public static void SetPlayerSide(bool inCorridor)
+    {
+        PlayerInCorridor = inCorridor;
     }
 
     // -- Helper ---------------------------------------------------------------

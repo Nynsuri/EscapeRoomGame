@@ -12,6 +12,9 @@ public class MagneticLock : MonoBehaviour
     [Tooltip("The red repair box GameObject — has ItemPickup on it")]
     public GameObject repairBox;
 
+    [Header("Sound Effects")]
+    public AudioClip unlockSound;
+
 
     private bool _unlocked = false;
 
@@ -31,6 +34,9 @@ public class MagneticLock : MonoBehaviour
     {
         if (_unlocked) return;
         _unlocked = true;
+
+        if (unlockSound != null)
+            AudioSource.PlayClipAtPoint(unlockSound, transform.position);
 
         if (repairBox != null)
         {

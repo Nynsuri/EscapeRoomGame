@@ -24,6 +24,9 @@ public class CircuitRepairPuzzle : BasePuzzle
     [Header("Requires Repair Kit")]
     public bool requireRepairKit = true;
 
+    [Header("Sound Effects")]
+    public AudioClip completedSound;
+
     [Header("On Solved")]
     public UnityEngine.Events.UnityEvent onSolved;
 
@@ -249,6 +252,8 @@ public class CircuitRepairPuzzle : BasePuzzle
             _everSolved = true;
             _state = State.Solved;
             ShowFeedback("✓ CIRCUIT REPAIRED!", ColPositive, 99f);
+            if (completedSound != null)
+                AudioSource.PlayClipAtPoint(completedSound, transform.position);
             StartCoroutine(FlashSolved());
             onSolved?.Invoke();
             StartCoroutine(SolvedExit());

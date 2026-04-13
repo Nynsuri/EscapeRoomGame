@@ -53,6 +53,9 @@ public class ClockPuzzle : BasePuzzle
     public float interactRange = 4f;
     public KeyCode interactKey = KeyCode.E;
 
+    [Header("Sound Effects")]
+    public AudioClip solvedSound;
+
     [Header("On Solved (optional Unity Event)")]
     public UnityEngine.Events.UnityEvent onSolved;
 
@@ -271,6 +274,8 @@ public class ClockPuzzle : BasePuzzle
         if (hOk && mOk && sOk)
         {
             ShowFeedback("✓  Correct!", Color.green);
+            if (solvedSound != null)
+                AudioSource.PlayClipAtPoint(solvedSound, transform.position);
             onSolved?.Invoke();
             StartCoroutine(SolvedExit());
         }

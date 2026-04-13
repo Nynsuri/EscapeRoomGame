@@ -15,10 +15,16 @@ public class BottleItem : InventoryItem
     [Tooltip("Display label shown in the placement prompt, e.g. 'Red Wine'")]
     public string bottleLabel = "Bottle";
 
+    [Header("Sound Effects")]
+    public AudioClip pickupSound;
+
     // --- InventoryItem overrides ----------------------------------------------
 
     public override void OnPickup()
     {
+        if (pickupSound != null)
+            AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+
         // Hide this object normally via the base class
         base.OnPickup();
 

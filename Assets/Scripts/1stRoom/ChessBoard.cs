@@ -35,6 +35,10 @@ public class ChessBoard : MonoBehaviour
     public Vector3 secretDrawerDirection = new Vector3(1f, 0f, 0f);
     public GameObject specialItem;
 
+    [Header("Sound Effects")]
+    public AudioClip piecePlacedSound;
+    public AudioClip drawerOpenSound;
+
     [Header("Interaction")]
     public float interactRange = 3f;
     public KeyCode interactKey = KeyCode.E;
@@ -97,6 +101,9 @@ public class ChessBoard : MonoBehaviour
         foreach (var p in spawned.GetComponentsInChildren<ItemPickup>(true))
             p.enabled = false;
 
+        if (piecePlacedSound != null)
+            AudioSource.PlayClipAtPoint(piecePlacedSound, slot.position);
+
         MarkPlaced(piece.pieceType);
         CheckCompletion();
     }
@@ -131,6 +138,9 @@ public class ChessBoard : MonoBehaviour
 
     IEnumerator OpenDrawer(Transform drawer, Vector3 direction, float distance, float speed)
     {
+        if (drawerOpenSound != null)
+            AudioSource.PlayClipAtPoint(drawerOpenSound, drawer.position);
+
         Vector3 start = drawer.localPosition;
         Vector3 end = start + direction.normalized * distance;
         float elapsed = 0f, dur = distance / speed;

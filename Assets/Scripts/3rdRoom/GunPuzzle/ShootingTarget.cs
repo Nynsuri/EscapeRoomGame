@@ -20,6 +20,9 @@ public class ShootingTarget : MonoBehaviour
     public Color hitColour = Color.red;
     public float hitColourDuration = 0.12f;
 
+    [Header("Sound Effects")]
+    public AudioClip hitSound;
+
     [Header("Auto Collider (added at runtime if none exists)")]
     public Vector3 colliderSize = new Vector3(0.5f, 0.5f, 0.5f);
     public Vector3 colliderCenter = new Vector3(0f, 0f, 0f);
@@ -59,6 +62,9 @@ public class ShootingTarget : MonoBehaviour
     {
         if (_isHit) return;
         _isHit = true;
+
+        if (hitSound != null)
+            AudioSource.PlayClipAtPoint(hitSound, transform.position);
 
         StopAllCoroutines();
         StartCoroutine(HitAndDisappear());

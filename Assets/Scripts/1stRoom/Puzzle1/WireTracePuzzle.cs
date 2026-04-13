@@ -29,6 +29,9 @@ public class WireTracePuzzle : BasePuzzle
     public float drawerOpenDistance = 0.35f;
     public float drawerOpenSpeed = 1.5f;
 
+    [Header("Sound Effects")]
+    public AudioClip completedSound;
+
     [Header("Cursor Tracer")]
     public GameObject cursorDotPrefab;
 
@@ -296,6 +299,8 @@ public class WireTracePuzzle : BasePuzzle
     {
         _state = PuzzleState.Completing;
         if (_cursorDot != null) _cursorDot.SetActive(false);
+        if (completedSound != null)
+            AudioSource.PlayClipAtPoint(completedSound, transform.position);
         ShowMessage("Puzzle solved!");
         yield return new WaitForSeconds(0.8f);
         yield return StartCoroutine(ZoomOut());

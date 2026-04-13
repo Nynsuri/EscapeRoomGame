@@ -21,6 +21,9 @@ public class HackingPuzzle : BasePuzzle
     [Header("Timer")]
     public float totalTime = 60f;
 
+    [Header("Sound Effects")]
+    public AudioClip completedSound;
+
     [Header("On Solved")]
     public UnityEngine.Events.UnityEvent onSolved;
 
@@ -479,6 +482,8 @@ public class HackingPuzzle : BasePuzzle
     IEnumerator SolvedExit()
     {
         _timerRunning = false;
+        if (completedSound != null)
+            AudioSource.PlayClipAtPoint(completedSound, transform.position);
         SetStatus("ACCESS GRANTED", new Color(0.2f, 1f, 0.5f));
         ShowFeedback("ACCESS GRANTED", new Color(0.2f, 1f, 0.5f));
         yield return new WaitForSeconds(1.5f);

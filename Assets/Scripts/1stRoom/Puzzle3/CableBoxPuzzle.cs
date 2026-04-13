@@ -82,6 +82,9 @@ public class CableBoxPuzzle : BasePuzzle
     [Tooltip("Direction drawer slides in LOCAL space. X=right, -X=left, Z=forward, -Z=back")]
     public Vector3 drawerOpenDirection = new Vector3(1f, 0f, 0f);
 
+    [Header("Sound Effects")]
+    public AudioClip correctCableSound;
+
     [Header("Interaction")]
     public float interactRange = 4f;
     public KeyCode interactKey = KeyCode.E;
@@ -500,6 +503,8 @@ public class CableBoxPuzzle : BasePuzzle
     IEnumerator Solve(bool straight)
     {
         _state = State.Solved;
+        if (correctCableSound != null)
+            AudioSource.PlayClipAtPoint(correctCableSound, transform.position);
         yield return new WaitForSeconds(1.5f);
 
         // Delete the appropriate objects
