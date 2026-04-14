@@ -17,6 +17,10 @@ public class TorchItem : InventoryItem
     [Header("Torch Settings")]
     public KeyCode toggleKey = KeyCode.T;
 
+    [Header("Sound Effects")]
+    [Tooltip("Played both when torch turns on and off")]
+    public AudioClip toggleSound;
+
     [Header("Light (auto-found in children if empty)")]
     [Tooltip("Assign a Spotlight child here. It will be moved to the camera on pickup.")]
     public Light torchLight;
@@ -153,6 +157,11 @@ public class TorchItem : InventoryItem
         _isOn = state;
         if (torchLight != null)
             torchLight.enabled = _isOn;
+        if (toggleSound != null)
+        {
+            Vector3 pos = _cam != null ? _cam.transform.position : transform.position;
+            AudioSource.PlayClipAtPoint(toggleSound, pos);
+        }
         Debug.Log($"[Torch] {(_isOn ? "ON" : "OFF")}");
     }
 

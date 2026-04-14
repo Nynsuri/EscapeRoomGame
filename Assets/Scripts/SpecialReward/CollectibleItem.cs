@@ -18,10 +18,6 @@ public class CollectibleItem : MonoBehaviour
     [Header("Display")]
     public string collectibleName = "Mysterious Relic";
 
-    [Header("Pickup FX (optional)")]
-    public GameObject pickupFXPrefab;
-    public AudioClip pickupSound;
-
     // ─────────────────────────────────────────────────────────────
 
     private bool _collected = false;
@@ -48,13 +44,6 @@ public class CollectibleItem : MonoBehaviour
         }
 
         _collected = true;
-
-        // ── FX ───────────────────────────────────────────────────
-        if (pickupFXPrefab != null)
-            Instantiate(pickupFXPrefab, transform.position, Quaternion.identity);
-
-        if (pickupSound != null)
-            AudioSource.PlayClipAtPoint(pickupSound, transform.position);
 
         // ── Hide in world ─────────────────────────────────────────
         SetWorldVisible(false);

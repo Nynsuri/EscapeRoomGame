@@ -14,6 +14,10 @@ public class ItemPickup : MonoBehaviour
     public float drawerCloseDistance = 0.3f;
     public float drawerCloseSpeed = 1.2f;
 
+    [Header("Sound Effects")]
+    public AudioClip pickupSound;
+    public AudioClip drawerCloseSound;
+
     [Header("Events")]
     public UnityEngine.Events.UnityEvent onPickup;
 
@@ -55,6 +59,7 @@ public class ItemPickup : MonoBehaviour
             bool collected = _collectible.TryCollect();
             if (!collected) return;         // already collected or no manager
 
+            if (pickupSound != null) AudioSource.PlayClipAtPoint(pickupSound, transform.position);
             onPickup?.Invoke();
             if (drawerToClose != null) StartCoroutine(CloseDrawer());
             return;
@@ -66,6 +71,7 @@ public class ItemPickup : MonoBehaviour
         bool added = inventory.AddItem(_item);
         if (!added) return;
 
+        if (pickupSound != null) AudioSource.PlayClipAtPoint(pickupSound, transform.position);
         onPickup?.Invoke();
         if (drawerToClose != null) StartCoroutine(CloseDrawer());
     }
@@ -103,6 +109,9 @@ public class ItemPickup : MonoBehaviour
 
     IEnumerator CloseDrawer()
     {
+        if (drawerCloseSound != null)
+            AudioSource.PlayClipAtPoint(drawerCloseSound, drawerToClose.position);
+
         Vector3 start = drawerToClose.localPosition;
         Vector3 end = start + drawerCloseDirection.normalized * drawerCloseDistance;
         float elapsed = 0f, dur = drawerCloseDistance / drawerCloseSpeed;

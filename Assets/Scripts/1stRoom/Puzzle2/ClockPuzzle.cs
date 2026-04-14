@@ -55,6 +55,7 @@ public class ClockPuzzle : BasePuzzle
 
     [Header("Sound Effects")]
     public AudioClip solvedSound;
+    public AudioClip drawerOpenSound;
 
     [Header("On Solved (optional Unity Event)")]
     public UnityEngine.Events.UnityEvent onSolved;
@@ -251,6 +252,9 @@ public class ClockPuzzle : BasePuzzle
 
     IEnumerator OpenDrawer()
     {
+        if (drawerOpenSound != null)
+            AudioSource.PlayClipAtPoint(drawerOpenSound, solveDrawer.position);
+
         Vector3 closed = solveDrawer.localPosition;
         Vector3 open = closed + new Vector3(-drawerOpenDistance, 0f, 0f);
         float elapsed = 0f, dur = drawerOpenDistance / drawerOpenSpeed;

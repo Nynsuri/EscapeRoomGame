@@ -31,9 +31,8 @@ public class WireTracePuzzle : BasePuzzle
 
     [Header("Sound Effects")]
     public AudioClip completedSound;
+    public AudioClip drawerOpenSound;
 
-    [Header("Cursor Tracer")]
-    public GameObject cursorDotPrefab;
 
     // ── State ─────────────────────────────────────────────────────
     private enum PuzzleState { Idle, ZoomingIn, Playing, Resetting, Completing, Done }
@@ -63,11 +62,6 @@ public class WireTracePuzzle : BasePuzzle
         if (playerCamera == null)
             playerCamera = Camera.main ?? FindFirstObjectByType<Camera>();
 
-        if (cursorDotPrefab != null)
-        {
-            _cursorDot = Instantiate(cursorDotPrefab);
-            _cursorDot.SetActive(false);
-        }
     }
 
     protected override void Update()
@@ -359,6 +353,9 @@ public class WireTracePuzzle : BasePuzzle
 
     IEnumerator OpenDrawer()
     {
+        if (drawerOpenSound != null)
+            AudioSource.PlayClipAtPoint(drawerOpenSound, drawer.position);
+
         Vector3 closedPos = drawer.localPosition;
         Vector3 openPos = closedPos + new Vector3(-drawerOpenDistance, 0f, 0f);
         float elapsed = 0f, duration = drawerOpenDistance / drawerOpenSpeed;

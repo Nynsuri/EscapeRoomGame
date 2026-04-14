@@ -14,6 +14,9 @@ public class KeyLockBox : MonoBehaviour
     [Tooltip("The key inside the box — visible always, but ItemPickup disabled until opened")]
     public GameObject innerKey;
 
+    [Header("Sound Effects")]
+    public AudioClip openSound;
+
     [Header("Interaction")]
     public float interactRange = 3f;
     public KeyCode interactKey = KeyCode.E;
@@ -62,6 +65,9 @@ public class KeyLockBox : MonoBehaviour
     IEnumerator OpenBox()
     {
         _opening = true;
+
+        if (openSound != null)
+            AudioSource.PlayClipAtPoint(openSound, boxDoor != null ? boxDoor.position : transform.position);
 
         if (boxDoor != null)
         {

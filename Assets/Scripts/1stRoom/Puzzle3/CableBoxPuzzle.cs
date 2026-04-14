@@ -68,8 +68,7 @@ public class CableBoxPuzzle : BasePuzzle
     [Header("Solve Objects — STRAIGHT solve (cables top-to-top)")]
     [Tooltip("These get DESTROYED on straight solve — assign the BISHOP piece and its parts here (wrong piece for this solve)")]
     public GameObject straightDeleteObject1;
-    public GameObject straightDeleteObject2;
-    public GameObject straightDeleteObject3;
+
 
     [Header("Solve Objects — DIAGONAL/COLOR solve (cables by color)")]
     [Tooltip("This gets DESTROYED on color solve — assign the ROOK piece here (wrong piece for this solve)")]
@@ -83,7 +82,9 @@ public class CableBoxPuzzle : BasePuzzle
     public Vector3 drawerOpenDirection = new Vector3(1f, 0f, 0f);
 
     [Header("Sound Effects")]
+    public AudioClip boxDoorOpenSound;
     public AudioClip correctCableSound;
+    public AudioClip drawerOpenSound;
 
     [Header("Interaction")]
     public float interactRange = 4f;
@@ -189,6 +190,8 @@ public class CableBoxPuzzle : BasePuzzle
     IEnumerator OpenDoor()
     {
         _state = State.DoorOpening;
+        if (boxDoorOpenSound != null)
+            AudioSource.PlayClipAtPoint(boxDoorOpenSound, boxDoor.position);
         Quaternion startRot = boxDoor.localRotation;
         Quaternion endRot = Quaternion.Euler(0f, doorOpenAngle, 0f);
         float elapsed = 0f, dur = 1f / doorOpenSpeed;
@@ -511,8 +514,6 @@ public class CableBoxPuzzle : BasePuzzle
         if (straight)
         {
             if (straightDeleteObject1 != null) Destroy(straightDeleteObject1);
-            if (straightDeleteObject2 != null) Destroy(straightDeleteObject2);
-            if (straightDeleteObject3 != null) Destroy(straightDeleteObject3);
         }
         else
         {
@@ -528,6 +529,9 @@ public class CableBoxPuzzle : BasePuzzle
 
     IEnumerator OpenDrawer()
     {
+        if (drawerOpenSound != null)
+            AudioSource.PlayClipAtPoint(drawerOpenSound, drawerTransform.position);
+
         Vector3 startPos = drawerTransform.localPosition;
         Vector3 endPos = startPos + drawerOpenDirection.normalized * drawerOpenDistance;
         float elapsed = 0f, dur = drawerOpenDistance / drawerOpenSpeed;
