@@ -46,6 +46,13 @@ public class PuzzleDoorUnlocker : MonoBehaviour
     [Header("Audio (optional)")]
     public AudioClip openSound;
     public AudioClip closeSound;
+    [Tooltip("Played once when all three puzzles are solved (after last puzzle sound finishes)")]
+    public AudioClip allSolvedSound;
+    [Tooltip("How long to wait after the last puzzle is solved before playing allSolvedSound — set this to match the longest puzzle completion sound length")]
+    public float allSolvedDelay = 2f;
+
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
 
     [Header("HUD Message")]
     [Tooltip("Message shown when all puzzles are solved and door opens")]
@@ -71,6 +78,7 @@ public class PuzzleDoorUnlocker : MonoBehaviour
     void Awake()
     {
         _audio = GetComponent<AudioSource>();
+        AudioHelper.Configure(_audio, audioMixerGroup);
 
         if (captureClosedOnAwake)
         {
@@ -126,8 +134,23 @@ public class PuzzleDoorUnlocker : MonoBehaviour
 
         Debug.Log("[PuzzleDoorUnlocker] All puzzles solved — opening door!");
         ShowMessage(unlockedMessage);
-        SetSlide(open: true);
         _doorOpen = true;
+        StartCoroutine(AllSolvedSequence());
+    }
+
+    IEnumerator AllSolvedSequence()
+    {
+        // Wait for the last puzzle's completion sound to finish
+        yield return new WaitForSeconds(allSolvedDelay);
+
+        if (allSolvedSound != null)
+            PlaySound(allSolvedSound);
+
+        // Wait for allSolvedSound to finish before opening the door
+        float soundLength = allSolvedSound != null ? allSolvedSound.length : 0f;
+        yield return new WaitForSeconds(soundLength);
+
+        SetSlide(open: true);
     }
 
     // ── Called by PuzzleDoorCloseTrigger child ────────────────────
@@ -190,7 +213,7 @@ public class PuzzleDoorUnlocker : MonoBehaviour
     {
         if (clip == null) return;
         if (_audio != null) _audio.PlayOneShot(clip);
-        else AudioSource.PlayClipAtPoint(clip, transform.position);
+        else AudioHelper.Play(clip, transform.position, audioMixerGroup);
     }
 
     // ── HUD ──────────────────────────────────────────────────────

@@ -2,23 +2,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// HUDManager — Unity 6000.3.9f1
-///
-/// Attach to the Player GameObject (alongside PlayerController and Inventory).
-///
-/// Provides:
-///   1. A persistent dot + four-arm crosshair in screen-centre.
-///   2. A context-sensitive item hints panel (bottom-left) that:
-///        - Shows ONLY the keybinds for the currently held item.
-///        - Stays fully visible as long as that item is held.
-///        - Fades out when the player has no item (or inventory is empty).
-///        - Instantly swaps + pops when the selection changes.
-/// </summary>
 public class HUDManager : MonoBehaviour
 {
-    //  Inspector
-
     [Header("Crosshair")]
     public float crosshairArmLength = 9f;
     public float crosshairThickness = 2f;
@@ -35,7 +20,7 @@ public class HUDManager : MonoBehaviour
     public Color keyBadgeColor = new Color(0.18f, 0.18f, 0.18f, 0.92f);
     public Color keyBadgeBorderColor = new Color(0.70f, 0.65f, 0.25f, 1f);
 
-    //  Private
+    private static HUDManager _instance;
 
     private Canvas _canvas;
     private GameObject _crosshairRoot;
@@ -55,10 +40,16 @@ public class HUDManager : MonoBehaviour
 
     private (string key, string desc)[] _currentHints = HintsEmpty;
 
-    //  Lifecycle
-
     void Awake()
     {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        _instance = this;
+
         _inventory = GetComponent<Inventory>();
         _player = GetComponent<PlayerController>();
 
@@ -70,7 +61,6 @@ public class HUDManager : MonoBehaviour
             _inventory.OnInventoryChanged += OnInventoryChanged;
         }
 
-        // Start hidden — panel appears when first item is selected
         _hintsGroup.alpha = 0f;
         _hintsVisible = false;
         _hintsRoot.SetActive(false);
@@ -78,22 +68,27 @@ public class HUDManager : MonoBehaviour
 
     void OnDestroy()
     {
-        if (_inventory == null) return;
-        _inventory.OnSelectionChanged -= OnSelectionChanged;
-        _inventory.OnInventoryChanged -= OnInventoryChanged;
+        if (_instance == this)
+            _instance = null;
+
+        if (_inventory != null)
+        {
+            _inventory.OnSelectionChanged -= OnSelectionChanged;
+            _inventory.OnInventoryChanged -= OnInventoryChanged;
+        }
+
+        if (_canvas != null)
+            Destroy(_canvas.gameObject);
     }
 
     void Update()
     {
-        // Smooth pop-in scale
         if (_hintsRoot.activeSelf && Mathf.Abs(_popScale - 1f) > 0.001f)
         {
             _popScale = Mathf.Lerp(_popScale, 1f, Time.deltaTime * 14f);
             _hintsRoot.transform.localScale = Vector3.one * _popScale;
         }
     }
-
-    //  Inventory callbacksň
 
     void OnSelectionChanged(int index) => RefreshForIndex(index);
     void OnInventoryChanged() => RefreshForIndex(_inventory.SelectedIndex);
@@ -123,15 +118,14 @@ public class HUDManager : MonoBehaviour
                 (KeyLabel(torch.toggleKey), "Toggle flashlight"),
             };
         }
-        else if (item is KeycardItem keycard) 
+        else if (item is KeycardItem keycard)
         {
             hints = new[]
             {
                 (KeyLabel(keycard.useKey), "Use KeyCard"),
-
             };
         }
-        else if (item is SuperAcidItem superAcid) 
+        else if (item is SuperAcidItem superAcid)
         {
             hints = new[]
             {
@@ -140,7 +134,6 @@ public class HUDManager : MonoBehaviour
         }
         else
         {
-            // Unknown item — surface its description as a hint if it has one
             hints = string.IsNullOrWhiteSpace(item.description)
                 ? HintsEmpty
                 : new[] { ("E", item.description) };
@@ -148,8 +141,6 @@ public class HUDManager : MonoBehaviour
 
         ShowHints(hints, fadeOut: hints.Length == 0);
     }
-
-    //  Show / hide hints
 
     void ShowHints((string key, string desc)[] hints, bool fadeOut)
     {
@@ -167,7 +158,7 @@ public class HUDManager : MonoBehaviour
         _hintsRoot.SetActive(true);
         _hintsGroup.alpha = 1f;
         _hintsVisible = true;
-        _popScale = 1.18f; // kick off pop animation
+        _popScale = 1.18f;
     }
 
     IEnumerator FadeOut()
@@ -186,11 +177,8 @@ public class HUDManager : MonoBehaviour
         _fadeCoroutine = null;
     }
 
-    //  Rebuild hint rows
-
     void RebuildHintsContent()
     {
-        // Clear old children
         for (int i = _hintsRoot.transform.childCount - 1; i >= 0; i--)
             Destroy(_hintsRoot.transform.GetChild(i).gameObject);
 
@@ -200,7 +188,6 @@ public class HUDManager : MonoBehaviour
         const float panelW = 175f;
         const float pad = 8f;
 
-        // Title = item name
         string title = "Item";
         if (_inventory != null)
         {
@@ -221,7 +208,6 @@ public class HUDManager : MonoBehaviour
 
         float totalH = -y + pad;
 
-        // Background behind everything
         var bg = new GameObject("BG", typeof(RectTransform), typeof(Image));
         bg.transform.SetParent(_hintsRoot.transform, false);
         bg.transform.SetAsFirstSibling();
@@ -236,8 +222,6 @@ public class HUDManager : MonoBehaviour
 
         _hintsRT.sizeDelta = new Vector2(panelW, totalH);
     }
-
-    //  Row / element builders
 
     float AddTitle(GameObject parent, string text, float width, float yOffset)
     {
@@ -262,15 +246,12 @@ public class HUDManager : MonoBehaviour
         const float badgeW = 40f;
         const float gap = 6f;
 
-        // Accent border
         MakeImage(parent, "Border_" + key, keyBadgeBorderColor,
                   badgeW + 2f, rowH, -1f, yOffset + 1f).raycastTarget = false;
 
-        // Badge fill
         MakeImage(parent, "Badge_" + key, keyBadgeColor,
                   badgeW, rowH - 2f, 0f, yOffset).raycastTarget = false;
 
-        // Key text
         var keyGO = new GameObject("Key_" + key, typeof(RectTransform), typeof(Text));
         keyGO.transform.SetParent(parent.transform, false);
         SetTL(keyGO.GetComponent<RectTransform>(), badgeW, rowH - 2f, 0f, yOffset);
@@ -280,7 +261,6 @@ public class HUDManager : MonoBehaviour
         kt.color = Color.white; kt.alignment = TextAnchor.MiddleCenter;
         kt.raycastTarget = false;
 
-        // Description
         var descGO = new GameObject("Desc_" + key, typeof(RectTransform), typeof(Text));
         descGO.transform.SetParent(parent.transform, false);
         SetTL(descGO.GetComponent<RectTransform>(), width - badgeW - gap, rowH - 2f,
@@ -312,10 +292,12 @@ public class HUDManager : MonoBehaviour
         rt.anchoredPosition = new Vector2(x, y);
     }
 
-    //  Canvas shell
-
     void BuildCanvas()
     {
+        var existing = GameObject.Find("HUDCanvas");
+        if (existing != null)
+            Destroy(existing);
+
         var go = new GameObject("HUDCanvas");
         DontDestroyOnLoad(go);
         _canvas = go.AddComponent<Canvas>();
@@ -346,11 +328,10 @@ public class HUDManager : MonoBehaviour
 
     void CrosshairPiece(string name, Vector2 size, Vector2 pos)
     {
-        // Shadow
         var s = MakeCentredImage(_crosshairRoot, name + "_S", crosshairShadowColor,
                                  size, pos + new Vector2(1f, -1f));
         s.raycastTarget = false;
-        // Foreground
+
         var f = MakeCentredImage(_crosshairRoot, name, crosshairColor, size, pos);
         f.raycastTarget = false;
     }
@@ -379,8 +360,6 @@ public class HUDManager : MonoBehaviour
         _hintsRT.anchorMax = Vector2.zero;
         _hintsRT.anchoredPosition = new Vector2(18f, 18f);
     }
-
-    //  Key label helper
 
     static string KeyLabel(KeyCode key) => key switch
     {

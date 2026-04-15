@@ -74,6 +74,9 @@ public class BottlePlacementZone : MonoBehaviour
     [Header("Sound Effects")]
     public AudioClip placeSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     [Header("On Solved - fires when all slots on this zone are filled")]
     public UnityEvent onSolved;
 
@@ -148,7 +151,7 @@ public class BottlePlacementZone : MonoBehaviour
     void PlaceBarSlot(BottleItem bottle, Inventory inventory, bool isSlotA)
     {
         if (placeSound != null)
-            AudioSource.PlayClipAtPoint(placeSound, transform.position);
+            AudioHelper.Play(placeSound, transform.position, audioMixerGroup);
         inventory.RemoveItem(bottle);
         if (isSlotA)
         {
@@ -167,7 +170,7 @@ public class BottlePlacementZone : MonoBehaviour
     void PlaceTableSlot(BottleItem bottle, Inventory inventory)
     {
         if (placeSound != null)
-            AudioSource.PlayClipAtPoint(placeSound, transform.position);
+            AudioHelper.Play(placeSound, transform.position, audioMixerGroup);
         inventory.RemoveItem(bottle);
         SpawnAtSlot(tableBottlePrefab, tableBottleSlot);
         SpawnAtSlot(tableGlassPrefab, tableGlassSlot_1, isGlass: true);

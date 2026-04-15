@@ -36,6 +36,9 @@ public class GunItem : InventoryItem
     [Header("Audio (optional)")]
     public AudioClip shootSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     [Header("Crosshair")]
     public float crosshairSize = 10f;
     public float crosshairThickness = 2f;
@@ -95,6 +98,7 @@ public class GunItem : InventoryItem
         _audio = GetComponent<AudioSource>();
         if (_audio == null) _audio = gameObject.AddComponent<AudioSource>();
         _audio.spatialBlend = 0f;
+        AudioHelper.Configure(_audio, audioMixerGroup, is3D: false);
 
         if (muzzleFlashObject != null) muzzleFlashObject.SetActive(false);
 

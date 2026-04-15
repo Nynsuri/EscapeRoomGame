@@ -35,6 +35,9 @@ public class DissolvableBox : MonoBehaviour
     [Header("Audio (optional)")]
     public AudioClip dissolveSFX;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     [Header("Events")]
     public UnityEngine.Events.UnityEvent onDissolveStart;
     public UnityEngine.Events.UnityEvent onDissolveComplete;
@@ -74,9 +77,7 @@ public class DissolvableBox : MonoBehaviour
         onDissolveStart?.Invoke();
 
         if (dissolveSFX != null)
-        {
-            AudioSource.PlayClipAtPoint(dissolveSFX, transform.position);
-        }
+            AudioHelper.Play(dissolveSFX, transform.position, audioMixerGroup);
 
         StartCoroutine(DissolveRoutine(duration));
     }

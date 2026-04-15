@@ -18,12 +18,15 @@ public class BottleItem : InventoryItem
     [Header("Sound Effects")]
     public AudioClip pickupSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     // --- InventoryItem overrides ----------------------------------------------
 
     public override void OnPickup()
     {
         if (pickupSound != null)
-            AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+            AudioHelper.Play(pickupSound, transform.position, audioMixerGroup);
 
         // Hide this object normally via the base class
         base.OnPickup();

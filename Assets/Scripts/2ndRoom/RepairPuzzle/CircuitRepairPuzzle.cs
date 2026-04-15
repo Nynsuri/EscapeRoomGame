@@ -27,6 +27,9 @@ public class CircuitRepairPuzzle : BasePuzzle
     [Header("Sound Effects")]
     public AudioClip completedSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     [Header("On Solved")]
     public UnityEngine.Events.UnityEvent onSolved;
 
@@ -253,7 +256,7 @@ public class CircuitRepairPuzzle : BasePuzzle
             _state = State.Solved;
             ShowFeedback("✓ CIRCUIT REPAIRED!", ColPositive, 99f);
             if (completedSound != null)
-                AudioSource.PlayClipAtPoint(completedSound, transform.position);
+                AudioHelper.Play(completedSound, transform.position, audioMixerGroup);
             StartCoroutine(FlashSolved());
             onSolved?.Invoke();
             StartCoroutine(SolvedExit());

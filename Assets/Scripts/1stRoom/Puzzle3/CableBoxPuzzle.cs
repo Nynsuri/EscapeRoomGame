@@ -85,10 +85,13 @@ public class CableBoxPuzzle : BasePuzzle
     public AudioClip boxDoorOpenSound;
     public AudioClip correctCableSound;
     public AudioClip drawerOpenSound;
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
 
     [Header("Interaction")]
     public float interactRange = 4f;
     public KeyCode interactKey = KeyCode.E;
+
 
 
 
@@ -191,7 +194,7 @@ public class CableBoxPuzzle : BasePuzzle
     {
         _state = State.DoorOpening;
         if (boxDoorOpenSound != null)
-            AudioSource.PlayClipAtPoint(boxDoorOpenSound, boxDoor.position);
+            AudioHelper.Play(boxDoorOpenSound, boxDoor.position, audioMixerGroup);
         Quaternion startRot = boxDoor.localRotation;
         Quaternion endRot = Quaternion.Euler(0f, doorOpenAngle, 0f);
         float elapsed = 0f, dur = 1f / doorOpenSpeed;
@@ -507,7 +510,7 @@ public class CableBoxPuzzle : BasePuzzle
     {
         _state = State.Solved;
         if (correctCableSound != null)
-            AudioSource.PlayClipAtPoint(correctCableSound, transform.position);
+            AudioHelper.Play(correctCableSound, transform.position, audioMixerGroup);
         yield return new WaitForSeconds(1.5f);
 
         // Delete the appropriate objects
@@ -530,7 +533,7 @@ public class CableBoxPuzzle : BasePuzzle
     IEnumerator OpenDrawer()
     {
         if (drawerOpenSound != null)
-            AudioSource.PlayClipAtPoint(drawerOpenSound, drawerTransform.position);
+            AudioHelper.Play(drawerOpenSound, drawerTransform.position, audioMixerGroup);
 
         Vector3 startPos = drawerTransform.localPosition;
         Vector3 endPos = startPos + drawerOpenDirection.normalized * drawerOpenDistance;

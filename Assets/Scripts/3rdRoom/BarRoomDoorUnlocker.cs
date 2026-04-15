@@ -43,6 +43,9 @@ public class BarRoomDoorUnlocker : MonoBehaviour
     public AudioClip openSound;
     public AudioClip closeSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     // ── State ─────────────────────────────────────────────────────
     private bool _shootingSolved = false;
     private bool _bottleSolved   = false;
@@ -64,6 +67,7 @@ public class BarRoomDoorUnlocker : MonoBehaviour
     void Awake()
     {
         _audio     = GetComponent<AudioSource>();
+        AudioHelper.Configure(_audio, audioMixerGroup);
         _closedRot = transform.localRotation;
         _openRot   = _closedRot * Quaternion.Euler(0f, openAngle, 0f);
     }
@@ -174,7 +178,7 @@ public class BarRoomDoorUnlocker : MonoBehaviour
     {
         if (clip == null) return;
         if (_audio != null) _audio.PlayOneShot(clip);
-        else AudioSource.PlayClipAtPoint(clip, transform.position);
+        else AudioHelper.Play(clip, transform.position, audioMixerGroup);
     }
 
     void ShowMessage(string msg)

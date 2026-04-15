@@ -24,6 +24,9 @@ public class HackingPuzzle : BasePuzzle
     [Header("Sound Effects")]
     public AudioClip completedSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     [Header("On Solved")]
     public UnityEngine.Events.UnityEvent onSolved;
 
@@ -483,7 +486,7 @@ public class HackingPuzzle : BasePuzzle
     {
         _timerRunning = false;
         if (completedSound != null)
-            AudioSource.PlayClipAtPoint(completedSound, transform.position);
+            AudioHelper.Play(completedSound, transform.position, audioMixerGroup);
         SetStatus("ACCESS GRANTED", new Color(0.2f, 1f, 0.5f));
         ShowFeedback("ACCESS GRANTED", new Color(0.2f, 1f, 0.5f));
         yield return new WaitForSeconds(1.5f);

@@ -17,6 +17,9 @@ public class KeyLockBox : MonoBehaviour
     [Header("Sound Effects")]
     public AudioClip openSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     [Header("Interaction")]
     public float interactRange = 3f;
     public KeyCode interactKey = KeyCode.E;
@@ -67,7 +70,7 @@ public class KeyLockBox : MonoBehaviour
         _opening = true;
 
         if (openSound != null)
-            AudioSource.PlayClipAtPoint(openSound, boxDoor != null ? boxDoor.position : transform.position);
+            AudioHelper.Play(openSound, boxDoor != null ? boxDoor.position : transform.position, audioMixerGroup);
 
         if (boxDoor != null)
         {

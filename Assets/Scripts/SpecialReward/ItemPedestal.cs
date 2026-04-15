@@ -56,6 +56,9 @@ public class ItemPedestal : MonoBehaviour
     public AudioClip placeSound;
     public AudioClip rejectSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     // ── HUD message ──────────────────────────────────────────────
     [Header("On-Screen Messages")]
     [Tooltip("Duration the message stays on screen (seconds)")]
@@ -78,6 +81,7 @@ public class ItemPedestal : MonoBehaviour
     void Awake()
     {
         _audio = GetComponent<AudioSource>();
+        AudioHelper.Configure(_audio, audioMixerGroup);
 
         if (itemMountPoint == null)
             Debug.LogWarning($"[ItemPedestal] '{gameObject.name}' has no Item Mount Point assigned!");
@@ -222,7 +226,7 @@ public class ItemPedestal : MonoBehaviour
     {
         if (clip == null) return;
         if (_audio != null) _audio.PlayOneShot(clip);
-        else AudioSource.PlayClipAtPoint(clip, transform.position);
+        else AudioHelper.Play(clip, transform.position, audioMixerGroup);
     }
 
     // ── Gizmo ────────────────────────────────────────────────────

@@ -39,6 +39,9 @@ public class ChessBoard : MonoBehaviour
     public AudioClip piecePlacedSound;
     public AudioClip drawerOpenSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     [Header("Interaction")]
     public float interactRange = 3f;
     public KeyCode interactKey = KeyCode.E;
@@ -102,7 +105,7 @@ public class ChessBoard : MonoBehaviour
             p.enabled = false;
 
         if (piecePlacedSound != null)
-            AudioSource.PlayClipAtPoint(piecePlacedSound, slot.position);
+            AudioHelper.Play(piecePlacedSound, slot.position, audioMixerGroup);
 
         MarkPlaced(piece.pieceType);
         CheckCompletion();
@@ -139,7 +142,7 @@ public class ChessBoard : MonoBehaviour
     IEnumerator OpenDrawer(Transform drawer, Vector3 direction, float distance, float speed)
     {
         if (drawerOpenSound != null)
-            AudioSource.PlayClipAtPoint(drawerOpenSound, drawer.position);
+            AudioHelper.Play(drawerOpenSound, drawer.position, audioMixerGroup);
 
         Vector3 start = drawer.localPosition;
         Vector3 end = start + direction.normalized * distance;

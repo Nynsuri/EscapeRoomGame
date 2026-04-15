@@ -47,6 +47,9 @@ public class ProximitySlidingDoors : MonoBehaviour
     public AudioClip openSound;
     public AudioClip closeSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     // ── State ─────────────────────────────────────────────────────
     public enum DoorState { Closed, Opening, Open, Closing }
     public DoorState State { get; private set; } = DoorState.Closed;
@@ -60,6 +63,7 @@ public class ProximitySlidingDoors : MonoBehaviour
     void Awake()
     {
         _audio = GetComponent<AudioSource>();
+        AudioHelper.Configure(_audio, audioMixerGroup);
 
         if (captureClosedOnAwake)
         {
@@ -149,7 +153,7 @@ public class ProximitySlidingDoors : MonoBehaviour
     {
         if (clip == null) return;
         if (_audio != null) _audio.PlayOneShot(clip);
-        else AudioSource.PlayClipAtPoint(clip, transform.position);
+        else AudioHelper.Play(clip, transform.position, audioMixerGroup);
     }
 
     void OnDrawGizmosSelected()

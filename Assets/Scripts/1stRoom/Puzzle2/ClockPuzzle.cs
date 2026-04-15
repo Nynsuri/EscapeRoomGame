@@ -57,6 +57,9 @@ public class ClockPuzzle : BasePuzzle
     public AudioClip solvedSound;
     public AudioClip drawerOpenSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     [Header("On Solved (optional Unity Event)")]
     public UnityEngine.Events.UnityEvent onSolved;
 
@@ -253,7 +256,7 @@ public class ClockPuzzle : BasePuzzle
     IEnumerator OpenDrawer()
     {
         if (drawerOpenSound != null)
-            AudioSource.PlayClipAtPoint(drawerOpenSound, solveDrawer.position);
+            AudioHelper.Play(drawerOpenSound, solveDrawer.position, audioMixerGroup);
 
         Vector3 closed = solveDrawer.localPosition;
         Vector3 open = closed + new Vector3(-drawerOpenDistance, 0f, 0f);
@@ -279,7 +282,7 @@ public class ClockPuzzle : BasePuzzle
         {
             ShowFeedback("✓  Correct!", Color.green);
             if (solvedSound != null)
-                AudioSource.PlayClipAtPoint(solvedSound, transform.position);
+                AudioHelper.Play(solvedSound, transform.position, audioMixerGroup);
             onSolved?.Invoke();
             StartCoroutine(SolvedExit());
         }

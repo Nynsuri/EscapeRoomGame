@@ -37,6 +37,9 @@ public class AutoSwingDoor : MonoBehaviour
     public AudioClip openSound;
     public AudioClip closeSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     // ── State ─────────────────────────────────────────────────────
     public enum DoorState { Closed, Opening, Open, Closing }
     public DoorState State { get; private set; } = DoorState.Closed;
@@ -52,6 +55,7 @@ public class AutoSwingDoor : MonoBehaviour
     void Awake()
     {
         _audio = GetComponent<AudioSource>();
+        AudioHelper.Configure(_audio, audioMixerGroup);
         _closedRot = transform.localRotation;
         _openRot = _closedRot * Quaternion.Euler(0f, openAngle, 0f);
     }
@@ -123,7 +127,7 @@ public class AutoSwingDoor : MonoBehaviour
     {
         if (clip == null) return;
         if (_audio != null) _audio.PlayOneShot(clip);
-        else AudioSource.PlayClipAtPoint(clip, transform.position);
+        else AudioHelper.Play(clip, transform.position, audioMixerGroup);
     }
 
     void OnDrawGizmosSelected()

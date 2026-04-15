@@ -247,31 +247,4 @@ public class PlayerController : MonoBehaviour
         _cc.radius = colliderRadius;
         _cc.center = colliderCenter;
     }
-
-    // ─── Dev / external teleport support ──────────────────────────
-
-    /// <summary>
-    /// Resets accumulated velocity. Call after teleporting the player
-    /// so gravity and momentum don't carry over from the previous position.
-    /// </summary>
-    public void ResetVelocity()
-    {
-        _velocity = Vector3.zero;
-    }
-
-    /// <summary>
-    /// Teleport-safe position setter. Disables the CharacterController,
-    /// moves the transform, resets velocity, then re-enables it.
-    /// Use this instead of setting transform.position directly.
-    /// </summary>
-    public void TeleportTo(Vector3 worldPosition)
-    {
-        // Disable CC, warp, sync physics, reset velocity, re-enable
-        _cc.enabled = false;
-        transform.position = worldPosition;
-        Physics.SyncTransforms();   // forces physics engine to accept the new position immediately
-        _velocity = Vector3.zero;
-        _cc.enabled = true;
-        Debug.Log($"[PlayerController] Teleported to {worldPosition}");
-    }
 }

@@ -14,6 +14,9 @@ public class LeverInteractable : MonoBehaviour
     [Header("Sound Effects")]
     public AudioClip leverPullSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     [Header("Interaction")]
     public float interactRange = 3f;
     public KeyCode interactKey = KeyCode.E;
@@ -59,7 +62,7 @@ public class LeverInteractable : MonoBehaviour
     IEnumerator PullAndValidate()
     {
         if (leverPullSound != null)
-            AudioSource.PlayClipAtPoint(leverPullSound, transform.position);
+            AudioHelper.Play(leverPullSound, transform.position, audioMixerGroup);
         yield return StartCoroutine(AnimateLever(leverTargetX));
         if (puzzle != null)
             puzzle.ValidateFromLever();

@@ -26,6 +26,9 @@ public class CabinetDoor : MonoBehaviour
     [Header("Sound Effects")]
     public AudioClip openSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     [Header("Interaction")]
     public float interactRange = 3f;
     public KeyCode interactKey = KeyCode.E;
@@ -73,7 +76,7 @@ public class CabinetDoor : MonoBehaviour
         _opening = true;
 
         if (openSound != null)
-            AudioSource.PlayClipAtPoint(openSound, transform.position);
+            AudioHelper.Play(openSound, transform.position, audioMixerGroup);
 
         // Nudge player out of the door's swing arc before it moves
         NudgePlayerClear();

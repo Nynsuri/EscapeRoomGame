@@ -54,6 +54,9 @@ public class KeyDoor : MonoBehaviour
     public AudioClip unlockSound;
     public AudioClip lockedSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     // ── HUD ──────────────────────────────────────────────────────
     [Header("Messages")]
     public string noKeyMessage      = "This door is locked.";
@@ -78,6 +81,7 @@ public class KeyDoor : MonoBehaviour
     void Awake()
     {
         _audio = GetComponent<AudioSource>();
+        AudioHelper.Configure(_audio, audioMixerGroup);
 
         if (playerCamera == null)
             playerCamera = Camera.main;
@@ -202,7 +206,7 @@ public class KeyDoor : MonoBehaviour
     {
         if (clip == null) return;
         if (_audio != null) _audio.PlayOneShot(clip);
-        else AudioSource.PlayClipAtPoint(clip, transform.position);
+        else AudioHelper.Play(clip, transform.position, audioMixerGroup);
     }
 
     // ── GUI ──────────────────────────────────────────────────────

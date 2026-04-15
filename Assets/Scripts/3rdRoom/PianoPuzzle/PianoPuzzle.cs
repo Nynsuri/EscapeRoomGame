@@ -112,7 +112,10 @@ public class PianoPuzzle : BasePuzzle
 
     void InitAudio()
     {
-        // Destroy stale host if it exists (e.g. after hot-reload rebuild)
+        // If host is still alive and the AudioSource is intact, keep it —
+        // destroying a playing host mid-solve would silence the music.
+        if (_audioHost != null && _audio != null) return;
+
         if (_audioHost != null) Destroy(_audioHost);
 
         // Scene-root object — no parent, so no transform inheritance from the piano root
@@ -383,9 +386,13 @@ public class PianoPuzzle : BasePuzzle
         var clip = _secretMode ? secretMusicClip : normalMusicClip;
         if (clip != null)
         {
-            _audio.clip = clip;
-            _audio.loop = false;
+            if (_audio == null || _audioHost == null) InitAudio();
+            _audio.clip   = clip;
+            _audio.loop   = false;
+            _audio.volume = musicVolume;
             _audio.Play();
+            _pausedByCorridor = false;
+            BarRoomState.SetPlayerSide(false);
         }
 
         yield return new WaitForSeconds(1.5f);

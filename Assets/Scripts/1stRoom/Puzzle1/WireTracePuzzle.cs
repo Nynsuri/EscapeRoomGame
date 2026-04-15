@@ -33,6 +33,9 @@ public class WireTracePuzzle : BasePuzzle
     public AudioClip completedSound;
     public AudioClip drawerOpenSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
 
     // ── State ─────────────────────────────────────────────────────
     private enum PuzzleState { Idle, ZoomingIn, Playing, Resetting, Completing, Done }
@@ -294,7 +297,7 @@ public class WireTracePuzzle : BasePuzzle
         _state = PuzzleState.Completing;
         if (_cursorDot != null) _cursorDot.SetActive(false);
         if (completedSound != null)
-            AudioSource.PlayClipAtPoint(completedSound, transform.position);
+            AudioHelper.Play(completedSound, transform.position, audioMixerGroup);
         ShowMessage("Puzzle solved!");
         yield return new WaitForSeconds(0.8f);
         yield return StartCoroutine(ZoomOut());
@@ -354,7 +357,7 @@ public class WireTracePuzzle : BasePuzzle
     IEnumerator OpenDrawer()
     {
         if (drawerOpenSound != null)
-            AudioSource.PlayClipAtPoint(drawerOpenSound, drawer.position);
+            AudioHelper.Play(drawerOpenSound, drawer.position, audioMixerGroup);
 
         Vector3 closedPos = drawer.localPosition;
         Vector3 openPos = closedPos + new Vector3(-drawerOpenDistance, 0f, 0f);

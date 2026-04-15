@@ -44,15 +44,12 @@ public class EndingManager : MonoBehaviour
     [Header("Bad Ending Text")]
     [SerializeField] private TMP_Text badTitleText;
     [SerializeField] private TMP_Text badBodyText;
-    [SerializeField] private TMP_Text badCountdownText;   // inside BadEndingPanel
 
     [Header("Shared")]
-    [SerializeField] private TMP_Text goodCountdownText;  // inside GoodEndingPanel
     [SerializeField] private Image fadeImage;          // full-screen black Image for fade
 
     [Header("Timing")]
-    [SerializeField] private float goodEndingDuration = 25f;  // seconds before returning to menu
-    [SerializeField] private float badEndingDuration = 20f;
+    [SerializeField] private float endingDisplayDuration = 7f;  // seconds ending text shows before credits
     [SerializeField] private float fadeDuration = 1.5f;
 
     [Header("Scene Names")]
@@ -80,6 +77,105 @@ public class EndingManager : MonoBehaviour
         "Not every story ends the way you hoped.";
 
 
+    [Header("Credits")]
+    [SerializeField] private float creditsScrollDuration = 40f;
+
+    // ── Credits content ───────────────────────────────────────────
+    private const string CreditsText =
+        "ASSETS & CREDITS\n" +
+        "All 3D models sourced from Sketchfab\n\n\n" +
+
+        "── ROOM 1 ──\n\n" +
+
+        "Bed Side Table\n" +
+        "  Author: phillips.kieran\n" +
+        "  License: CC BY 4.0\n\n" +
+
+        "Wooden Table\n" +
+        "  Author: Mehdi Shahsavan\n" +
+        "  License: CC BY 4.0\n\n" +
+
+        "Generator\n" +
+        "  Author: DJMaesen (bumstrum)\n" +
+        "  License: CC Attribution\n\n" +
+
+        "Damaged Frame\n" +
+        "  Author: Gabbo (gabbo104)\n" +
+        "  License: CC BY 4.0\n\n" +
+
+        "Key\n" +
+        "  Author: yomans\n" +
+        "  License: CC Attribution\n\n" +
+
+        "Door Wooden Old\n" +
+        "  Author: Mehdi Shahsavan\n" +
+        "  License: CC BY 4.0\n\n" +
+
+        "Filing Cabinets (papers)\n" +
+        "  Author: TooManyDemons\n" +
+        "  License: CC BY 4.0\n\n\n" +
+
+        "── ROOM 2 ──\n\n" +
+
+        "Cryopod\n" +
+        "  Author: epilogueronin\n" +
+        "  License: CC Attribution\n\n" +
+
+        "Digital City\n" +
+        "  Author: Moshe Caine\n" +
+        "  License: CC Attribution\n\n" +
+
+        "Repair Kit / Control Panel\n" +
+        "  Author: Ramil Kudashev (mlknz)\n" +
+        "  License: CC BY 4.0\n\n" +
+
+        "Realistic Galaxy Skybox HDRI Panorama\n" +
+        "  Author: Aliaksandr.melas\n" +
+        "  License: CC BY 4.0\n\n\n" +
+
+        "── ROOM 3 ──\n\n" +
+
+        "Old Wooden Grand Piano\n" +
+        "  Author: Mikael H. (mikaelhyttinen)\n" +
+        "  License: CC Attribution\n\n" +
+
+        "Revolver\n" +
+        "  Author: DJMaesen (bumstrum)\n" +
+        "  License: CC Attribution\n\n" +
+
+        "Old Western Bar\n" +
+        "  Author: gallacs\n" +
+        "  License: CC BY 4.0\n\n" +
+
+        "Saloon Floor Tile Texture\n" +
+        "  Author: CATholic\n" +
+        "  License: CC Attribution\n\n" +
+
+        "Bar with Bottles\n" +
+        "  Author: windupbird\n" +
+        "  License: CC BY 4.0\n\n" +
+
+        "Door Wooden\n" +
+        "  Author: Mehdi Shahsavan\n" +
+        "  License: CC Attribution\n\n\n" +
+
+        "── ROOM 4 ──\n\n" +
+
+        "Chemistry Glassware\n" +
+        "  Author: melissasyamsiah\n" +
+        "  License: CC BY 4.0\n\n" +
+
+        "Binocular Microscope\n" +
+        "  Author: miqasasuqasa\n" +
+        "  License: CC BY 4.0\n\n" +
+
+        "Laboratory Table\n" +
+        "  Author: yuitop\n" +
+        "  License: CC BY 4.0\n\n\n" +
+
+        "Thank you for playing.";
+
+    // ── Runtime ───────────────────────────────────────────────────
     private void Start()
     {
         // Restore time scale in case the game paused before transitioning
@@ -91,7 +187,6 @@ public class EndingManager : MonoBehaviour
 
         if (goodEnding)
         {
-            // Unlock unlimited mode
             MainMenuManager.UnlockUnlimitedMode();
             StartCoroutine(PlayGoodEnding());
         }
@@ -105,24 +200,20 @@ public class EndingManager : MonoBehaviour
 
     private IEnumerator PlayGoodEnding()
     {
-        // Set up text
         if (goodTitleText != null) goodTitleText.text = goodTitle;
         if (goodBodyText != null) goodBodyText.text = goodBody;
         if (goodSubtitleText != null) goodSubtitleText.text = goodUnlockText;
 
-        // Start fully black, fade in
         SetFade(1f);
         goodEndingPanel?.SetActive(true);
         badEndingPanel?.SetActive(false);
 
         yield return StartCoroutine(Fade(1f, 0f));
-
-        // Count down with live text
-        yield return StartCoroutine(Countdown(goodEndingDuration, goodCountdownText));
-
-        // Fade out then return to menu
+        yield return new WaitForSeconds(endingDisplayDuration);
         yield return StartCoroutine(Fade(0f, 1f));
-        ReturnToMenu();
+
+        goodEndingPanel?.SetActive(false);
+        yield return StartCoroutine(PlayCredits());
     }
 
     //  BAD ENDING
@@ -137,27 +228,128 @@ public class EndingManager : MonoBehaviour
         goodEndingPanel?.SetActive(false);
 
         yield return StartCoroutine(Fade(1f, 0f));
-        yield return StartCoroutine(Countdown(badEndingDuration, badCountdownText));
+        yield return new WaitForSeconds(endingDisplayDuration);
         yield return StartCoroutine(Fade(0f, 1f));
-        ReturnToMenu();
+
+        badEndingPanel?.SetActive(false);
+        yield return StartCoroutine(PlayCredits());
     }
-    //  HELPERS
 
-    private IEnumerator Countdown(float duration, TMP_Text label)
+    //  CREDITS
+
+    private IEnumerator PlayCredits()
     {
-        float remaining = duration;
-        while (remaining > 0f)
-        {
-            if (label != null)
-                label.text = $"Returning to menu in {Mathf.CeilToInt(remaining)}...";
+        // ── Build credits canvas ──────────────────────────────────
+        var canvasGO = new GameObject("CreditsCanvas");
+        var canvas = canvasGO.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 50;
+        canvasGO.AddComponent<UnityEngine.UI.CanvasScaler>().uiScaleMode =
+            UnityEngine.UI.CanvasScaler.ScaleMode.ConstantPixelSize;
 
-            remaining -= Time.deltaTime;
+        // Black background
+        var bg = new GameObject("BG", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+        bg.transform.SetParent(canvasGO.transform, false);
+        var bgRT = bg.GetComponent<RectTransform>();
+        bgRT.anchorMin = Vector2.zero; bgRT.anchorMax = Vector2.one;
+        bgRT.offsetMin = bgRT.offsetMax = Vector2.zero;
+        bg.GetComponent<UnityEngine.UI.Image>().color = Color.black;
+
+        // Mask area — leaves a margin and hides text outside it
+        var maskGO = new GameObject("Mask", typeof(RectTransform), typeof(UnityEngine.UI.Image),
+            typeof(UnityEngine.UI.Mask));
+        maskGO.transform.SetParent(canvasGO.transform, false);
+        var maskRT = maskGO.GetComponent<RectTransform>();
+        maskRT.anchorMin = new Vector2(0.1f, 0.08f);
+        maskRT.anchorMax = new Vector2(0.9f, 0.92f);
+        maskRT.offsetMin = maskRT.offsetMax = Vector2.zero;
+        maskGO.GetComponent<UnityEngine.UI.Image>().color = new Color(0, 0, 0, 0.01f);
+        maskGO.GetComponent<UnityEngine.UI.Mask>().showMaskGraphic = false;
+
+        // Scrolling text container
+        var textGO = new GameObject("CreditsText", typeof(RectTransform));
+        textGO.transform.SetParent(maskGO.transform, false);
+        var textRT = textGO.GetComponent<RectTransform>();
+        textRT.anchorMin = new Vector2(0f, 0f);
+        textRT.anchorMax = new Vector2(1f, 0f);
+        textRT.pivot = new Vector2(0.5f, 0f);
+        textRT.sizeDelta = new Vector2(0f, 2000f); // tall enough for all text
+
+        var tmPro = textGO.AddComponent<TMPro.TextMeshProUGUI>();
+        tmPro.text = CreditsText;
+        tmPro.fontSize = 22;
+        tmPro.alignment = TMPro.TextAlignmentOptions.Center;
+        tmPro.color = Color.white;
+        tmPro.textWrappingMode = TMPro.TextWrappingModes.Normal;
+
+        // Force mesh update to get correct preferred height
+        tmPro.ForceMeshUpdate();
+        float textHeight = tmPro.preferredHeight + 60f;
+        textRT.sizeDelta = new Vector2(0f, textHeight);
+
+        // Wait one frame so Unity's layout system resolves RectTransform sizes
+        yield return null;
+
+        // Skip prompt fixed at bottom
+        var skipGO = new GameObject("SkipPrompt", typeof(RectTransform));
+        skipGO.transform.SetParent(canvasGO.transform, false);
+        var skipRT = skipGO.GetComponent<RectTransform>();
+        skipRT.anchorMin = new Vector2(0f, 0f); skipRT.anchorMax = new Vector2(1f, 0f);
+        skipRT.pivot = new Vector2(0.5f, 0f);
+        skipRT.sizeDelta = new Vector2(0f, 40f);
+        skipRT.anchoredPosition = new Vector2(0f, 10f);
+        var skipTMP = skipGO.AddComponent<TMPro.TextMeshProUGUI>();
+        skipTMP.text = "[ Press any key to skip ]";
+        skipTMP.fontSize = 16;
+        skipTMP.alignment = TMPro.TextAlignmentOptions.Center;
+        skipTMP.color = new Color(1f, 1f, 1f, 0.45f);
+
+        var canvasFader = canvasGO.AddComponent<CanvasGroup>();
+        canvasFader.alpha = 0f;
+
+        // ── Scroll text upward, title starting at centre of screen ─
+        // pivot is at bottom of text, anchor at bottom of mask.
+        // We want the TOP of the text at maskHeight/2:
+        //   top of text = anchoredPosition.y + textHeight = maskHeight/2
+        //   → anchoredPosition.y = maskHeight/2 - textHeight
+        float maskHeight = maskRT.rect.height;
+        float startY = maskHeight * 0.5f - textHeight;   // top of text at centre of mask
+        float endY   = maskHeight;                        // bottom of text scrolled past top
+
+        textRT.anchoredPosition = new Vector2(0f, startY);
+
+        bool skipped = false;
+        float elapsed = 0f;
+
+        while (elapsed < creditsScrollDuration && !skipped)
+        {
+            if (Input.anyKeyDown) skipped = true;
+
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / creditsScrollDuration);
+            textRT.anchoredPosition = new Vector2(0f, Mathf.Lerp(startY, endY, t));
+
+            // Fade in during first fadeDuration seconds of scrolling
+            if (canvasFader.alpha < 1f)
+                canvasFader.alpha = Mathf.Clamp01(elapsed / fadeDuration);
+
             yield return null;
         }
 
-        if (label != null)
-            label.text = "";
+        // Fade out credits
+        float fadeOut = 1f;
+        while (fadeOut > 0f)
+        {
+            fadeOut -= Time.deltaTime / fadeDuration;
+            canvasFader.alpha = Mathf.Clamp01(fadeOut);
+            yield return null;
+        }
+
+        Destroy(canvasGO);
+        ReturnToMenu();
     }
+
+    //  HELPERS
 
     private IEnumerator Fade(float from, float to)
     {
@@ -188,7 +380,6 @@ public class EndingManager : MonoBehaviour
 
     private void ReturnToMenu()
     {
-        // Clean up the ending flag so it doesn't persist into next playthrough
         PlayerPrefs.DeleteKey(PREF_GOOD_ENDING);
         PlayerPrefs.Save();
         SceneManager.LoadScene(mainMenuSceneName);

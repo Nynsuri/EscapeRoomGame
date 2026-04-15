@@ -44,6 +44,9 @@ public class ChemistryPuzzle : BasePuzzle
     [Header("Sound Effects")]
     public AudioClip completedSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     [Header("On Solved")]
     public UnityEngine.Events.UnityEvent onSolved;
 
@@ -538,7 +541,7 @@ public class ChemistryPuzzle : BasePuzzle
         if (solved)
         {
             if (completedSound != null)
-                AudioSource.PlayClipAtPoint(completedSound, transform.position);
+                AudioHelper.Play(completedSound, transform.position, audioMixerGroup);
             onSolved?.Invoke();
         }
     }

@@ -15,6 +15,9 @@ public class MagneticLock : MonoBehaviour
     [Header("Sound Effects")]
     public AudioClip unlockSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
 
     private bool _unlocked = false;
 
@@ -36,7 +39,7 @@ public class MagneticLock : MonoBehaviour
         _unlocked = true;
 
         if (unlockSound != null)
-            AudioSource.PlayClipAtPoint(unlockSound, transform.position);
+            AudioHelper.Play(unlockSound, transform.position, audioMixerGroup);
 
         if (repairBox != null)
         {

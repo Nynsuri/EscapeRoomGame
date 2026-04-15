@@ -23,6 +23,9 @@ public class RewardUnlocker : MonoBehaviour
     public AudioClip doorCloseSound;
     public AudioClip tableRiseSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     public enum DoorOpenMode { SlideDown, SlideUp, SlideAside, Rotate }
 
     private bool _triggered = false;
@@ -33,6 +36,7 @@ public class RewardUnlocker : MonoBehaviour
     void Awake()
     {
         _audio = GetComponent<AudioSource>();
+        AudioHelper.Configure(_audio, audioMixerGroup);
         if (door != null)
         {
             _doorClosedPos = door.position;
@@ -68,7 +72,6 @@ public class RewardUnlocker : MonoBehaviour
 
         if (table != null)
         {
-            PlaySound(tableRiseSound, table.position);
             yield return StartCoroutine(AnimateTableRise());
         }
 
@@ -125,7 +128,7 @@ public class RewardUnlocker : MonoBehaviour
     {
         Vector3 startPos = table.position;
         Vector3 endPos = new Vector3(table.position.x, tableTargetY, table.position.z);
-
+        PlaySound(tableRiseSound, table.position);
         float elapsed = 0f;
         while (elapsed < tableRiseDuration)
         {
@@ -142,7 +145,7 @@ public class RewardUnlocker : MonoBehaviour
     {
         if (clip == null) return;
         if (_audio != null) _audio.PlayOneShot(clip);
-        else AudioSource.PlayClipAtPoint(clip, pos);
+        else AudioHelper.Play(clip, pos, audioMixerGroup);
     }
 
     void OnDrawGizmosSelected()

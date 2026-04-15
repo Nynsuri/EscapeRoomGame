@@ -65,6 +65,9 @@ public class PortalRing : MonoBehaviour
     [Tooltip("Clip to play on Side B crossing")]
     public AudioClip sideBCrossingSound;
 
+    [Header("Audio Mixer")]
+    public UnityEngine.Audio.AudioMixerGroup audioMixerGroup;
+
     [Header("Audio Occlusion")]
     [Tooltip("Layers considered walls for audio occlusion — match your wall/floor layer(s)")]
     public LayerMask occlusionLayers = ~0;
@@ -99,13 +102,11 @@ public class PortalRing : MonoBehaviour
             _idleSource = gameObject.AddComponent<AudioSource>();
             _idleSource.clip = idleAmbientSound;
             _idleSource.loop = true;
-            _idleSource.spatialBlend = 1f;
             _idleSource.volume = idleVolume;
             _idleSource.playOnAwake = false;
-            _idleSource.dopplerLevel = 0f;
-            _idleSource.rolloffMode = AudioRolloffMode.Logarithmic;
             _idleSource.minDistance = 1f;
             _idleSource.maxDistance = idleMaxDistance;
+            AudioHelper.Configure(_idleSource, audioMixerGroup);
             _idleSource.Play();
         }
     }
@@ -177,9 +178,9 @@ public class PortalRing : MonoBehaviour
 
         // Play crossing sound for the side the player just came FROM
         if (isSideA && sideACrossingEnabled && sideACrossingSound != null)
-            AudioSource.PlayClipAtPoint(sideACrossingSound, transform.position);
+            AudioHelper.Play(sideACrossingSound, transform.position, audioMixerGroup);
         else if (!isSideA && sideBCrossingEnabled && sideBCrossingSound != null)
-            AudioSource.PlayClipAtPoint(sideBCrossingSound, transform.position);
+            AudioHelper.Play(sideBCrossingSound, transform.position, audioMixerGroup);
 
         if (isSideA)
             ClearInventory();
