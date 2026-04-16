@@ -504,7 +504,6 @@ public class ChemistryPuzzle : BasePuzzle
     {
         _state = State.ZoomingOut;
         _panel.SetActive(false);
-        ClosePuzzle();
 
         float elapsed = 0f, dur = 1f / cameraZoomSpeed;
         Vector3 sp = playerCamera.transform.position;
@@ -535,7 +534,7 @@ public class ChemistryPuzzle : BasePuzzle
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
+        ClosePuzzle();
         _state = solved ? State.Solved : State.Idle;
 
         if (solved)

@@ -19,6 +19,8 @@ public class BarBottleRoomManager : MonoBehaviour
     [Header("Symphony Note")]
     [Tooltip("Assign the SymphonyNote (Normal) GameObject — hidden at start, shown when all bottles placed")]
     public SymphonyNote normalSymphonyNote;
+    [Tooltip("Assign the SymphonyNote (Secret) GameObject — hidden when bottle puzzle completes (secret path locked)")]
+    public SymphonyNote secretSymphonyNote;
 
     private int _filledCount = 0;
     private bool _done = false;
@@ -41,9 +43,11 @@ public class BarBottleRoomManager : MonoBehaviour
             BarRoomState.OnBottlePuzzleCompleted();
             onAllFilled?.Invoke();
             if (rewardObject != null) rewardObject.SetActive(true);
-            // Spawn the note — player must read it to unlock normal syphons
+            // Spawn the normal note — player must read it to unlock normal syphons
             if (normalSymphonyNote != null) normalSymphonyNote.Activate();
-            Debug.Log("[BarBottleRoomManager] All zones filled. Note spawned for normal syphons.");
+            // Hide the secret note — bottle puzzle completion locks the secret path permanently
+            if (secretSymphonyNote != null) secretSymphonyNote.gameObject.SetActive(false);
+            Debug.Log("[BarBottleRoomManager] All zones filled. Normal note spawned; secret note hidden.");
         }
     }
 }

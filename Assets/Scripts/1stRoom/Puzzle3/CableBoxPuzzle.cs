@@ -602,7 +602,6 @@ public class CableBoxPuzzle : BasePuzzle
     IEnumerator ExitPuzzle()
     {
         _panel.SetActive(false);
-        ClosePuzzle();
 
         // Return any cable pieces that were consumed but not yet permanently connected
         if (_state != State.Solved)
@@ -639,6 +638,7 @@ public class CableBoxPuzzle : BasePuzzle
             Cursor.visible = false;
         }
 
+        ClosePuzzle();
         if (_state != State.Solved)
             _state = _doorOpen ? State.DoorOpen : State.Idle;
     }

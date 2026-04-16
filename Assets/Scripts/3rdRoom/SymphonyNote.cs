@@ -84,6 +84,14 @@ public class SymphonyNote : BasePuzzle
 
     void UpdateWorld()
     {
+        // Secret note becomes irrelevant once the bottle puzzle is done (secret path locked).
+        // Hide it so the player can't interact with a note that would silently do nothing.
+        if (noteType == NoteType.Secret && BarRoomState.BottlePuzzleDone)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         bool hit = Physics.Raycast(ray, out RaycastHit hitInfo, interactDistance)
                    && hitInfo.collider.gameObject == gameObject;

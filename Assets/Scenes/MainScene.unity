@@ -8879,7 +8879,7 @@ MonoBehaviour:
   noteType: 1
   playerCamera: {fileID: 1294032726}
   puzzleCameraPosition: {fileID: 385688157}
-  cameraZoomSpeed: 3
+  cameraZoomSpeed: 5
   interactDistance: 3
   interactKey: 101
 --- !u!64 &1263755500
@@ -9200,7 +9200,7 @@ Transform:
   m_GameObject: {fileID: 1297552600}
   serializedVersion: 2
   m_LocalRotation: {x: 0.68979275, y: -0.15551847, z: 0.15551847, w: 0.68979275}
-  m_LocalPosition: {x: -1.301, y: 1.69, z: -0.356}
+  m_LocalPosition: {x: -1.301, y: 1.654, z: -0.356}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9243,7 +9243,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ReadableDocument
   playerCamera: {fileID: 1294032726}
   puzzleCameraPosition: {fileID: 515757309}
-  cameraZoomSpeed: 3
+  cameraZoomSpeed: 5
   interactDistance: 3
   interactKey: 101
   flipKey: 102
@@ -10313,6 +10313,7 @@ MonoBehaviour:
         m_CallState: 2
   rewardObject: {fileID: 0}
   normalSymphonyNote: {fileID: 764937070}
+  secretSymphonyNote: {fileID: 1263755499}
 --- !u!1001 &1462716975
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12204,136 +12205,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0a4f9bf5d708b943be2964a54d4ac73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DevTeleport
-  developerMode: 1
-  location1Transform: {fileID: 0}
-  location2Transform: {fileID: 0}
-  location3Transform: {fileID: 0}
-  location4Transform: {fileID: 0}
-  location1Position: {x: 0, y: 0, z: 0}
-  location2Position: {x: 0, y: 0, z: 0}
-  location3Position: {x: 0, y: 0, z: 0}
-  location4Position: {x: 0, y: 0, z: 0}
-  location5Transform: {fileID: 0}
-  location6Transform: {fileID: 0}
-  location7Transform: {fileID: 0}
-  location8Transform: {fileID: 0}
-  location5Position: {x: 0, y: 0, z: 0}
-  location6Position: {x: 0, y: 0, z: 0}
-  location7Position: {x: 0, y: 0, z: 0}
-  location8Position: {x: 0, y: 0, z: 0}
-  location1Name: Location 1
-  location2Name: Location 2
-  location3Name: Location 3
-  location4Name: Location 4
-  location5Name: Location 5
-  location6Name: Location 6
-  location7Name: Location 7
-  location8Name: Location 8
-  key1: 118
-  key2: 98
-  key3: 110
-  key4: 109
-  key5: 283
-  key6: 284
-  key7: 285
-  key8: 286
-  toggleKey: 282
-  notificationDuration: 2.5
-  _cc: {fileID: 0}
-  _pc: {fileID: 0}
-  _notification: 
-  _notificationTimer: 0
-  _style:
-    m_Name: 
-    m_Normal: {m_Background: {fileID: 0}, m_ScaledBackgrounds: []
-, m_TextColor:
-        r: 0
-        g: 0
-        b: 0
-        a: 1
-}
-    m_Hover: {m_Background: {fileID: 0}, m_ScaledBackgrounds: []
-, m_TextColor:
-        r: 0
-        g: 0
-        b: 0
-        a: 1
-}
-    m_Active: {m_Background: {fileID: 0}, m_ScaledBackgrounds: []
-, m_TextColor:
-        r: 0
-        g: 0
-        b: 0
-        a: 1
-}
-    m_Focused: {m_Background: {fileID: 0}, m_ScaledBackgrounds: []
-, m_TextColor:
-        r: 0
-        g: 0
-        b: 0
-        a: 1
-}
-    m_OnNormal: {m_Background: {fileID: 0}, m_ScaledBackgrounds: []
-, m_TextColor:
-        r: 0
-        g: 0
-        b: 0
-        a: 1
-}
-    m_OnHover: {m_Background: {fileID: 0}, m_ScaledBackgrounds: []
-, m_TextColor:
-        r: 0
-        g: 0
-        b: 0
-        a: 1
-}
-    m_OnActive: {m_Background: {fileID: 0}, m_ScaledBackgrounds: []
-, m_TextColor:
-        r: 0
-        g: 0
-        b: 0
-        a: 1
-}
-    m_OnFocused: {m_Background: {fileID: 0}, m_ScaledBackgrounds: []
-, m_TextColor:
-        r: 0
-        g: 0
-        b: 0
-        a: 1
-}
-    m_Border:
-      m_Left: 0
-      m_Right: 0
-      m_Top: 0
-      m_Bottom: 0
-    m_Margin:
-      m_Left: 0
-      m_Right: 0
-      m_Top: 0
-      m_Bottom: 0
-    m_Padding:
-      m_Left: 0
-      m_Right: 0
-      m_Top: 0
-      m_Bottom: 0
-    m_Overflow:
-      m_Left: 0
-      m_Right: 0
-      m_Top: 0
-      m_Bottom: 0
-    m_Font: {fileID: 0}
-    m_FontSize: 0
-    m_FontStyle: 0
-    m_Alignment: 0
-    m_WordWrap: 0
-    m_RichText: 1
-    m_TextClipping: 0
-    m_ImagePosition: 0
-    m_ContentOffset: {x: 0, y: 0}
-    m_FixedWidth: 0
-    m_FixedHeight: 0
-    m_StretchWidth: 1
-    m_StretchHeight: 0
 --- !u!114 &1694967401
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21078,7 +20949,7 @@ MonoBehaviour:
   tolerance: 0.12
   playerCamera: {fileID: 1294032726}
   puzzleCameraPosition: {fileID: 3331197758063246945}
-  cameraZoomSpeed: 3
+  cameraZoomSpeed: 5
   keyObject: {fileID: 3090070087806294664}
   keyDestination: {fileID: 3361520417544602986}
   keyMoveSpeed: 2
@@ -24552,7 +24423,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HackingPuzzle
   playerCamera: {fileID: 1294032726}
   puzzleCameraPosition: {fileID: 3222337108307259853}
-  cameraZoomSpeed: 3
+  cameraZoomSpeed: 5
   hackedMaterial: {fileID: 2100000, guid: 31ca4008f9abceb45a0e6cc0f8cb6aed, type: 2}
   solvedMaterial: {fileID: 2100000, guid: 9908a631fd4f0ab4c8f8098e1377f8af, type: 2}
   interactRange: 4
@@ -50791,7 +50662,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CableBoxPuzzle
   playerCamera: {fileID: 1294032726}
   puzzleCameraPosition: {fileID: 2150963471483999534}
-  cameraZoomSpeed: 3
+  cameraZoomSpeed: 5
   boxDoor: {fileID: 3807011217335558899}
   doorOpenAngle: 110
   doorOpenSpeed: 2
@@ -58739,7 +58610,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ClockPuzzle
   playerCamera: {fileID: 1294032726}
   puzzleCameraPosition: {fileID: 4706273935189467713}
-  cameraZoomSpeed: 3
+  cameraZoomSpeed: 5
   hourHand: {fileID: 6020789106600419555}
   minuteHand: {fileID: 345807622176761542}
   secondHand: {fileID: 7975223961843506733}
@@ -65072,7 +64943,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EngineCalibratorPuzzle
   playerCamera: {fileID: 1294032726}
   puzzleCameraPosition: {fileID: 2910219619006031967}
-  cameraZoomSpeed: 3
+  cameraZoomSpeed: 5
   uncalibratedMaterial: {fileID: 2100000, guid: 50d8af1f9121a6945818e9e7f20df3d5, type: 2}
   normalSolveMaterial: {fileID: 2100000, guid: 64e81357513ee574db1e65cba4d70147, type: 2}
   specialSolveMaterial: {fileID: 2100000, guid: acd1744e0b5e4484d923a5d358c3beab, type: 2}
@@ -66677,7 +66548,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CircuitRepairPuzzle
   playerCamera: {fileID: 1294032726}
   puzzleCameraPosition: {fileID: 8666709987874431544}
-  cameraZoomSpeed: 3
+  cameraZoomSpeed: 5
   targetVoltage: 7
   requireRepairKit: 1
   completedSound: {fileID: 8300000, guid: e1d208a620d9ae2448176967232714f5, type: 3}
@@ -90383,7 +90254,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ChemistryPuzzle
   playerCamera: {fileID: 1294032726}
   puzzleCameraPosition: {fileID: 770362448}
-  cameraZoomSpeed: 3
+  cameraZoomSpeed: 5
   interactRange: 4
   interactKey: 101
   superAcidPrefab: {fileID: 6615137473423304739, guid: e664f100c7f51f347a0c2e2b96a34da9, type: 3}

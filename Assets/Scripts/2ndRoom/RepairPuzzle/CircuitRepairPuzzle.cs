@@ -298,7 +298,6 @@ public class CircuitRepairPuzzle : BasePuzzle
     IEnumerator ExitPuzzle(bool solved)
     {
         _panel.SetActive(false);
-        ClosePuzzle();
         float elapsed = 0f, dur = 1f / cameraZoomSpeed;
         Vector3 sp = playerCamera.transform.position;
         Quaternion sr = playerCamera.transform.rotation;
@@ -322,6 +321,7 @@ public class CircuitRepairPuzzle : BasePuzzle
         if (pc != null) pc.enabled = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        ClosePuzzle();
         if (!solved) _state = State.Idle;
     }
 

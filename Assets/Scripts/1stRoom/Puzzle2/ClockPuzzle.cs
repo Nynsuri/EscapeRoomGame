@@ -217,7 +217,6 @@ public class ClockPuzzle : BasePuzzle
 
     IEnumerator ExitPuzzle(bool solved)
     {
-        ClosePuzzle();
         _state = State.ZoomingOut;
         _panel.SetActive(false);
 
@@ -247,6 +246,7 @@ public class ClockPuzzle : BasePuzzle
         if (pc != null) pc.enabled = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        ClosePuzzle();
         _state = solved ? State.Solved : State.Idle;
 
         if (solved && solveDrawer != null)
